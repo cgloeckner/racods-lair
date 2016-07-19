@@ -1,6 +1,6 @@
 # Game Data fo Racod's Lair
 
-This repository (will) contain the major game mod data for [Racod's Lair](http://www.indiedb.com/games/racods-lair/). More information can be found in the [SFML forum](http://en.sfml-dev.org/forums/index.php?topic=16367.0) and at [Spieleprogrammierer.de](https://www.spieleprogrammierer.de/12-projektvorstellungen-und-stellenangebote/23552-racod-s-lair-ein-coop-dungeoncrawler).
+This repository (will) contain the major game mod data for [Racod's Lair](http://www.indiedb.com/games/racods-lair/). More information can be found in the [SFML forum](http://en.sfml-dev.org/forums/index.php?topic=16367.0) and at [Spieleprogrammierer.de](https://www.spieleprogrammierer.de/12-projektvorstellungen-und-stellenangebote/23552-racod-s-lair-ein-coop-dungeoncrawler). You can follow [Racod's Lair on Twitter](https://twitter.com/racodslair).
 
 ## Licence
 
