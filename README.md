@@ -6,11 +6,6 @@ This repository (will) contain the major game mod data for [Racod's Lair](http:/
 
 ## Licence
 
-"Racod's Lair" is licenced under CC BY-NC 4.0 with attribution to
-Christian Glöckner. See https://creativecommons.org/licenses/by-nc-sa/4.0/
-for more information about the licence details. All game resources, except
-the provided fonts, are part of "Racod's Lair" under the mentioned licence.
-
-The used fonts were published as "free" by Hazel Abbiati, see
-http://www.dafont.com/simone-u-dono.d3997 for more information.
-
+"Racod's Lair" is licenced under CC BY-NC 4.0 with attribution to Christian Glöckner. See https://creativecommons.org/licenses/by-nc-sa/4.0/ for more information about the licence details. All game resources, except the provided fonts, are part of "Racod's Lair" under the mentioned licence.
+The used fonts were published as "free" by Hazel Abbiati, see http://www.dafont.com/simone-u-dono.d3997 for more information.
+The music is based on the "SalamanderGrandPiano" samples (CC-BY 3.0 by Alexander Holm) and the "Sonatina Symphonic Orchestra" (CC Sampling Plus 1.0 license by Mattias Westlund) as well as the "fluid-soundfont-gm", taken from the official ubuntu repository (originally by Toby Smithe).
