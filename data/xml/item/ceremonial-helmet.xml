@@ -1,0 +1,5 @@
+<general type="Armor" display_name="Ceremonial Helmet" icon_name="icon/armor" sprite_name="ceremonial-helmet" worth="50" />
+<equip slot="Head" />
+<boni>
+	<defense Blade="0.2" Blunt="0.2" Bullet="0.3" />
+</boni>

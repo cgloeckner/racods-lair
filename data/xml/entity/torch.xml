@@ -1,0 +1,3 @@
+<general is_projectile="false" collide="true" max_sight="0.0" max_speed="0.0" sprite_name="torch" display_name="" />
+<light red="255" green="255" blue="255" radius="5.0" intensity="255" cast_shadow="false" lod="2" />
+<sounds />

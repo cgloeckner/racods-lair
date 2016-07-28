@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<general filename="axe"/>
+<torso>
+	<Idle>
+		<frame left="32" top="0" width="7" height="17" x="12" y="0" duration="100"/>
+	</Idle>
+	<Melee>
+		<frame left="80" top="0" width="7" height="15" x="12" y="1" duration="100"/>
+		<frame left="80" top="16" width="14" height="7" x="19" y="1" duration="100"/>
+		<frame left="21" top="0" width="10" height="12" x="15" y="11" duration="130"/>
+		<frame left="64" top="16" width="7" height="15" x="13" y="-3" duration="100"/>
+		<frame left="0" top="0" width="21" height="12" x="22" y="-4" duration="70"/>
+		<frame left="16" top="16" width="7" height="15" x="12" y="0" duration="70"/>
+	</Melee>
+	<Range>
+		<frame left="48" top="0" width="7" height="17" x="11" y="0" duration="100"/>
+		<frame left="0" top="16" width="7" height="15" x="11" y="1" duration="100"/>
+		<frame left="240" top="0" width="7" height="15" x="10" y="1" duration="130"/>
+		<frame left="224" top="0" width="7" height="15" x="10" y="1" duration="100"/>
+		<frame left="208" top="0" width="7" height="15" x="11" y="1" duration="70"/>
+		<frame left="192" top="0" width="7" height="15" x="11" y="0" duration="70"/>
+	</Range>
+	<Magic>
+		<frame left="176" top="0" width="7" height="15" x="13" y="1" duration="80"/>
+		<frame left="160" top="0" width="7" height="15" x="13" y="2" duration="80"/>
+		<frame left="144" top="0" width="7" height="15" x="13" y="1" duration="80"/>
+		<frame left="128" top="0" width="7" height="15" x="13" y="-1" duration="100"/>
+		<frame left="112" top="0" width="7" height="15" x="6" y="-4" duration="150"/>
+		<frame left="96" top="0" width="7" height="15" x="13" y="-1" duration="100"/>
+	</Magic>
+	<Use>
+		<frame left="64" top="0" width="13" height="9" x="8" y="-3" duration="100"/>
+		<frame left="96" top="16" width="16" height="5" x="7" y="-5" duration="200"/>
+		<frame left="112" top="16" width="16" height="5" x="7" y="-6" duration="400"/>
+		<frame left="128" top="16" width="16" height="5" x="7" y="-5" duration="150"/>
+	</Use>
+</torso>

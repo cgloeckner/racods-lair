@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grid>
+	<cell x="19" y="19" wall="true" entity="torch" face="0,1"/>
+	<cell x="11" y="11" wall="true" entity="torch" face="0,1"/>
+	<cell x="10" y="10"/>
+	<cell x="9" y="9"/>
+	<cell x="8" y="8" entity="barrel-side" face="1,1"/>
+	<cell x="20" y="20"/>
+	<cell x="21" y="21"/>
+	<cell x="22" y="22" entity="barrel-side" face="1,1"/>
+	<cell x="14" y="9"/>
+	<cell x="15" y="8"/>
+	<cell x="13" y="10"/>
+	<cell x="10" y="13"/>
+	<cell x="20" y="19"/>
+	<cell x="21" y="18"/>
+	<cell x="22" y="17"/>
+	<cell x="19" y="20"/>
+	<cell x="18" y="21"/>
+	<cell x="17" y="22"/>
+	<cell x="9" y="14"/>
+	<cell x="8" y="15"/>
+	<cell x="15" y="9"/>
+	<cell x="14" y="8"/>
+	<cell x="12" y="10"/>
+	<cell x="21" y="19"/>
+	<cell x="20" y="18"/>
+	<cell x="22" y="16"/>
+	<cell x="18" y="20" entity="barrel-top" face="0,1"/>
+	<cell x="19" y="21"/>
+	<cell x="16" y="22"/>
+	<cell x="8" y="14"/>
+	<cell x="9" y="15"/>
+	<cell x="10" y="12"/>
+	<cell x="19" y="10"/>
+	<cell x="17" y="8"/>
+	<cell x="16" y="9"/>
+	<cell x="20" y="13"/>
+	<cell x="21" y="12"/>
+	<cell x="22" y="15"/>
+	<cell x="15" y="22"/>
+	<cell x="13" y="20"/>
+	<cell x="12" y="21"/>
+	<cell x="8" y="17"/>
+	<cell x="10" y="19"/>
+	<cell x="9" y="16"/>
+	<cell x="21" y="10"/>
+	<cell x="22" y="9" entity="barrel-side" face="1,0"/>
+	<cell x="20" y="11" entity="barrel-top" face="0,1"/>
+	<cell x="11" y="20"/>
+	<cell x="10" y="21"/>
+	<cell x="9" y="22"/>
+	<cell x="20" y="9"/>
+	<cell x="21" y="8"/>
+	<cell x="22" y="11"/>
+	<cell x="11" y="22" entity="barrel-side" face="0,1"/>
+	<cell x="9" y="20"/>
+	<cell x="8" y="21" entity="barrel-top" face="0,1"/>
+	<cell x="15" y="10"/>
+	<cell x="12" y="9"/>
+	<cell x="13" y="8"/>
+	<cell x="8" y="13"/>
+	<cell x="22" y="19"/>
+	<cell x="20" y="17"/>
+	<cell x="21" y="16"/>
+	<cell x="17" y="20" entity="barrel-top" face="0,1"/>
+	<cell x="19" y="22"/>
+	<cell x="16" y="21"/>
+	<cell x="10" y="15"/>
+	<cell x="9" y="12"/>
+	<cell x="14" y="10"/>
+	<cell x="13" y="9"/>
+	<cell x="12" y="8"/>
+	<cell x="9" y="13"/>
+	<cell x="22" y="18"/>
+	<cell x="21" y="17"/>
+	<cell x="20" y="16"/>
+	<cell x="17" y="21"/>
+	<cell x="18" y="22"/>
+	<cell x="16" y="20"/>
+	<cell x="10" y="14"/>
+	<cell x="8" y="12"/>
+	<cell x="17" y="10"/>
+	<cell x="18" y="9"/>
+	<cell x="19" y="8"/>
+	<cell x="22" y="13"/>
+	<cell x="21" y="14"/>
+	<cell x="20" y="15"/>
+	<cell x="15" y="20"/>
+	<cell x="14" y="21"/>
+	<cell x="13" y="22"/>
+	<cell x="10" y="17" entity="barrel-top" face="0,1"/>
+	<cell x="9" y="18"/>
+	<cell x="8" y="19"/>
+	<cell x="11" y="9"/>
+	<cell x="8" y="10" entity="barrel-top" face="0,1"/>
+	<cell x="10" y="8" entity="barrel-top" face="0,1"/>
+	<cell x="22" y="20" entity="barrel-side" face="1,0"/>
+	<cell x="20" y="22"/>
+	<cell x="9" y="11"/>
+	<cell x="11" y="8"/>
+	<cell x="9" y="10"/>
+	<cell x="10" y="9"/>
+	<cell x="22" y="21"/>
+	<cell x="21" y="22" entity="barrel-top" face="0,1"/>
+	<cell x="8" y="11"/>
+	<cell x="19" y="9"/>
+	<cell x="18" y="8"/>
+	<cell x="16" y="10"/>
+	<cell x="22" y="12"/>
+	<cell x="21" y="15"/>
+	<cell x="20" y="14"/>
+	<cell x="14" y="20"/>
+	<cell x="15" y="21"/>
+	<cell x="12" y="22"/>
+	<cell x="8" y="18"/>
+	<cell x="9" y="19"/>
+	<cell x="10" y="16"/>
+	<cell x="20" y="10"/>
+	<cell x="22" y="8" entity="barrel-side" face="1,-1"/>
+	<cell x="21" y="11"/>
+	<cell x="11" y="21"/>
+	<cell x="10" y="20"/>
+	<cell x="8" y="22" entity="barrel-side" face="1,-1"/>
+	<cell x="11" y="10"/>
+	<cell x="8" y="9" entity="barrel-side" face="1,0"/>
+	<cell x="9" y="8"/>
+	<cell x="21" y="20"/>
+	<cell x="20" y="21"/>
+	<cell x="10" y="11"/>
+	<cell x="19" y="11" wall="true" entity="torch" face="0,1"/>
+	<cell x="11" y="19" wall="true" entity="torch" face="0,1"/>
+	<cell x="18" y="10" entity="barrel-top" face="0,1"/>
+	<cell x="17" y="9"/>
+	<cell x="16" y="8"/>
+	<cell x="21" y="13"/>
+	<cell x="20" y="12" entity="barrel-top" face="0,1"/>
+	<cell x="22" y="14"/>
+	<cell x="14" y="22"/>
+	<cell x="12" y="20"/>
+	<cell x="13" y="21"/>
+	<cell x="9" y="17"/>
+	<cell x="10" y="18" entity="barrel-top" face="0,1"/>
+	<cell x="8" y="16"/>
+	<cell x="22" y="10"/>
+	<cell x="21" y="9"/>
+	<cell x="20" y="8" entity="barrel-top" face="0,1"/>
+	<cell x="8" y="20" entity="barrel-top" face="0,1"/>
+	<cell x="9" y="21"/>
+	<cell x="10" y="22" entity="barrel-side" face="0,1"/>
+</grid>

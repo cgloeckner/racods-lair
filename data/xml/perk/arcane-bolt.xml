@@ -1,0 +1,5 @@
+<general type="Enemy" display_name="Arcane Bolt" icon_name="icon/fireball" />
+<bullet name="magic-bullet">
+	<color red="255" green="128" blue="255" />
+</bullet>
+<damage Magic="1.5" />

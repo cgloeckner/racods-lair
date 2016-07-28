@@ -1,0 +1,5 @@
+<encounter>
+	<bot name="spider" ratio="0.5" />
+	<bot name="fire-spider" ratio="0.3" />
+	<bot name="black-spider" ratio="0.2" />
+</encounter>

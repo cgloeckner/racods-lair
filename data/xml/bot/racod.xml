@@ -1,0 +1,10 @@
+<general display_name="Racod" entity_name="dragon">
+	<color red="100" green="100" blue="100"/>
+</general>
+<attributes Strength="0.5" Dexterity="0.1" Wisdom="0.4" />
+<defense Blade="0.6" Blunt="0.3" Bullet="0.6" Magic="0.4" />
+<properties MaxLife="5.0" MeleeBase="2.0" MagicBase="3.0" />
+<items />
+<perks>
+	<perk perk="fireball" level="1.0" />
+</perks>

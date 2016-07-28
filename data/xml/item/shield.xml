@@ -1,0 +1,5 @@
+<general type="Armor" display_name="Shield" icon_name="icon/armor" sprite_name="shield" worth="100" />
+<equip slot="Extension" melee="false" two_handed="false" />
+<boni>
+	<defense Blade="0.1" Blunt="0.3" Bullet="0.3" />
+</boni>

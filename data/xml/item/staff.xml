@@ -1,0 +1,3 @@
+<general type="Weapon" display_name="Staff" icon_name="icon/sword" sprite_name="staff" use_sound="melee-swing-1" worth="100" />
+<equip slot="Weapon" melee="true" two_handed="true" />
+<damage Blunt="0.66" />

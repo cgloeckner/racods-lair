@@ -1,0 +1,5 @@
+<general type="Armor" display_name="Hat" icon_name="icon/armor" sprite_name="hat" worth="50" />
+<equip slot="Head" />
+<boni>
+	<defense Blade="0.2" Blunt="0.1" Bullet="0.1" />
+</boni>

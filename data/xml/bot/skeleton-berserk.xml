@@ -1,0 +1,10 @@
+<general display_name="Skeleton Berserk" entity_name="skeleton" />
+<attributes Strength="0.7" Dexterity="0.2" Wisdom="0.1" />
+<defense Bullet="1" />
+<items>
+	<item item="axe" quantity="1"/>
+	<item item="shield" quantity="1"/>
+	<item item="leather" quantity="1"/>
+	<item item="helmet" quantity="1"/>
+</items>
+<perks />

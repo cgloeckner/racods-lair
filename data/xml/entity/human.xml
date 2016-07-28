@@ -1,0 +1,16 @@
+<general is_projectile="false" collide="true" max_sight="15.0" max_speed="50.0" sprite_name="human" display_name="Human" />
+<sounds>
+	<Death>
+		<sound name="human-death-0" />
+		<sound name="human-death-1" />
+		<sound name="human-death-2" />
+		<sound name="human-death-3" />
+	</Death>
+	<Hit>
+		<sound name="human-hit-0" />
+		<sound name="human-hit-1" />
+		<sound name="human-hit-2" />
+		<sound name="human-hit-3" />
+	</Hit>
+</sounds>
+<blood red="255" green="0" blue="0" />

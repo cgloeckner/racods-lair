@@ -1,0 +1,5 @@
+<general type="Enemy" display_name="Holy Bolt" icon_name="icon/fireball" />
+<bullet name="magic-bullet">
+	<color red="128" green="128" blue="255" />
+</bullet>
+<damage Bullet="0.6" Magic="0.9" />

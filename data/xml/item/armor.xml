@@ -1,0 +1,5 @@
+<general type="Armor" display_name="Armor" icon_name="icon/armor" sprite_name="armor" worth="150" />
+<equip slot="Body" />
+<boni>
+	<defense Blade="0.5" Blunt="0.4" Bullet="0.3" />
+</boni>

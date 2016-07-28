@@ -1,0 +1,4 @@
+<general type="Weapon" display_name="Bow" icon_name="icon/bow" sprite_name="bow" worth="100" />
+<equip slot="Weapon" melee="false" two_handed="true" />
+<bullet name="arrow" />
+<damage Bullet="1.0" />

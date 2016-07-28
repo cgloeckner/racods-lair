@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<general filename="fireball"/>
+<torso>
+	<Idle>
+		<frame left="64" top="0" width="12" height="14" x="6" y="8" duration="80"/>
+		<frame left="32" top="0" width="14" height="15" x="7" y="9" duration="80"/>
+		<frame left="48" top="0" width="14" height="15" x="7" y="9" duration="80"/>
+		<frame left="0" top="0" width="14" height="17" x="7" y="11" duration="80"/>
+		<frame left="14" top="0" width="14" height="17" x="7" y="11" duration="80"/>
+		<frame left="80" top="0" width="12" height="14" x="5" y="8" duration="80"/>
+	</Idle>
+</torso>

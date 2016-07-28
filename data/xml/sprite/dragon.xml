@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<general filename="dragon"/>
+<legs>
+	<frame left="132" top="32" width="44" height="30" x="22" y="29" duration="80"/>
+	<frame left="44" top="32" width="44" height="30" x="22" y="29" duration="80"/>
+	<frame left="132" top="0" width="44" height="31" x="22" y="29" duration="80"/>
+	<frame left="44" top="0" width="44" height="32" x="22" y="29" duration="80"/>
+	<frame left="0" top="0" width="44" height="33" x="22" y="29" duration="80"/>
+	<frame left="88" top="0" width="44" height="32" x="22" y="29" duration="80"/>
+	<frame left="176" top="0" width="44" height="31" x="22" y="29" duration="80"/>
+	<frame left="88" top="32" width="44" height="30" x="22" y="29" duration="80"/>
+</legs>
+<torso>
+	<Idle>
+		<frame left="80" top="64" width="8" height="18" x="4" y="9" duration="100"/>
+	</Idle>
+	<Melee>
+		<frame left="64" top="64" width="8" height="18" x="4" y="9" duration="120"/>
+		<frame left="144" top="64" width="8" height="17" x="4" y="9" duration="110"/>
+		<frame left="128" top="64" width="8" height="17" x="4" y="9" duration="100"/>
+		<frame left="112" top="64" width="8" height="17" x="4" y="9" duration="100"/>
+		<frame left="240" top="32" width="8" height="18" x="4" y="9" duration="90"/>
+		<frame left="224" top="32" width="8" height="20" x="4" y="9" duration="70"/>
+	</Melee>
+	<Magic>
+		<frame left="0" top="48" width="8" height="18" x="4" y="9" duration="80"/>
+		<frame left="96" top="64" width="8" height="17" x="4" y="9" duration="100"/>
+		<frame left="160" top="64" width="8" height="16" x="4" y="9" duration="130"/>
+		<frame left="176" top="64" width="8" height="16" x="4" y="9" duration="400"/>
+		<frame left="192" top="64" width="8" height="16" x="4" y="9" duration="100"/>
+	</Magic>
+	<Die>
+		<frame left="16" top="48" width="8" height="18" x="4" y="9" duration="100"/>
+		<frame left="208" top="32" width="9" height="18" x="5" y="9" duration="100"/>
+		<frame left="32" top="48" width="8" height="18" x="4" y="9" duration="100"/>
+		<frame left="48" top="64" width="8" height="18" x="4" y="9" duration="100"/>
+		<frame left="192" top="32" width="9" height="18" x="4" y="9" duration="100"/>
+		<frame left="240" top="0" width="10" height="17" x="4" y="9" duration="100"/>
+		<frame left="220" top="0" width="10" height="17" x="6" y="9" duration="100"/>
+		<frame left="176" top="32" width="9" height="18" x="5" y="9" duration="100"/>
+	</Die>
+</torso>

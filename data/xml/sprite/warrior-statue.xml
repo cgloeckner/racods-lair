@@ -1,0 +1,12 @@
+<general filename="warrior-statue" />
+<shadow>
+	<point x="-16" y="-16" />
+	<point x="16" y="-16" />
+	<point x="16" y="16" />
+	<point x="-16" y="16" />
+</shadow>
+<torso>
+	<Idle>
+		<frame left="0" top="0" width="64" height="64" x="32" y="32" duration="100" />
+	</Idle>
+</torso>

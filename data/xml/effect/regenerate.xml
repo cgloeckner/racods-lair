@@ -1,0 +1,2 @@
+<general display_name="player regeneration" />
+<recover Life="0.025" Mana="0.025" />

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<general filename="gem"/>
+<torso>
+	<Idle>
+		<frame left="0" top="0" width="10" height="10" x="5" y="5" duration="100"/>
+		<frame left="10" top="0" width="8" height="10" x="4" y="5" duration="100"/>
+		<frame left="48" top="0" width="6" height="10" x="3" y="5" duration="100"/>
+		<frame left="80" top="0" width="4" height="10" x="2" y="5" duration="100"/>
+		<frame left="64" top="0" width="6" height="10" x="3" y="5" duration="100"/>
+		<frame left="32" top="0" width="8" height="10" x="4" y="5" duration="100"/>
+	</Idle>
+</torso>

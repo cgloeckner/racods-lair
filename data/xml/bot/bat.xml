@@ -1,0 +1,6 @@
+<general display_name="Giant Bat" entity_name="bat" />
+<attributes Strength="0.7" Dexterity="0.3" Wisdom="0.0" />
+<defense Blade="0.2" Blunt="0.4" Bullet="0.4" />
+<properties MaxLife="0.7" MeleeBase="1.0" />
+<items />
+<perks />

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<engine max_num_objects="35000" />
+<logo>
+	<img src="logo/sfml" />
+</logo>
+<players>
+	<color r="255" g="0" b="0" />
+	<color r="0" g="255" b="0" />
+	<color r="0" g="0" b="255" />
+	<color r="255" g="255" b="0" />
+	<color r="255" g="0" b="255" />
+	<color r="0" g="255" b="255" />
+</players>
+<difficulty Easy="0.3" Normal="0.5" Difficult="0.8" Hard="1.2" />
+<ui
+	menu_background="ui/background"
+	vertical_padding="30"
+	horizontal_padding="200"
+	hud_padding="10"
+	hud_margin="100"
+	widget_width="200"
+	max_input_len="15">
+	<widget font="PlopDump" char_size="14" />
+	<title font="PlopDumpOutline" char_size="25" />
+	<combat font="HydratingLip" char_size="14" />
+	<notification font="TubeOfCorn" char_size="25" />
+	<color r="255" g="255" b="255" />
+	<highlight r="255" g="255" b="0" />
+	<warning r="255" g="0" b="0" />
+	<menu_sfx
+		activate="ui/menu-activate"
+		deactivate="ui/menu-deactivate"
+		alternate="ui/menu-alternate"
+		navigate="ui/menu-navigate"
+		type="ui/menu-type"
+		undo="ui/menu-undo"
+		/>
+</ui>
+<video
+	framelimit="200"
+	zoom="1.0"
+	/>
+<audio
+	poolsize="8"
+	sfx_preview="spider-death-1"
+	sfx_threshold="500"
+	title_theme="theme"
+	powerup="ui/powerup"
+	levelup="ui/levelup">
+	<feedback NotEnoughMana="no-mana" />
+</audio>
+<input>
+	<keyboard>
+		<MoveN type="Key" key="W"/>
+		<MoveE type="Key" key="D"/>
+		<MoveS type="Key" key="S"/>
+		<MoveW type="Key" key="A"/>
+		<LookN type="Key" key="Up"/>
+		<LookE type="Key" key="Right"/>
+		<LookS type="Key" key="Down"/>
+		<LookW type="Key" key="Left"/>
+		<Attack type="Key" key="Space"/>
+		<Interact type="Key" key="Return"/>
+		<UseSlot type="Key" key="BackSpace"/>
+		<PrevSlot type="Key" key="LShift"/>
+		<NextSlot type="Key" key="LControl"/>
+		<Pause type="Key" key="Escape"/>
+		<ToggleAutoLook type="Key" key="Tab"/>
+	</keyboard>
+	<gamepad>
+		<MoveN type="Axis" axis="Y" threshold="-10"/>
+		<MoveE type="Axis" axis="X" threshold="10"/>
+		<MoveS type="Axis" axis="Y" threshold="10"/>
+		<MoveW type="Axis" axis="X" threshold="-10"/>
+		<LookN type="Axis" axis="Z" threshold="-10"/>
+		<LookE type="Axis" axis="R" threshold="10"/>
+		<LookS type="Axis" axis="Z" threshold="10"/>
+		<LookW type="Axis" axis="R" threshold="-10"/>
+		<Attack type="Button" button="5"/>
+		<Interact type="Button" button="0"/>
+		<UseSlot type="Button" button="4"/>
+		<PrevSlot type="Button" button="6"/>
+		<NextSlot type="Button" button="7"/>
+		<Pause type="Button" button="9"/>
+		<ToggleAutoLook type="Button" button="11"/>
+	</gamepad>
+</input>
+<dungeon_generator
+	room_density="0.5"
+	deadend_density="0.1"
+	redundant_paths_ratio="0.25"
+	ambience_density="0.05"
+	cell_size="31"
+	min_num_dungeons="3"
+	max_num_dungeons="12">
+	<size width="96" height="96" />
+</dungeon_generator>

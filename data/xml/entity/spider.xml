@@ -1,0 +1,26 @@
+<general is_projectile="false" collide="true" max_sight="15.0" max_speed="55.0" sprite_name="spider" display_name="Spider" />
+<sounds>
+	<Death>
+		<sound name="spider-death-0" />
+		<sound name="spider-death-1" />
+		<sound name="spider-death-2" />
+		<sound name="spider-death-3" />
+	</Death>
+	<Hit>
+		<sound name="spider-hit-0" />
+		<sound name="spider-hit-1" />
+	</Hit>
+	<Attack>
+		<sound name="spider-attack-0" />
+		<sound name="spider-attack-1" />
+		<sound name="spider-attack-2" />
+		<sound name="spider-attack-3" />
+	</Attack>
+	<Perk>
+		<sound name="spider-attack-0" />
+		<sound name="spider-attack-1" />
+		<sound name="spider-attack-2" />
+		<sound name="spider-attack-3" />
+	</Perj>
+</sounds>
+<blood red="255" green="255" blue="0" />

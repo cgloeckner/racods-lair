@@ -1,0 +1,5 @@
+<encounter>
+	<bot name="skeleton-warrior" ratio="0.6" />
+	<bot name="skeleton-berserk" ratio="0.2" />
+	<bot name="skeleton-warlock" ratio="0.2" />
+</encounter>

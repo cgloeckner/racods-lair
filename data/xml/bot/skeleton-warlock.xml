@@ -1,0 +1,10 @@
+<general display_name="Skeleton Warlock" entity_name="skeleton" />
+<attributes Strength="0.1" Dexterity="0.1" Wisdom="0.8" />
+<defense Bullet="1" />
+<items>
+	<item item="staff" quantity="1"/>
+	<item item="cowl" quantity="1"/>
+</items>
+<perks>
+	<perk perk="arcane-bolt" level="1.0" />
+</perks>

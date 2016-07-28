@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<general filename="shield"/>
+<torso>
+	<Idle>
+		<frame left="64" top="0" width="3" height="8" x="-7" y="2" duration="100"/>
+	</Idle>
+	<Melee>
+		<frame left="0" top="0" width="6" height="7" x="-4" y="2" duration="100"/>
+		<frame left="80" top="16" width="3" height="8" x="-5" y="2" duration="100"/>
+		<frame left="64" top="16" width="3" height="8" x="-5" y="2" duration="130"/>
+		<frame left="16" top="0" width="5" height="7" x="-5" y="2" duration="100"/>
+		<frame left="6" top="0" width="6" height="7" x="-4" y="3" duration="70"/>
+		<frame left="48" top="16" width="3" height="8" x="-6" y="2" duration="70"/>
+	</Melee>
+	<Range>
+		<frame left="32" top="16" width="3" height="8" x="-6" y="1" duration="100"/>
+		<frame left="16" top="16" width="3" height="8" x="-5" y="-1" duration="100"/>
+		<frame left="0" top="16" width="3" height="8" x="-4" y="-1" duration="130"/>
+		<frame left="32" top="0" width="6" height="5" x="1" y="-4" duration="100"/>
+		<frame left="240" top="0" width="3" height="8" x="-5" y="-1" duration="70"/>
+		<frame left="224" top="0" width="3" height="8" x="-6" y="0" duration="70"/>
+	</Range>
+	<Magic>
+		<frame left="208" top="0" width="3" height="8" x="-6" y="2" duration="80"/>
+		<frame left="192" top="0" width="3" height="8" x="-5" y="1" duration="80"/>
+		<frame left="176" top="0" width="3" height="8" x="-6" y="1" duration="80"/>
+		<frame left="160" top="0" width="3" height="8" x="-6" y="2" duration="100"/>
+		<frame left="144" top="0" width="8" height="3" x="-1" y="4" duration="150"/>
+		<frame left="128" top="0" width="3" height="8" x="-6" y="2" duration="100"/>
+	</Magic>
+	<Use>
+		<frame left="112" top="0" width="3" height="8" x="-7" y="1" duration="100"/>
+		<frame left="96" top="0" width="3" height="8" x="-6" y="-2" duration="200"/>
+		<frame left="80" top="0" width="3" height="8" x="-5" y="-1" duration="400"/>
+		<frame left="48" top="0" width="3" height="8" x="-6" y="-1" duration="150"/>
+	</Use>
+</torso>

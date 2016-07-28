@@ -1,0 +1,16 @@
+<general is_projectile="false" flying="true" collide="true" max_sight="20.0" max_speed="100.0" sprite_name="bat" display_name="Bat" />
+<sounds>
+	<Death>
+		<sound name="bat-death-0" />
+		<sound name="bat-death-1" />
+	</Death>
+	<Hit>
+		<sound name="bat-hit-0" />
+		<sound name="bat-hit-1" />
+	</Hit>
+	<Attack>
+		<sound name="bat-attack-0" />
+		<sound name="bat-attack-1" />
+	</Attack>
+</sounds>
+<blood red="255" green="0" blue="0" />

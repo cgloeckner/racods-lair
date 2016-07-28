@@ -1,0 +1,5 @@
+<general type="Armor" display_name="Leather" icon_name="icon/armor" sprite_name="leather" worth="50" />
+<equip slot="Body" />
+<boni>
+	<defense Blade="0.3" Blunt="0.5" Bullet="0.2" />
+</boni>

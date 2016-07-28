@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<general filename="magic-bullet"/>
+<torso>
+	<Idle>
+		<frame left="14" top="0" width="12" height="14" x="6" y="8" duration="100"/>
+		<frame left="0" top="0" width="14" height="15" x="7" y="9" duration="100"/>
+	</Idle>
+</torso>

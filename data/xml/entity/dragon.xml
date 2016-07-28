@@ -1,0 +1,19 @@
+<general is_projectile="false" flying="true" collide="true" max_sight="20.0" max_speed="45.0" sprite_name="dragon" display_name="Dragon" />
+<sounds>
+	<Death>
+		<sound name="dragon-death-0" />
+	</Death>
+	<Hit>
+		<sound name="dragon-hit-0" />
+		<sound name="dragon-hit-1" />
+	</Hit>
+	<Attack>
+		<sound name="dragon-attack-0" />
+		<sound name="dragon-attack-1" />
+	</Attack>
+	<Perk>
+		<sound name="dragon-attack-0" />
+		<sound name="dragon-attack-1" />
+	</perk>
+</sounds>
+<blood red="255" green="0" blue="0" />

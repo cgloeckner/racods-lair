@@ -1,0 +1,8 @@
+<general display_name="Heavy Bandit" entity_name="human" />
+<attributes Strength="0.6" Dexterity="0.4" Wisdom="0.0" />
+<items>
+	<item item="sword" quantity="1"/>
+	<item item="bow" quantity="1"/>
+	<item item="armor" quantity="1"/>
+</items>
+<perks />

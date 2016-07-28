@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<general
+	story="The scourge of mankind escaped to its lair\nto regenerate for his next decade of terror.\nHopefully, you and your brave fellows are willed\nto travel those cursed catacombs\nto find and finally defeat\nR A C O D\nStay brave and adamant, dear rogue"
+	apply="Apply"
+	discard="Discard"
+	back="Back"
+	ok="Okay"
+	keyboard="Keyboard"
+	gamepad="Gamepad"
+	loading="Loading..."
+	filename="Filename"
+	charname="Character Name"
+	experience="Experience"
+	next_exp="Required Exp."
+	level="Level"
+	/>
+<title
+	lobby="Lobby"
+	settings="Settings"
+	quit="Quit" />
+<lobby
+	title="Game Lobby"
+	num_players="Number of Players"
+	player="Player"
+	num_dungeons="Number of Dungeons"
+	difficulty="Difficulty"
+	new_profile="** NEW **"
+	unset_profile="No profile selected for player"
+	multi_profile="Cannot use profiles multiple times"
+	ambiguous_input="Ambigious input binding"
+	shared_gamepad="Cannot share gamepad"
+	start="Start" />
+<savegame
+	title="Profile Details"
+	last_game="Last time played"
+	controls="Controls"
+	/>
+<profile
+	title="Profile Editor"
+	default_name="new"
+	create="Create"
+	too_short_filename="Too short filename"
+	filename_already_used="Filename is already used"
+	too_short_charname="Too short character name"
+	>
+	<charclass
+		warrior="Warrior"
+		rogue="Rogue"
+		wizard="Wizard" />
+</profile>
+<pause
+	title="Game Paused"
+	continue="Continue"
+	save="Save"
+	camera="Camera"
+	controls="Controls"
+	character="Character"
+	settings="Settings"
+	quit="Quit" />
+<camera
+	camera="Camera"
+	title="Camera Settings"
+	/>
+<character
+	title="Character Menu"
+	/>
+<settings
+	title="Settings"
+	resolution="Resolution"
+	autocam="Automatic Camera"
+	fullscreen="Fullscreen"
+	autosave="Auto-Save"
+	sound="Sound Effects Volume"
+	Music="Music Volume"
+	>
+	<lighting
+		level="Lighting Level"
+		disabled="Disabled"
+		simple="Simple"
+		complex="Complex" />
+</settings>
+<controls
+	title="Game Controls"
+	unsupported="Unsupported input"
+	expect_gamepad="Input by gamepad expected"
+	expect_another_gamepad="Input by another gamepad expected"
+	expect_keyboard="Input by keyboard expected"
+	wait="(Waiting for Input)"
+	reset="Reset to default"
+	
+	Attack="Attack"
+	Interact="Interact"
+	UseSlot="Use Quickslot"
+	PrevSlot="Previous Quickslot"
+	NextSlot="Next Quickslot"
+	Pause="Pause Menu"
+	ToggleAutoLook="Toggle Automatic Facing"
+	MoveN="Move Up"
+	MoveE="Move Right"
+	MoveS="Move Down"
+	MoveW="Move Left"
+	LookN="Look Up"
+	LookE="Look Right"
+	LookS="Look South"
+	LookW="Look Left" />
+<stat
+	Life="Life"
+	Mana="Mana"
+	Stamina="Stamina"
+	/>
+<attribute
+	Strength="Strength"
+	Dexterity="Dexterity"
+	Wisdom="Wisdom"
+	/>
+<damage_type
+	Blade="Blade Damage"
+	Blunt="Blunt Damage"
+	Bullet="Piercing Damage"
+	Magic="Magic Damage"
+	Fire="Fire Damage"
+	Ice="Ice Damage"
+	Poison="Poison Damage"
+	/>
+<defense_type
+	Blade="Blade Protection"
+	Blunt="Blunt Protection"
+	Bullet="Piercing Protection"
+	Magic="Magic Protection"
+	Fire="Fire Protection"
+	Ice="Ice Protection"
+	Poison="Poison Protection"
+	/>
+<hud
+	death="You died!"
+	respawn="You revived!"
+	levelup="Levelup! Now level"
+	upstairs="You went up to stage"
+	downstairs="You went down to stage"
+	teleport="You were teleported"
+	/>
+<difficulty
+	Easy="Novice"
+	Normal="Beginner"
+	Difficult="Expert"
+	Hard="Suicidal"
+	/>

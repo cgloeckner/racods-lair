@@ -1,0 +1,10 @@
+<general display_name="Fire-Spider" entity_name="spider">
+	<color red="255" green="100" blue="100"/>
+</general>
+<attributes Strength="0.3" Dexterity="0.1" Wisdom="0.6" />
+<defense Blade="0.2" Blunt="0.2" Bullet="0.2" magic="0.5" fire="0.75" />
+<properties MeleeBase="0.75" MagicBase="1.0" />
+<items />
+<perks>
+	<perk perk="fireball" level="1.0" />
+</perks>

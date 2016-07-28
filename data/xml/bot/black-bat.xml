@@ -1,0 +1,8 @@
+<general display_name="Giant Black Bat" entity_name="bat">
+	<color red="100" green="100" blue="100"/>
+</general>
+<attributes Strength="0.7" Dexterity="0.3" Wisdom="0.0" />
+<defense Blade="0.6" Blunt="0.6" Bullet="0.4" />
+<properties MaxLife="1.0" MeleeBase="2.0" />
+<items />
+<perks />

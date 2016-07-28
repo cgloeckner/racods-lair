@@ -1,0 +1,8 @@
+<general display_name="Light Bandit" entity_name="human" />
+<attributes Strength="0.8" Dexterity="0.2" Wisdom="0.0" />
+<items>
+	<item item="sword" quantity="1"/>
+	<item item="bow" quantity="1"/>
+	<item item="leather" quantity="1"/>
+</items>
+<perks />

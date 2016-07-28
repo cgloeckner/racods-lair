@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<general filename="torch"/>
+<torso>
+	<Idle>
+		<frame left="0" top="0" width="12" height="12" x="6" y="6" duration="100"/>
+		<frame left="12" top="0" width="12" height="12" x="6" y="6" duration="100"/>
+		<frame left="32" top="0" width="12" height="12" x="6" y="6" duration="100"/>
+		<frame left="48" top="0" width="12" height="12" x="6" y="6" duration="100"/>
+	</Idle>
+</torso>

@@ -1,0 +1,4 @@
+<encounter>
+	<bot name="bat" ratio="0.75" />
+	<bot name="black-bat" ratio="0.25" />
+</encounter>

@@ -1,0 +1,11 @@
+<general display_name="Renegade Paladin" entity_name="human" />
+<attributes Strength="0.5" Dexterity="0.3" Wisdom="0.2" />
+<items>
+	<item item="sword" quantity="1"/>
+	<item item="armor" quantity="1"/>
+	<item item="shield" quantity="1"/>
+	<item item="cowl" quantity="1"/>
+</items>
+<perks>
+	<perk perk="holy-bolt" level="1.0" />
+</perks>

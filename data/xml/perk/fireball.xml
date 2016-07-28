@@ -1,0 +1,3 @@
+<general type="Enemy" display_name="Fireball" icon_name="icon/fireball" />
+<bullet name="fireball" />
+<damage Fire="1.0" Magic="0.5" />

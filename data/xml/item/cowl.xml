@@ -1,0 +1,5 @@
+<general type="Armor" display_name="Cowl" icon_name="icon/armor" sprite_name="cowl" worth="50" />
+<equip slot="Head" />
+<boni>
+	<defense Blade="0.1" Blunt="0.2" Bullet="0.1" />
+</boni>

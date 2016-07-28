@@ -1,0 +1,16 @@
+<general is_projectile="true" collide="true" max_sight="0.0" max_speed="110.0" sprite_name="magic-bullet" />
+<light red="255" green="64" blue="96" radius="10.0" intensity="255" cast_shadow="true" lod="2" />
+<sounds>
+	<Spawn>
+		<sound name="fireball-spawn-0" />
+		<sound name="fireball-spawn-1" />
+		<sound name="fireball-spawn-2" />
+		<sound name="fireball-spawn-3" />
+	</Spawn>
+	<Death>
+		<sound name="fireball-vanish-0" />
+		<sound name="fireball-vanish-1" />
+		<sound name="fireball-vanish-2" />
+		<sound name="fireball-vanish-3" />
+	</Death>
+</sounds>
