@@ -4,6 +4,10 @@
 
 This repository contains the major game mod data for [Racod's Lair](http://www.indiedb.com/games/racods-lair/). More information can be found in the [SFML forum](http://en.sfml-dev.org/forums/index.php?topic=16367.0) and at [Spieleprogrammierer.de](https://www.spieleprogrammierer.de/12-projektvorstellungen-und-stellenangebote/23552-racod-s-lair-ein-coop-dungeoncrawler). You can follow Racod's Lair on [Twitter](http://www.twitter.com/racodslair) and [Facebook](http://www.facebook.com/racodslair).
 
+## Issue
+
+I'm using the issue functionality to track all reported issues related to the game or its content data. Feel free to join the discussion!
+
 ## Licence
 
 "Racod's Lair" is licenced under CC BY-NC 4.0 with attribution to Christian Glöckner. See https://creativecommons.org/licenses/by-nc-sa/4.0/ for more information about the licence details. All game resources, except the provided fonts, are part of "Racod's Lair" under the mentioned licence.
