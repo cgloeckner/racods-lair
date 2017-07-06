@@ -1,0 +1,35 @@
+<torso>
+	<Idle size="1">
+		<0 duration="100" />
+	</Idle>
+	<Use size="4">
+		<0 duration="100" />
+		<1 duration="200" />
+		<2 duration="400" />
+		<3 duration="150" />
+	</Use>
+	<Melee size="6">
+		<0 duration="100" />
+		<1 duration="100" />
+		<2 duration="130" />
+		<3 duration="100" />
+		<4 duration="70" />
+		<5 duration="70" />
+	</Melee>
+	<Range size="6">
+		<0 duration="100" />
+		<1 duration="100" />
+		<2 duration="130" />
+		<3 duration="100" />
+		<4 duration="70" />
+		<5 duration="70" />
+	</Range>
+	<Magic size="6">
+		<0 duration="80" />
+		<1 duration="80" />
+		<2 duration="80" />
+		<3 duration="100" />
+		<4 duration="150" />
+		<5 duration="100" />
+	</Magic>
+</torso>

@@ -1,0 +1,14 @@
+#pragma once
+#include <cmath>
+#include <boost/test/unit_test.hpp>
+#include <SFML/System/Vector2.hpp>
+
+#define BOOST_CHECK_VECTOR_CLOSE(u, v, eps)									\
+	if (std::abs(u.x - v.x) > eps || std::abs(u.y - v.y) > eps) {			\
+		BOOST_FAIL("Vector <" + std::to_string(u.x) + ","					\
+			+ std::to_string(u.y) + "> not close to <"						\
+			+ std::to_string(v.x) + "," + std::to_string(v.y) + ">");		\
+	}
+
+// tba: macros to compare rect, time, color
+

@@ -1,0 +1,33 @@
+<legs size="8">
+	<0 duration="75" />
+	<1 duration="75" />
+	<2 duration="75" />
+	<3 duration="75" />
+	<4 duration="75" />
+	<5 duration="75" />
+	<6 duration="75" />
+	<7 duration="75" />
+</legs>
+<torso>
+	<Idle size="1">
+		<0 duration="100" />
+	</Idle>
+	<Melee size="5">
+		<0 duration="100" />
+		<1 duration="100" />
+		<2 duration="100" />
+		<3 duration="100" />
+		<4 duration="100" />
+	</Melee>
+	<Magic size="6">
+		<0 duration="100" />
+		<1 duration="100" />
+		<2 duration="100" />
+		<3 duration="100" />
+		<4 duration="300" />
+		<5 duration="100" />
+	</Magic>
+	<Die size="1">
+		<0 duration="100" />
+	</Die>
+</torso>

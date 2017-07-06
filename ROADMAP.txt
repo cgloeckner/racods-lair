@@ -1,0 +1,494 @@
+=== Prepare Build ===
+cd ~/.build/racod
+cmake ~/Dokumente/racod.git -DCMAKE_CXX_COMPILER=clang++ [-DCMAKE_BUILD_TYPE=RELEASE]
+make
+
+cd C:\%HOMEPATH%\.build\racod
+cmake C:\%HOMEPATH%\Documents\racod.git -DCMAKE_CXX_COMPILER=g++ -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=RELEASE
+	oder
+cmake Z:\home\christian\Dokumente\racod.git -DCMAKE_CXX_COMPILER=g++ -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=RELEASE
+mingw32-make
+
+==============================================================================
+@racodslair #roguelike #dungeoncrawler #pixelart #indiedev #gamedev #sfml #cpp
+==============================================================================
+
+v0.2-alpha
+- mouse controls (looking via mouse move, movement unabhängig von Blickrichtung zb Up immer nach <0,-1>, actions via mouse buttons)
+- graphics style overhaul
+    keine Trennung Beine Torso mehr
+    gfx Inspiration GTA1/2
+    less square-looking terrain (smooth, intelligent edge tiling, fake perspective!!)
+    mehr eye-candy bei Animationen (zb fetter weißer schweif bei nahkampf ani) - crawl-like
+    hud overhaul (target health direkt neben ziel sprite)
+- drop dependencies
+    boost-filesystem by filesystem-ts
+    boost-ptree by tinyxml2
+    boost-test by catch
+- improved dungeon generation
+- mouse at menu
+- fix reported bugs (github)
+- if no shaders
+    warn via imgui ui on startup
+    disable all shader-related options
+
+- chiptune music (https://www.youtube.com/watch?v=64R-10xNfmk)
+
+
+pixelart
+	dunkle tiles
+	helle sprites
+
+
+chiptune
+	square wave \o/
+
+	title theme: auf basis des bisherigen
+	overworld theme: major, using parallel minor
+	dungeon theme: minor, using parallel major
+		kurze, chromatische, wiederholte 16tel melo
+		tritone harmonization
+			steigt langsam an, bis zusätzliche melodie
+				die verschwindet -> anfang
+	=> theme attached to tileset
+
+
+Beta Roadmap
+- tutorial api
+- character ui
+- looting
+- effect ui (hud indication)
+- perk train books
+- npc api (later quest givers, merchants etc.) with random walk ai + speech sfx
+- quest API (main quest ends on racod's death)
+- more music themes
+
+
+-----------------------------------------------------------------------
+
+Tutorial API - Necessary changes
+	TutorialApi needs to listent to specific events in order to be
+	integrated to the game
+	--> unit tests on different tutorial steps
+	--> integration test on full tutorial
+
+Minimap API
+
+struct TutorialEvent {
+	core::ObjectID actor;
+	std::size_t step;
+	std::string meta; // needs localization
+};
+
+struct TutorialStep {
+	virtual void operator()(core::ObjectID actor) = 0;
+	
+	virtual void update() = 0;
+};
+
+class TutorialApi {
+  private:
+	engine::Engine const * engine;
+	
+	std::vector<std::unique_ptr<TutorialStep>> steps;
+	
+  public:
+	TutorialApi(engine::Engine const * engine);
+	
+	template <typename S, typename... Args>
+	void addStep(Args&&... args);
+};
+
+TutorialApi::TutorialApi(engine::Engine const * engine)
+	: engine{engine}
+	, steps{} {
+}
+
+template <typename S, typename... Args>
+void TutorialApi::addStep(Args&&... args) {
+	std::unique_ptr<TutorialStep> ptr = std::make_unique<S>(std::forward<Args>(args)...);
+	steps.push_back(std::move(ptr));
+}
+
+// ---
+
+struct MoveTutorial: TutorialStep {
+	game::Engine const & engine;
+	
+	MoveTutorial(game::Engine const & engine);
+	
+	void operator()(core::ObjectID actor) override;
+};
+
+void foo(tutorial_impl::Context& context) {
+	ASSERT(context.engine != nullptr);
+	tutorial_impl::addStep<MoveTutorial>(context, *context.engine);
+	tutorial_impl::addStep<AutoLookTutorial>(context, *context.engine);
+	tutorial_impl::addStep<ManualLookTutorial>(context, *context.engine);
+}
+
+TutorialApi
+- handle sfml events
+- const access game session
+- propagate tutorial events
+
+// ----
+
+Alpha tutorial: suggest input
+	widget: select, activate, alternate
+	player: move, attack/cast, manualLook, autoLook, pause
+
+Tutorial API
+	part of context and game context
+	add states and input actions
+	handle input, draw fading labels, update, resize
+
+Tutorial States
+	pref/tutorial.xml für Menu, part of context
+	player tut state at keys xml, part LobbyContext::Player
+
+
+
+
+
+
+
+
+
+
+Refactor Globals.XML respresentation in Code
+
+C++14 Guidelines in a Nutshell
+- return type deduction
+	auto f(int i) {
+		return i * 2
+	}
+- generic lambdas
+	auto l = [](auto lhs, auto rhs) {
+		return lhs + rhs;
+	}
+- more lambda stuff
+	auto l = [](MyObject const & o) -> bool {
+		return o.testFoo()
+	}
+- constexpr
+
+
+
+CMake-Struktur aufbrechen
+	CMakeLists.txt pro Modul
+	CMake von SFML und Thor verwenden
+
+
+"Feature: make lua api more robust"
+	referring invalid ids and positions
+
+"Feature: make ai script testable"
+
+"Feature: move barriers via movement keys"
+	action system prüft ob interactable und erzeugt event
+	spieler wird auch bewegt
+
+Render Fog
+	1st: floor
+	2nd: ambiences, bottom objects, all others' legs
+	3rd: fog layer
+	4th: other layers
+
+"Feature: looting chest creates powerup"
+	- interactable; spawnt powerup
+	- death sfx: quietschen
+	- death animation: öffnen
+
+"Refactor: item/perk recovery based on floating point arithmetics"
+
+"Feature: render game engine while pause"
+	Menu Box
+		window size - 100px (50px pro seite)
+		alpha-blended background tile (xy repeated) ??
+	Context::render()
+		try render game engine (else: background)
+		render semi-transparent menu box
+		render menu state
+
+Map Generators
+	-> MapType enum used in tileset xml
+	- Catacomb (grid-based)
+	- Dungeon (classical rogue-like)
+	- Cave (ellipse-approach)
+
+Game Design: natural progression system (ähnlich gothic)
+	per dungeon
+
+Loot Game UI
+	Spiel pausiert, wird aber gezeichnet
+	Inventar UI des Spielers in Bildschirmmitte
+
+Quest Engine
+- vordefinierte Quests (mit text und/oder speech)
+- bestimmte items finden / gegner töten
+- quests kombinieren: main & side quests
+
+
+"Feature: Perk level cannot be freely raised"
+	summe über alle perklevels <= 2 * char level
+		z.B. Lvl 10: Feuerball Lvl 12, Eiswelle Lvl 5, Wundheilung Lvl 4
+	
+	einzelner perk braucht bestimmtes attribut (je 2 pro Level)
+		z.B. Feuerball braucht Weisheit
+			--> Feuerball Lvl 12 braucht Weisheit 12
+		==> Template hat Attribute-Flag (auf welches Attribut es sich bezieht)
+	
+	Beispiel:
+		- Magier Lvl 10 (10 Stärke, 10 Geschick, 60=10+10x5 Weisheit)
+			Feuerball Lvl 12
+			Wundheilung Lvl 4
+			=> LvlSumme 16 --> braucht char level 8 und 32 Weisheit
+		- Paladin Lvl 10 (35=10+5x5 Stärke, 20=10+2x5 Geschick, 25=10+3x5 Weisheit)
+			Wundheilung Lvl 5
+			Heiliger Schutz Lvl 2
+				WisdomLvlSum 7 --> braucht 14 Weisheit
+			Schildhieb Lvl 5
+				StrenLvlSum 5 --> braucht 10 Stärke
+			=> LvlSumme 12 --> braucht Level 6
+	
+
+Blocken von Angriffen
+	--> neue player action
+	--> verringert schaden wenn man gerade blockt
+		frisst aber ausdauer
+
+Sprinten
+	--> neue player action
+	--> bonus auf bewegungsgeschwindigkeit
+		frisst aber ausdauer
+	wichtig: lauf animation sollte schneller laufen
+
+
+Tutorial:
+	statische Oberwelt (vgl. Delver)
+	mit Tutorial für
+		Bewegung
+		Quickslots
+
+
+
+Achievement System
+	data/xml/achieve/foo.xml
+	rewards: exp, items, perk
+	hardcoded types vs. lua-scriptes ????
+
+
+kisten und fässer zerstörbar
+	keine exp
+	chance auf powerup
+	trümmer-ambience platzieren
+
+- schalter (onInteract)
+- druckplatten (onTileReached for barrier und character)
+
+"Feature: overlay layer for render and animation data"
+	layer für effekte
+		vector<Sprite>
+	verwendet gleiche TrafoMatrix
+	separater renderlayer
+	vgl. Pala-Auran (D2)
+
+"Feature: combat particles"
+	ParticleSystem
+	- blutspritzer
+	- zauberpartikel beim einschlag
+
+"Improvement: entity offset for room editor"
+	[-0.5f, 0.5f] ^ 2 um Objekte innerhalb einer Zelle zu positionieren
+	wird zur MovementData::position addiert
+
+"Fix: register more enums for lua access"
+
+"Unit test: intense AI API testing"
+	aka test_suite/engine/ai_integration.cpp
+	pro Testcase ein Lua-Script bauen das bestimmte LuaApi-Methode aufruft
+
+
+engine/ItemRandomization @item.xpp + Docs + Test
+	Bot-Templates beschreiben BasisItems
+	=> Randomization@Factory notwendig
+
+"Feature: darkness factor in lighting system"
+	float darkness in [0.f, 1.f] // 1.f = regular darkness, 0.f = no lighting at all^^
+	alpha = static_cast<sf::Uint8>(light.intensity * (1.f - darkness))
+
+Camera Rumble
+	rumble(float max_dist, float speed, size_t num_shakes)
+		random offset within max_dist
+			dx := rand(-d, d)
+			r := dx != 0 ? d*d/dx : d
+			dy := rand(-r, r)
+		move back and forth using speed
+		decr num_shakes
+	RumbleState {
+		float max_dist, speed
+		Vector2f current, target // relative!!
+		bool rise
+		size_t remain
+		void update(Time)
+	}
+
+keine Grid-basierten Dungeons mehr
+	generator settings: max room size
+		=> min_path_length := std::max(max_room_size.x, max_room_size.y)
+		=> max_path_length := min_path_length * 3
+	
+	create empty dungeon (using grid_size x grid_size)
+	start at dungeon's center
+	push position to stack
+	while stack not empty
+		pop pos
+		roll dice
+			place room
+		for each neighbor
+			dist := distance(center, neighbor)
+			if dist < grid_size && roll dice
+				create corridor (calculate far waypoint and push it to stack)
+
+"Refactor: split move and pos data"
+"Refactor: split focus and face data"
+
+Singleplayer Audio Impl:
+	Spatialization if cam.size() == 1
+
+Musik ähnlich Pool of Radiance
+	enum MusicLayer { Combat, Ambience }
+		data/music/ambience_foo.ogg ==> { Ambience, foo }
+			--> überwiegend sustain, melodien im hintergrund
+		data/music/combat_baz.ogg ==> { Combat, baz }
+			--> viel pizzicat & staccato, rhythmik
+	
+	EnumMap<MusicLayer, sf::Music>
+		Ambience: nacheinander zufällige stems
+		Combat: geloopt das gleiche stem
+		
+		Transitions: fading
+	
+	die frage ist: WANN ist etwas ein Kampf?
+		- muss eine KI in der Engine ein Kampf-Flag setzen?
+		- oder setzt die Engine es selbst, wenn ein feindliches
+			KI-Objekt nah genug an einem Spieler ist?
+
+
+Gamepad Layout Configuration
+- Axis and Buttons: Icons
+- No Edit, but Handcrafted XML Config
+- to show e.g. "X: Use item" at inventory, similar to PSX Games
+- select layout at profile
+	Carl uses Keyboard --> no layout
+	Bob uses PSX Controller --> data/layout/psx.xml
+	Finn uses XBox Controller --> data/layout/xbox.xml
+
+Remove Powerups and implement Loot
+
+Enhance Hud:
+	QuickslotBar
+
+Enhance CharacterMenu:
+	Tab-based Menu:
+	- Inventory, Perks, Stats, items in actual content, Quickslots
+		as Buttons
+	- Activate "picks"
+		Inventory/Perk/Stats: Change content region
+		Item in content region/quickslot: Pick or Place
+	- context region scrollable (with respect to current window size)
+		--> Navi, Info, Quickslotbar with fixed size
+		--> context region dynamic
+	- merging vs. recombinging menus
+	
+	+-----------+-------+-----------------------------------------------+
+	| Inventory | Perks | Stats											|
+	+-----------+-------+-------------------------------+---------------+
+	|													|				|
+	|	A C T U A L										|	I N F O		|
+	|		C O N T E N T								|	A B O U T	|
+	|			B A S E D   O N							|	C U R -		|
+	|				S E L E C T E D						|	 R E N T	|
+	|					S U B M E N U					|	I T E M	/	|
+	|													|	P E R K		|
+	+-----------+-------+-------------------------------+---------------+
+	| * Q U I C K S L O T   B A R *										|
+	+-----------+-------+-----------------------------------------------+
+	
+	Inventory ("Weapons" etc. as Labels")
+	+---------------------------------------------------+
+	|	Weapons:										|
+	|		- Swordsword								|
+	|		- Bow										|
+	|	Armor:											|
+	|	Potions:										|
+	|	Misc:											|
+	+---------------------------------------------------+
+	
+	Perks
+	+---------------------------------------------------+
+	|	Fireball										|
+	|	Healing Wounds									|
+	|													|
+	|													|
+	|													|
+	+---------------------------------------------------+
+
+
+Truhen-Grafik wie https://upload.wikimedia.org/wikipedia/en/2/22/Gauntlet_screenshot.png
+
+Use Animation
+Cast Animation
+
+Melee Animationen so bauen, dass beim Nahkampfangriff beide Arme
+	nacheinander nach vorne schwingen
+	Waffe+Schild & Waffe+Waffe
+
+Block Implementierung
+	Taste halten
+	1 Frame Animation
+	Def Boni: Blade (+100%), Bullet (+66%), Blunt (+33%)
+	Move Mali: Speed (-50%)
+	Winkel zwischen Blickvektoren entscheident:
+		0°: 100% Boni
+		45°: 70% Boni
+		90°: 25% Boni
+		sonst: keni Bonus
+
+Druckplatten
+	- manche sind Explosionsfallen (mehrfach triggerbar)
+	- andere öffnen Geheimgänge
+	- und ein paar haben keinen Effekt
+	- einige als solche gut erkennbar
+	- andere sehen fast wie Boden aus
+
+Türen und Schlüssel
+
+Equipment: Crafting (vgl. Diablo)
+	=> Nur reine Basis-Items stacken
+	=> Gecraftete Items mit crafted-Flag
+	=> Savegame enthält ConfigName + Verbesserungen
+
+Lernpunkte + Perks (vgl. Gothic)
+	=> erhaltene Exp geht zusätzlich auf Level-"Konto"
+	=> bei Levelup erhält Spieler 5 LP
+	=> Oberwelt: Händler und Lehrer
+	=> Perks: Trophäen, Alchemie, Schmieden/Craften
+
+
+=========================================================
+== vllt.?? ==
+
+Improve Lighting Performance :S
+	getFarPoint() wird zu oft aufgerufen
+	Idee: Culling um festzustellen, welche Edges wirklich vom
+	entsprechenden Lichtstrahl getroffen werden (d.h. welche Edges durch
+	andere Edges verdeckt werden)
+
+==============================================================================
+
+CREDITS
+
+Fonts by http://www.dafont.com/simone-u-dono.d3997
+

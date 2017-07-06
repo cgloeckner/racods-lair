@@ -1,0 +1,3 @@
+// used to ignore all warnings caused by boost
+#include <boost/property_tree/ptree.hpp>
+#include <boost/test/unit_test.hpp>
