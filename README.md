@@ -1,8 +1,8 @@
 ![alt text](http://media.indiedb.com/images/games/1/41/40378/add.png "Racod's Lair")
 
-# Game Data fo Racod's Lair
+Since I'm out of time, the development for [Racod's Lair](http://www.indiedb.com/games/racods-lair/) is paused pending further notice. Feel free to contribute to the project if you like to. I plan to return at one time, but I'm totally not sure when this will be. Sure you'll be added as author if you want to participate :)
 
-This repository contains the major game mod data for [Racod's Lair](http://www.indiedb.com/games/racods-lair/). More information can be found in the [SFML forum](http://en.sfml-dev.org/forums/index.php?topic=16367.0) and at [Spieleprogrammierer.de](https://www.spieleprogrammierer.de/12-projektvorstellungen-und-stellenangebote/23552-racod-s-lair-ein-coop-dungeoncrawler). You can follow Racod's Lair on [Twitter](http://www.twitter.com/racodslair) and [Facebook](http://www.facebook.com/racodslair).
+More information can be found in the [SFML forum](http://en.sfml-dev.org/forums/index.php?topic=16367.0) and at [Spieleprogrammierer.de](https://www.spieleprogrammierer.de/12-projektvorstellungen-und-stellenangebote/23552-racod-s-lair-ein-coop-dungeoncrawler). You can follow Racod's Lair on [Twitter](http://www.twitter.com/racodslair) and [Facebook](http://www.facebook.com/racodslair).
 
 ## Issue
 
