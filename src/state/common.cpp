@@ -10,8 +10,9 @@ void apply(core::LogContext& log, sf::Window& window,
 	state::Settings const & settings, unsigned int framelimit) {
 	sf::Uint32 style{sf::Style::Default};
 	if (settings.fullscreen) {
+		style = sf::Style::Fullscreen;
 		// workaround: something is broken with the fullscreen mode
-		style = sf::Style::None;
+		// style = sf::Style::None;
 	}
 	auto title = engine::TITLE + " (v" + engine::VERSION + ")";
 	window.create(settings.resolution, title, style);
