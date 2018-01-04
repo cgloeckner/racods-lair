@@ -45,7 +45,7 @@ bool InputText(std::string const & label, std::string& str, std::size_t max_size
 bool forwardStream(std::stringstream& stream, ImGuiTextBuffer& buffer) {
 	auto data = stream.str();
 	stream.str("");
-	buffer.append("%s", data.c_str());
+	buffer.appendf("%s", data.c_str());
 	return !data.empty();
 }
 

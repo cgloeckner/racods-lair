@@ -4,6 +4,15 @@ Since I'm out of time, the development for [Racod's Lair](http://www.indiedb.com
 
 More information can be found in the [SFML forum](http://en.sfml-dev.org/forums/index.php?topic=16367.0) and at [Spieleprogrammierer.de](https://www.spieleprogrammierer.de/12-projektvorstellungen-und-stellenangebote/23552-racod-s-lair-ein-coop-dungeoncrawler). You can follow Racod's Lair on [Twitter](http://www.twitter.com/racodslair) and [Facebook](http://www.facebook.com/racodslair).
 
+## Build
+
+recommanded: -DCMAKE_CXX_COMPILER=clang++-5.0 -DCMAKE_C_COMPILER=clang-5.0 -DLUA_INCLUDE_DIR=/usr/include/lua5.2
+
+## Dependencies
+
+liblua5.2-dev
+boost (filesystem, property tree, preprocessor)
+
 ## Issue
 
 I'm using the issue functionality to track all reported issues related to the game or its content data. Feel free to join the discussion!

@@ -5,7 +5,8 @@
 #include <sstream>
 
 #include <imgui/imgui.h>
-#include <imgui/imgui-SFML.h>
+
+#include <ui/imgui-SFML.h>
 
 #define IM_COLOR(sfColor) IM_COL32(sfColor.r, sfColor.g, sfColor.b, sfColor.a)
 

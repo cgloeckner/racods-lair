@@ -21,7 +21,7 @@ void ModVerifyState::draw(sf::RenderTarget& target, sf::RenderStates states) con
 void ModVerifyState::onVerifyClick() {
 	modlog.clear();
 	if (!utils::file_exists(modname)) {
-		modlog.append("Not found\n");
+		modlog.appendf("Not found\n");
 		result = "Mod " + modname + " was not found :(";
 		return;
 	}
@@ -38,7 +38,7 @@ void ModVerifyState::onVerifyClick() {
 		mod.preload();
 		success = mod.verify(log);
 	} catch (std::exception const & err) {
-		modlog.append("%s", err.what());
+		modlog.appendf("%s", err.what());
 		success = false;
 	}
 	
@@ -48,7 +48,7 @@ void ModVerifyState::onVerifyClick() {
 		result = "Mod " + modname + " is incomplete :S";
 	}
 	
-	modlog.append("%s", output.str().c_str());
+	modlog.appendf("%s", output.str().c_str());
 }
 
 void ModVerifyState::onBackClick() {

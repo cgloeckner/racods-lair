@@ -1,0 +1,12 @@
+[submodule "sfml"]
+	path = extlibs/sfml
+	url = https://github.com/sfml/sfml
+[submodule "thor"]
+	path = extlibs/thor
+	url = https://github.com/Bromeon/Thor
+[submodule "sol2"]
+	path = extlibs/sol2
+	url = https://github.com/ThePhD/sol2
+[submodule "imgui"]
+	path = extlibs/imgui
+	url = https://github.com/ocornut/imgui

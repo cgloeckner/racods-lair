@@ -22,12 +22,12 @@ void SpritePackerState::draw(sf::RenderTarget& target, sf::RenderStates states) 
 void SpritePackerState::onPackClick() {
 	packlog.clear();
 	if (!utils::file_exists(source)) {
-		packlog.append("%s not found\n", source.c_str());
+		packlog.appendf("%s not found\n", source.c_str());
 		result = "Source path '" + source + "' not found :S";
 		return;
 	}
 	if (!utils::file_exists(target)) {
-		packlog.append("%s not found\n", target.c_str());
+		packlog.appendf("%s not found\n", target.c_str());
 		result = "Target path '" + target + "' not found :S";
 		return;
 	}
@@ -74,7 +74,7 @@ void SpritePackerState::onPackClick() {
 		log.debug << "No sprites found\n";
 	}
 	
-	packlog.append("%s", output.str().c_str());
+	packlog.appendf("%s", output.str().c_str());
 }
 
 void SpritePackerState::onBackClick() {

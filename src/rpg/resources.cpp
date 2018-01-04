@@ -45,7 +45,7 @@ bool BaseResource::saveToFile(std::string const& fname) const {
 	}
 	// dump xml
 	try {
-		boost::property_tree::xml_writer_settings<char> settings('\t', 1);
+		auto settings = boost::property_tree::xml_writer_make_settings<std::string>('\t', 1);
 		boost::property_tree::write_xml(fname, ptree, std::locale(), settings);
 	} catch (std::exception const & error) {
 		last_error = error.what();
