@@ -16,3 +16,6 @@
 [submodule "extlibs/sol2"]
 	path = extlibs/sol2
 	url = https://github.com/ThePhD/sol2
+[submodule "extlibs/imgui"]
+	path = extlibs/imgui
+	url = https://github.com/cgloeckner/imgui
