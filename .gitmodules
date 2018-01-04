@@ -16,3 +16,6 @@
 [submodule "extlibs/thor"]
 	path = extlibs/thor
 	url = https://github.com/Bromeon/Thor
+[submodule "extlibs/sol2"]
+	path = extlibs/sol2
+	url = https://github.com/ThePhD/sol2
