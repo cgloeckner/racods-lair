@@ -7,9 +7,6 @@
 [submodule "sol2"]
 	path = extlibs/sol2
 	url = https://github.com/ThePhD/sol2
-[submodule "imgui"]
-	path = extlibs/imgui
-	url = https://github.com/cgloeckner/imgui
 [submodule "extlibs/sfml"]
 	path = extlibs/sfml
 	url = https://github.com/sfml/sfml
@@ -21,4 +18,4 @@
 	url = https://github.com/ThePhD/sol2
 [submodule "extlibs/imgui"]
 	path = extlibs/imgui
-	url = https://github.com/ocornut/imgui
+	url = https://github.com/cgloeckner/imgui
