@@ -1,0 +1,1100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeLite_Project Name="racods-lair" Version="10.0.0" InternalType="">
+  <Plugins>
+    <Plugin Name="qmake">
+      <![CDATA[00010001N0005Debug000000000000]]>
+    </Plugin>
+  </Plugins>
+  <VirtualDirectory Name="_work">
+    <VirtualDirectory Name="torch">
+      <File Name="_work/torch/torch.xml"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="spider">
+      <File Name="_work/spider/spider.xml"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="skeleton">
+      <File Name="_work/skeleton/skeleton.xml"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="magic-bullet">
+      <File Name="_work/magic-bullet/magic-bullet.xml"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="human">
+      <File Name="_work/human/sword.xml"/>
+      <File Name="_work/human/staff.xml"/>
+      <File Name="_work/human/shield.xml"/>
+      <File Name="_work/human/leather.xml"/>
+      <File Name="_work/human/human.xml"/>
+      <File Name="_work/human/hat.xml"/>
+      <File Name="_work/human/cowl.xml"/>
+      <File Name="_work/human/helmet.xml"/>
+      <File Name="_work/human/ceremonial-helmet.xml"/>
+      <File Name="_work/human/bow.xml"/>
+      <File Name="_work/human/axe.xml"/>
+      <File Name="_work/human/armor.xml"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="gem">
+      <File Name="_work/gem/gem.xml"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="fireball">
+      <File Name="_work/fireball/fireball.xml"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="dragon">
+      <File Name="_work/dragon/dragon.xml"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="bat">
+      <File Name="_work/bat/bat.xml"/>
+    </VirtualDirectory>
+  </VirtualDirectory>
+  <VirtualDirectory Name="src">
+    <File Name="src/sfml-fix.cpp"/>
+    <File Name="src/main.cpp"/>
+    <File Name="src/CMakeLists.txt"/>
+    <VirtualDirectory Name="utils">
+      <File Name="src/utils/verifier.cpp"/>
+      <File Name="src/utils/unionfind.cpp"/>
+      <File Name="src/utils/scope_guard.cpp"/>
+      <File Name="src/utils/pathfinder.cpp"/>
+      <File Name="src/utils/ortho_tile.cpp"/>
+      <File Name="src/utils/menu.cpp"/>
+      <File Name="src/utils/lua_utils.cpp"/>
+      <File Name="src/utils/logger.cpp"/>
+      <File Name="src/utils/lighting_system.cpp"/>
+      <File Name="src/utils/input_mapper.cpp"/>
+      <File Name="src/utils/filesystem.cpp"/>
+      <File Name="src/utils/fader.cpp"/>
+      <File Name="src/utils/event_system.cpp"/>
+      <File Name="src/utils/CMakeLists.txt"/>
+      <File Name="src/utils/camera.cpp"/>
+      <File Name="src/utils/binary_utils.cpp"/>
+      <File Name="src/utils/assert.cpp"/>
+      <File Name="src/utils/animation_utils.cpp"/>
+      <File Name="src/utils/algorithm.cpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="ui">
+      <File Name="src/ui/systemgraph.cpp"/>
+      <File Name="src/ui/statusbar.cpp"/>
+      <File Name="src/ui/select.cpp"/>
+      <File Name="src/ui/playerhud.cpp"/>
+      <File Name="src/ui/notificationtext.cpp"/>
+      <File Name="src/ui/input.cpp"/>
+      <File Name="src/ui/imgui.cpp"/>
+      <File Name="src/ui/imgui-SFML.cpp"/>
+      <File Name="src/ui/floatingtext.cpp"/>
+      <File Name="src/ui/common.cpp"/>
+      <File Name="src/ui/CMakeLists.txt"/>
+      <File Name="src/ui/checkbox.cpp"/>
+      <File Name="src/ui/button.cpp"/>
+      <File Name="src/ui/animation.cpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="state">
+      <File Name="src/state/title.cpp"/>
+      <File Name="src/state/story.cpp"/>
+      <File Name="src/state/settings.cpp"/>
+      <File Name="src/state/savegame_menu.cpp"/>
+      <File Name="src/state/resources.cpp"/>
+      <File Name="src/state/profile_creator.cpp"/>
+      <File Name="src/state/pause.cpp"/>
+      <File Name="src/state/logo.cpp"/>
+      <File Name="src/state/lobby.cpp"/>
+      <File Name="src/state/loadthread.cpp"/>
+      <File Name="src/state/game_launcher.cpp"/>
+      <File Name="src/state/game.cpp"/>
+      <File Name="src/state/controls_viewer.cpp"/>
+      <File Name="src/state/controls_editor.cpp"/>
+      <File Name="src/state/common.cpp"/>
+      <File Name="src/state/CMakeLists.txt"/>
+      <File Name="src/state/character_viewer.cpp"/>
+      <File Name="src/state/camera_editor.cpp"/>
+      <File Name="src/state/app_launcher.cpp"/>
+      <VirtualDirectory Name="tool">
+        <File Name="src/state/tool/toolmenu.cpp"/>
+        <File Name="src/state/tool/testmode.cpp"/>
+        <File Name="src/state/tool/spriteviewer.cpp"/>
+        <File Name="src/state/tool/spritepacker.cpp"/>
+        <File Name="src/state/tool/savegameviewer.cpp"/>
+        <File Name="src/state/tool/roomeditor.cpp"/>
+        <File Name="src/state/tool/modverify.cpp"/>
+        <File Name="src/state/tool/inspector.cpp"/>
+      </VirtualDirectory>
+    </VirtualDirectory>
+    <VirtualDirectory Name="rpg">
+      <File Name="src/rpg/stats.cpp"/>
+      <File Name="src/rpg/spritepacker.cpp"/>
+      <File Name="src/rpg/session.cpp"/>
+      <File Name="src/rpg/resources.cpp"/>
+      <File Name="src/rpg/quickslot.cpp"/>
+      <File Name="src/rpg/projectile.cpp"/>
+      <File Name="src/rpg/player.cpp"/>
+      <File Name="src/rpg/perk.cpp"/>
+      <File Name="src/rpg/item.cpp"/>
+      <File Name="src/rpg/interact.cpp"/>
+      <File Name="src/rpg/input.cpp"/>
+      <File Name="src/rpg/gameplay.cpp"/>
+      <File Name="src/rpg/event.cpp"/>
+      <File Name="src/rpg/entity.cpp"/>
+      <File Name="src/rpg/effect.cpp"/>
+      <File Name="src/rpg/delay.cpp"/>
+      <File Name="src/rpg/common.cpp"/>
+      <File Name="src/rpg/combat.cpp"/>
+      <File Name="src/rpg/CMakeLists.txt"/>
+      <File Name="src/rpg/balance.cpp"/>
+      <File Name="src/rpg/algorithm.cpp"/>
+      <File Name="src/rpg/action.cpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="game">
+      <File Name="src/game/visuals.cpp"/>
+      <File Name="src/game/tracer.cpp"/>
+      <File Name="src/game/session.cpp"/>
+      <File Name="src/game/script.cpp"/>
+      <File Name="src/game/resources.cpp"/>
+      <File Name="src/game/powerup.cpp"/>
+      <File Name="src/game/player.cpp"/>
+      <File Name="src/game/path.cpp"/>
+      <File Name="src/game/navigator.cpp"/>
+      <File Name="src/game/mod.cpp"/>
+      <File Name="src/game/lua.cpp"/>
+      <File Name="src/game/item.cpp"/>
+      <File Name="src/game/hud.cpp"/>
+      <File Name="src/game/generator.cpp"/>
+      <File Name="src/game/factory.cpp"/>
+      <File Name="src/game/event.cpp"/>
+      <File Name="src/game/entity.cpp"/>
+      <File Name="src/game/common.cpp"/>
+      <File Name="src/game/CMakeLists.txt"/>
+      <File Name="src/game/builder.cpp"/>
+      <File Name="src/game/autocam.cpp"/>
+      <File Name="src/game/audio.cpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="engine">
+      <File Name="src/engine/ui.cpp"/>
+      <File Name="src/engine/savemanager.cpp"/>
+      <File Name="src/engine/physics.cpp"/>
+      <File Name="src/engine/event.cpp"/>
+      <File Name="src/engine/engine.cpp"/>
+      <File Name="src/engine/common.cpp"/>
+      <File Name="src/engine/CMakeLists.txt"/>
+      <File Name="src/engine/behavior.cpp"/>
+      <File Name="src/engine/avatar.cpp"/>
+      <File Name="src/engine/ai.cpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="core">
+      <File Name="src/core/teleport.cpp"/>
+      <File Name="src/core/sound.cpp"/>
+      <File Name="src/core/render.cpp"/>
+      <File Name="src/core/physics.cpp"/>
+      <File Name="src/core/music.cpp"/>
+      <File Name="src/core/movement.cpp"/>
+      <File Name="src/core/focus.cpp"/>
+      <File Name="src/core/event.cpp"/>
+      <File Name="src/core/entity.cpp"/>
+      <File Name="src/core/dungeon.cpp"/>
+      <File Name="src/core/common.cpp"/>
+      <File Name="src/core/collision.cpp"/>
+      <File Name="src/core/CMakeLists.txt"/>
+      <File Name="src/core/animation.cpp"/>
+      <File Name="src/core/algorithm.cpp"/>
+    </VirtualDirectory>
+  </VirtualDirectory>
+  <VirtualDirectory Name="data">
+    <VirtualDirectory Name="xml">
+      <File Name="data/xml/locale.xml"/>
+      <File Name="data/xml/globals.xml"/>
+      <VirtualDirectory Name="trap">
+        <File Name="data/xml/trap/arrow.xml"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="tileset">
+        <File Name="data/xml/tileset/dungeon.xml"/>
+        <File Name="data/xml/tileset/dark-dungeon.xml"/>
+        <File Name="data/xml/tileset/dark-cave.xml"/>
+        <File Name="data/xml/tileset/cave.xml"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="sprite">
+        <File Name="data/xml/sprite/wood-table-b.xml"/>
+        <File Name="data/xml/sprite/wood-table-a.xml"/>
+        <File Name="data/xml/sprite/wood-chest.xml"/>
+        <File Name="data/xml/sprite/wood-chair.xml"/>
+        <File Name="data/xml/sprite/warrior-statue.xml"/>
+        <File Name="data/xml/sprite/upstairs.xml"/>
+        <File Name="data/xml/sprite/torch.xml"/>
+        <File Name="data/xml/sprite/sword.xml"/>
+        <File Name="data/xml/sprite/steel-chest.xml"/>
+        <File Name="data/xml/sprite/staff.xml"/>
+        <File Name="data/xml/sprite/spider.xml"/>
+        <File Name="data/xml/sprite/skeleton.xml"/>
+        <File Name="data/xml/sprite/shield.xml"/>
+        <File Name="data/xml/sprite/magic-bullet.xml"/>
+        <File Name="data/xml/sprite/leather.xml"/>
+        <File Name="data/xml/sprite/human.xml"/>
+        <File Name="data/xml/sprite/helmet.xml"/>
+        <File Name="data/xml/sprite/hat.xml"/>
+        <File Name="data/xml/sprite/gem.xml"/>
+        <File Name="data/xml/sprite/fireball.xml"/>
+        <File Name="data/xml/sprite/empty-wood-table.xml"/>
+        <File Name="data/xml/sprite/empty-shelf.xml"/>
+        <File Name="data/xml/sprite/dragon.xml"/>
+        <File Name="data/xml/sprite/downstairs.xml"/>
+        <File Name="data/xml/sprite/crate.xml"/>
+        <File Name="data/xml/sprite/cowl.xml"/>
+        <File Name="data/xml/sprite/ceremonial-helmet.xml"/>
+        <File Name="data/xml/sprite/bow.xml"/>
+        <File Name="data/xml/sprite/book-shelf.xml"/>
+        <File Name="data/xml/sprite/bat.xml"/>
+        <File Name="data/xml/sprite/barrel-top.xml"/>
+        <File Name="data/xml/sprite/barrel-side.xml"/>
+        <File Name="data/xml/sprite/axe.xml"/>
+        <File Name="data/xml/sprite/arrow.xml"/>
+        <File Name="data/xml/sprite/armor.xml"/>
+        <File Name="data/xml/sprite/alchemy-shelf.xml"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="room">
+        <File Name="data/xml/room/warehouse.xml"/>
+        <File Name="data/xml/room/unnamed-4.xml"/>
+        <File Name="data/xml/room/unnamed-3.xml"/>
+        <File Name="data/xml/room/unnamed-2.xml"/>
+        <File Name="data/xml/room/unnamed-1.xml"/>
+        <File Name="data/xml/room/unnamed-0.xml"/>
+        <File Name="data/xml/room/library.xml"/>
+        <File Name="data/xml/room/laboratory.xml"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="perk">
+        <File Name="data/xml/perk/holy-bolt.xml"/>
+        <File Name="data/xml/perk/fireball.xml"/>
+        <File Name="data/xml/perk/arcane-bolt.xml"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="item">
+        <File Name="data/xml/item/sword.xml"/>
+        <File Name="data/xml/item/staff.xml"/>
+        <File Name="data/xml/item/shield.xml"/>
+        <File Name="data/xml/item/leather.xml"/>
+        <File Name="data/xml/item/helmet.xml"/>
+        <File Name="data/xml/item/hat.xml"/>
+        <File Name="data/xml/item/cowl.xml"/>
+        <File Name="data/xml/item/ceremonial-helmet.xml"/>
+        <File Name="data/xml/item/bow.xml"/>
+        <File Name="data/xml/item/axe.xml"/>
+        <File Name="data/xml/item/armor.xml"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="entity">
+        <File Name="data/xml/entity/wood-table-b.xml"/>
+        <File Name="data/xml/entity/wood-table-a.xml"/>
+        <File Name="data/xml/entity/wood-chest.xml"/>
+        <File Name="data/xml/entity/wood-chair.xml"/>
+        <File Name="data/xml/entity/warrior-statue.xml"/>
+        <File Name="data/xml/entity/upstairs.xml"/>
+        <File Name="data/xml/entity/torch.xml"/>
+        <File Name="data/xml/entity/steel-chest.xml"/>
+        <File Name="data/xml/entity/spider.xml"/>
+        <File Name="data/xml/entity/skeleton.xml"/>
+        <File Name="data/xml/entity/magic-bullet.xml"/>
+        <File Name="data/xml/entity/human.xml"/>
+        <File Name="data/xml/entity/gem.xml"/>
+        <File Name="data/xml/entity/fireball.xml"/>
+        <File Name="data/xml/entity/empty-wood-table.xml"/>
+        <File Name="data/xml/entity/empty-shelf.xml"/>
+        <File Name="data/xml/entity/dragon.xml"/>
+        <File Name="data/xml/entity/downstairs.xml"/>
+        <File Name="data/xml/entity/crate.xml"/>
+        <File Name="data/xml/entity/book-shelf.xml"/>
+        <File Name="data/xml/entity/bat.xml"/>
+        <File Name="data/xml/entity/barrel-top.xml"/>
+        <File Name="data/xml/entity/barrel-side.xml"/>
+        <File Name="data/xml/entity/arrow.xml"/>
+        <File Name="data/xml/entity/alchemy-shelf.xml"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="encounter">
+        <File Name="data/xml/encounter/spiders.xml"/>
+        <File Name="data/xml/encounter/skeletons.xml"/>
+        <File Name="data/xml/encounter/bat.xml"/>
+        <File Name="data/xml/encounter/bandits.xml"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="effect">
+        <File Name="data/xml/effect/regenerate.xml"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="bullet">
+        <File Name="data/xml/bullet/magic-bullet.xml"/>
+        <File Name="data/xml/bullet/fireball.xml"/>
+        <File Name="data/xml/bullet/arrow.xml"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="bot">
+        <File Name="data/xml/bot/spider.xml"/>
+        <File Name="data/xml/bot/skeleton-warrior.xml"/>
+        <File Name="data/xml/bot/skeleton-warlock.xml"/>
+        <File Name="data/xml/bot/skeleton-berserk.xml"/>
+        <File Name="data/xml/bot/renegade-paladin.xml"/>
+        <File Name="data/xml/bot/racod.xml"/>
+        <File Name="data/xml/bot/light-bandit.xml"/>
+        <File Name="data/xml/bot/heavy-bandit.xml"/>
+        <File Name="data/xml/bot/fire-spider.xml"/>
+        <File Name="data/xml/bot/black-spider.xml"/>
+        <File Name="data/xml/bot/black-bat.xml"/>
+        <File Name="data/xml/bot/bat.xml"/>
+      </VirtualDirectory>
+    </VirtualDirectory>
+  </VirtualDirectory>
+  <VirtualDirectory Name="racods-lair">
+    <File Name="ROADMAP.txt"/>
+    <File Name="Readme.txt"/>
+    <File Name="old.CMakeLists.txt"/>
+    <File Name="CMakeLists.txt"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="include">
+    <File Name="include/tools.hpp"/>
+    <VirtualDirectory Name="utils">
+      <File Name="include/utils/xml_utils.inl"/>
+      <File Name="include/utils/xml_utils.hpp"/>
+      <File Name="include/utils/verifier.hpp"/>
+      <File Name="include/utils/unionfind.hpp"/>
+      <File Name="include/utils/tiling.inl"/>
+      <File Name="include/utils/tiling.hpp"/>
+      <File Name="include/utils/states.inl"/>
+      <File Name="include/utils/states.hpp"/>
+      <File Name="include/utils/spatial_scene.inl"/>
+      <File Name="include/utils/spatial_scene.hpp"/>
+      <File Name="include/utils/scope_guard.hpp"/>
+      <File Name="include/utils/resource_cache.inl"/>
+      <File Name="include/utils/resource_cache.hpp"/>
+      <File Name="include/utils/priority_queue.inl"/>
+      <File Name="include/utils/priority_queue.hpp"/>
+      <File Name="include/utils/pathfinder.inl"/>
+      <File Name="include/utils/pathfinder.hpp"/>
+      <File Name="include/utils/ortho_tile.hpp"/>
+      <File Name="include/utils/menu.inl"/>
+      <File Name="include/utils/menu.hpp"/>
+      <File Name="include/utils/lua_utils.inl"/>
+      <File Name="include/utils/lua_utils.hpp"/>
+      <File Name="include/utils/logger.inl"/>
+      <File Name="include/utils/logger.hpp"/>
+      <File Name="include/utils/lighting_system.hpp"/>
+      <File Name="include/utils/layered_sprite.inl"/>
+      <File Name="include/utils/layered_sprite.hpp"/>
+      <File Name="include/utils/keybinding.inl"/>
+      <File Name="include/utils/keybinding.hpp"/>
+      <File Name="include/utils/input_mapper.hpp"/>
+      <File Name="include/utils/filesystem.hpp"/>
+      <File Name="include/utils/fader.hpp"/>
+      <File Name="include/utils/event_system.inl"/>
+      <File Name="include/utils/event_system.hpp"/>
+      <File Name="include/utils/enum_utils.inl"/>
+      <File Name="include/utils/enum_map.inl"/>
+      <File Name="include/utils/enum_map.hpp"/>
+      <File Name="include/utils/delay_system.inl"/>
+      <File Name="include/utils/delay_system.hpp"/>
+      <File Name="include/utils/component_system.inl"/>
+      <File Name="include/utils/component_system.hpp"/>
+      <File Name="include/utils/camera.inl"/>
+      <File Name="include/utils/camera.hpp"/>
+      <File Name="include/utils/binary_utils.inl"/>
+      <File Name="include/utils/binary_utils.hpp"/>
+      <File Name="include/utils/atlas.inl"/>
+      <File Name="include/utils/atlas.hpp"/>
+      <File Name="include/utils/assert.hpp"/>
+      <File Name="include/utils/animation_utils.hpp"/>
+      <File Name="include/utils/algorithm.inl"/>
+      <File Name="include/utils/algorithm.hpp"/>
+      <File Name="include/utils/enum_utils.hpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="ui">
+      <File Name="include/ui/systemgraph.hpp"/>
+      <File Name="include/ui/statusbar.hpp"/>
+      <File Name="include/ui/select.hpp"/>
+      <File Name="include/ui/playerhud.hpp"/>
+      <File Name="include/ui/notificationtext.hpp"/>
+      <File Name="include/ui/input.hpp"/>
+      <File Name="include/ui/imgui.inl"/>
+      <File Name="include/ui/imgui.hpp"/>
+      <File Name="include/ui/imgui-SFML.h"/>
+      <File Name="include/ui/floatingtext.hpp"/>
+      <File Name="include/ui/common.inl"/>
+      <File Name="include/ui/common.hpp"/>
+      <File Name="include/ui/checkbox.hpp"/>
+      <File Name="include/ui/button.hpp"/>
+      <File Name="include/ui/animation.hpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="testsuite">
+      <File Name="include/testsuite/singleton.hpp"/>
+      <File Name="include/testsuite/sfml_system.hpp"/>
+      <File Name="include/testsuite/common.hpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="state">
+      <File Name="include/state/title.hpp"/>
+      <File Name="include/state/story.hpp"/>
+      <File Name="include/state/settings.hpp"/>
+      <File Name="include/state/savegame_menu.hpp"/>
+      <File Name="include/state/resources.hpp"/>
+      <File Name="include/state/profile_creator.hpp"/>
+      <File Name="include/state/pause.hpp"/>
+      <File Name="include/state/logo.hpp"/>
+      <File Name="include/state/lobby.hpp"/>
+      <File Name="include/state/loadthread.hpp"/>
+      <File Name="include/state/game_launcher.hpp"/>
+      <File Name="include/state/game.hpp"/>
+      <File Name="include/state/controls_viewer.hpp"/>
+      <File Name="include/state/controls_editor.hpp"/>
+      <File Name="include/state/common.hpp"/>
+      <File Name="include/state/character_viewer.hpp"/>
+      <File Name="include/state/camera_editor.hpp"/>
+      <File Name="include/state/app_launcher.hpp"/>
+      <VirtualDirectory Name="tool">
+        <File Name="include/state/tool/toolmenu.hpp"/>
+        <File Name="include/state/tool/testmode.hpp"/>
+        <File Name="include/state/tool/spriteviewer.hpp"/>
+        <File Name="include/state/tool/spritepacker.hpp"/>
+        <File Name="include/state/tool/savegameviewer.hpp"/>
+        <File Name="include/state/tool/roomeditor.hpp"/>
+        <File Name="include/state/tool/modverify.hpp"/>
+        <File Name="include/state/tool/inspector.inl"/>
+        <File Name="include/state/tool/inspector.hpp"/>
+      </VirtualDirectory>
+    </VirtualDirectory>
+    <VirtualDirectory Name="rpg">
+      <File Name="include/rpg/stats.hpp"/>
+      <File Name="include/rpg/spritepacker.hpp"/>
+      <File Name="include/rpg/session.hpp"/>
+      <File Name="include/rpg/resources.inl"/>
+      <File Name="include/rpg/resources.hpp"/>
+      <File Name="include/rpg/quickslot.hpp"/>
+      <File Name="include/rpg/projectile.hpp"/>
+      <File Name="include/rpg/player.hpp"/>
+      <File Name="include/rpg/perk.hpp"/>
+      <File Name="include/rpg/item.hpp"/>
+      <File Name="include/rpg/interact.hpp"/>
+      <File Name="include/rpg/input.hpp"/>
+      <File Name="include/rpg/gameplay.hpp"/>
+      <File Name="include/rpg/event.hpp"/>
+      <File Name="include/rpg/entity.hpp"/>
+      <File Name="include/rpg/effect.hpp"/>
+      <File Name="include/rpg/delay.hpp"/>
+      <File Name="include/rpg/common.hpp"/>
+      <File Name="include/rpg/combat.hpp"/>
+      <File Name="include/rpg/balance.hpp"/>
+      <File Name="include/rpg/algorithm.inl"/>
+      <File Name="include/rpg/algorithm.hpp"/>
+      <File Name="include/rpg/action.hpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="game">
+      <File Name="include/game/visuals.hpp"/>
+      <File Name="include/game/tracer.hpp"/>
+      <File Name="include/game/session.hpp"/>
+      <File Name="include/game/script.hpp"/>
+      <File Name="include/game/resources.hpp"/>
+      <File Name="include/game/powerup.hpp"/>
+      <File Name="include/game/player.hpp"/>
+      <File Name="include/game/path.hpp"/>
+      <File Name="include/game/navigator.hpp"/>
+      <File Name="include/game/mod.inl"/>
+      <File Name="include/game/mod.hpp"/>
+      <File Name="include/game/lua.hpp"/>
+      <File Name="include/game/item.hpp"/>
+      <File Name="include/game/hud.hpp"/>
+      <File Name="include/game/generator.hpp"/>
+      <File Name="include/game/factory.hpp"/>
+      <File Name="include/game/event.hpp"/>
+      <File Name="include/game/entity.hpp"/>
+      <File Name="include/game/common.hpp"/>
+      <File Name="include/game/builder.hpp"/>
+      <File Name="include/game/autocam.hpp"/>
+      <File Name="include/game/audio.hpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="engine">
+      <File Name="include/engine/ui.hpp"/>
+      <File Name="include/engine/savemanager.hpp"/>
+      <File Name="include/engine/physics.hpp"/>
+      <File Name="include/engine/event.inl"/>
+      <File Name="include/engine/event.hpp"/>
+      <File Name="include/engine/engine.hpp"/>
+      <File Name="include/engine/common.hpp"/>
+      <File Name="include/engine/behavior.hpp"/>
+      <File Name="include/engine/avatar.hpp"/>
+      <File Name="include/engine/ai.hpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="core">
+      <File Name="include/core/teleport.inl"/>
+      <File Name="include/core/teleport.hpp"/>
+      <File Name="include/core/sound.hpp"/>
+      <File Name="include/core/render.hpp"/>
+      <File Name="include/core/physics.hpp"/>
+      <File Name="include/core/music.hpp"/>
+      <File Name="include/core/movement.hpp"/>
+      <File Name="include/core/focus.hpp"/>
+      <File Name="include/core/event.hpp"/>
+      <File Name="include/core/entity.hpp"/>
+      <File Name="include/core/dungeon.inl"/>
+      <File Name="include/core/dungeon.hpp"/>
+      <File Name="include/core/common.hpp"/>
+      <File Name="include/core/collision.hpp"/>
+      <File Name="include/core/animation.hpp"/>
+      <File Name="include/core/algorithm.inl"/>
+      <File Name="include/core/algorithm.hpp"/>
+    </VirtualDirectory>
+  </VirtualDirectory>
+  <VirtualDirectory Name="extlibs">
+    <VirtualDirectory Name="imgui">
+      <File Name="extlibs/imgui/TODO.txt"/>
+      <File Name="extlibs/imgui/stb_truetype.h"/>
+      <File Name="extlibs/imgui/stb_textedit.h"/>
+      <File Name="extlibs/imgui/stb_rect_pack.h"/>
+      <File Name="extlibs/imgui/LICENSE.txt"/>
+      <File Name="extlibs/imgui/imgui_internal.h"/>
+      <File Name="extlibs/imgui/imgui_draw.cpp"/>
+      <File Name="extlibs/imgui/imgui_demo.cpp"/>
+      <File Name="extlibs/imgui/imgui.h"/>
+      <File Name="extlibs/imgui/imgui.cpp"/>
+      <File Name="extlibs/imgui/imconfig.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="sfml">
+      <VirtualDirectory Name="include">
+        <VirtualDirectory Name="SFML">
+          <File Name="extlibs/sfml/include/SFML/Window.hpp"/>
+          <File Name="extlibs/sfml/include/SFML/System.hpp"/>
+          <File Name="extlibs/sfml/include/SFML/OpenGL.hpp"/>
+          <File Name="extlibs/sfml/include/SFML/Network.hpp"/>
+          <File Name="extlibs/sfml/include/SFML/Main.hpp"/>
+          <File Name="extlibs/sfml/include/SFML/Graphics.hpp"/>
+          <File Name="extlibs/sfml/include/SFML/Config.hpp"/>
+          <File Name="extlibs/sfml/include/SFML/Audio.hpp"/>
+          <VirtualDirectory Name="Window">
+            <File Name="extlibs/sfml/include/SFML/Window/WindowStyle.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Window/WindowHandle.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Window/Window.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Window/VideoMode.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Window/Touch.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Window/Sensor.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Window/Mouse.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Window/Keyboard.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Window/Joystick.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Window/GlResource.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Window/Export.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Window/Event.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Window/Cursor.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Window/ContextSettings.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Window/Context.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Window/Clipboard.hpp"/>
+          </VirtualDirectory>
+          <VirtualDirectory Name="System">
+            <File Name="extlibs/sfml/include/SFML/System/Vector3.inl"/>
+            <File Name="extlibs/sfml/include/SFML/System/Vector3.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/System/Vector2.inl"/>
+            <File Name="extlibs/sfml/include/SFML/System/Vector2.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/System/Utf.inl"/>
+            <File Name="extlibs/sfml/include/SFML/System/Utf.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/System/Time.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/System/ThreadLocalPtr.inl"/>
+            <File Name="extlibs/sfml/include/SFML/System/ThreadLocalPtr.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/System/ThreadLocal.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/System/Thread.inl"/>
+            <File Name="extlibs/sfml/include/SFML/System/Thread.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/System/String.inl"/>
+            <File Name="extlibs/sfml/include/SFML/System/String.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/System/Sleep.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/System/NonCopyable.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/System/NativeActivity.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/System/Mutex.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/System/MemoryInputStream.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/System/Lock.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/System/InputStream.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/System/FileInputStream.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/System/Export.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/System/Err.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/System/Clock.hpp"/>
+          </VirtualDirectory>
+          <VirtualDirectory Name="Network">
+            <File Name="extlibs/sfml/include/SFML/Network/UdpSocket.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Network/TcpSocket.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Network/TcpListener.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Network/SocketSelector.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Network/SocketHandle.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Network/Socket.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Network/Packet.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Network/IpAddress.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Network/Http.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Network/Ftp.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Network/Export.hpp"/>
+          </VirtualDirectory>
+          <VirtualDirectory Name="Graphics">
+            <File Name="extlibs/sfml/include/SFML/Graphics/View.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Graphics/VertexArray.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Graphics/Vertex.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Graphics/Transformable.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Graphics/Transform.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Graphics/Texture.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Graphics/Text.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Graphics/Sprite.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Graphics/Shape.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Graphics/Shader.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Graphics/RenderWindow.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Graphics/RenderTexture.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Graphics/RenderTarget.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Graphics/RenderStates.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Graphics/RectangleShape.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Graphics/Rect.inl"/>
+            <File Name="extlibs/sfml/include/SFML/Graphics/Rect.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Graphics/PrimitiveType.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Graphics/Image.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Graphics/Glyph.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Graphics/Glsl.inl"/>
+            <File Name="extlibs/sfml/include/SFML/Graphics/Glsl.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Graphics/Font.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Graphics/Export.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Graphics/Drawable.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Graphics/ConvexShape.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Graphics/Color.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Graphics/CircleShape.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Graphics/BlendMode.hpp"/>
+          </VirtualDirectory>
+          <VirtualDirectory Name="Audio">
+            <File Name="extlibs/sfml/include/SFML/Audio/SoundStream.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Audio/SoundSource.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Audio/SoundRecorder.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Audio/SoundFileWriter.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Audio/SoundFileReader.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Audio/SoundFileFactory.inl"/>
+            <File Name="extlibs/sfml/include/SFML/Audio/SoundFileFactory.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Audio/SoundBufferRecorder.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Audio/SoundBuffer.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Audio/Sound.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Audio/OutputSoundFile.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Audio/Music.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Audio/Listener.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Audio/InputSoundFile.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Audio/Export.hpp"/>
+            <File Name="extlibs/sfml/include/SFML/Audio/AlResource.hpp"/>
+          </VirtualDirectory>
+        </VirtualDirectory>
+      </VirtualDirectory>
+      <File Name="extlibs/sfml/CMakeLists.txt"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="sol2">
+      <VirtualDirectory Name="sol">
+        <File Name="extlibs/sol2/sol/wrapper.hpp"/>
+        <File Name="extlibs/sol2/sol/variadic_results.hpp"/>
+        <File Name="extlibs/sol2/sol/variadic_args.hpp"/>
+        <File Name="extlibs/sol2/sol/usertype_traits.hpp"/>
+        <File Name="extlibs/sol2/sol/usertype_metatable.hpp"/>
+        <File Name="extlibs/sol2/sol/usertype_core.hpp"/>
+        <File Name="extlibs/sol2/sol/usertype.hpp"/>
+        <File Name="extlibs/sol2/sol/userdata.hpp"/>
+        <File Name="extlibs/sol2/sol/unsafe_function_result.hpp"/>
+        <File Name="extlibs/sol2/sol/unsafe_function.hpp"/>
+        <File Name="extlibs/sol2/sol/types.hpp"/>
+        <File Name="extlibs/sol2/sol/tuple.hpp"/>
+        <File Name="extlibs/sol2/sol/traits.hpp"/>
+        <File Name="extlibs/sol2/sol/tie.hpp"/>
+        <File Name="extlibs/sol2/sol/thread.hpp"/>
+        <File Name="extlibs/sol2/sol/table_iterator.hpp"/>
+        <File Name="extlibs/sol2/sol/table_core.hpp"/>
+        <File Name="extlibs/sol2/sol/table.hpp"/>
+        <File Name="extlibs/sol2/sol/string_view.hpp"/>
+        <File Name="extlibs/sol2/sol/state_view.hpp"/>
+        <File Name="extlibs/sol2/sol/state.hpp"/>
+        <File Name="extlibs/sol2/sol/stack_reference.hpp"/>
+        <File Name="extlibs/sol2/sol/stack_push.hpp"/>
+        <File Name="extlibs/sol2/sol/stack_proxy_base.hpp"/>
+        <File Name="extlibs/sol2/sol/stack_proxy.hpp"/>
+        <File Name="extlibs/sol2/sol/stack_probe.hpp"/>
+        <File Name="extlibs/sol2/sol/stack_pop.hpp"/>
+        <File Name="extlibs/sol2/sol/stack_guard.hpp"/>
+        <File Name="extlibs/sol2/sol/stack_get.hpp"/>
+        <File Name="extlibs/sol2/sol/stack_field.hpp"/>
+        <File Name="extlibs/sol2/sol/stack_core.hpp"/>
+        <File Name="extlibs/sol2/sol/stack_check_get.hpp"/>
+        <File Name="extlibs/sol2/sol/stack_check.hpp"/>
+        <File Name="extlibs/sol2/sol/stack.hpp"/>
+        <File Name="extlibs/sol2/sol/simple_usertype_metatable.hpp"/>
+        <File Name="extlibs/sol2/sol/resolve.hpp"/>
+        <File Name="extlibs/sol2/sol/reference.hpp"/>
+        <File Name="extlibs/sol2/sol/raii.hpp"/>
+        <File Name="extlibs/sol2/sol/proxy_base.hpp"/>
+        <File Name="extlibs/sol2/sol/proxy.hpp"/>
+        <File Name="extlibs/sol2/sol/protected_function_result.hpp"/>
+        <File Name="extlibs/sol2/sol/protected_function.hpp"/>
+        <File Name="extlibs/sol2/sol/protect.hpp"/>
+        <File Name="extlibs/sol2/sol/property.hpp"/>
+        <File Name="extlibs/sol2/sol/optional_implementation.hpp"/>
+        <File Name="extlibs/sol2/sol/optional.hpp"/>
+        <File Name="extlibs/sol2/sol/object_base.hpp"/>
+        <File Name="extlibs/sol2/sol/object.hpp"/>
+        <File Name="extlibs/sol2/sol/load_result.hpp"/>
+        <File Name="extlibs/sol2/sol/in_place.hpp"/>
+        <File Name="extlibs/sol2/sol/inheritance.hpp"/>
+        <File Name="extlibs/sol2/sol/function_types_templated.hpp"/>
+        <File Name="extlibs/sol2/sol/function_types_stateless.hpp"/>
+        <File Name="extlibs/sol2/sol/function_types_stateful.hpp"/>
+        <File Name="extlibs/sol2/sol/function_types_overloaded.hpp"/>
+        <File Name="extlibs/sol2/sol/function_types_core.hpp"/>
+        <File Name="extlibs/sol2/sol/function_types.hpp"/>
+        <File Name="extlibs/sol2/sol/function_result.hpp"/>
+        <File Name="extlibs/sol2/sol/function.hpp"/>
+        <File Name="extlibs/sol2/sol/forward_detail.hpp"/>
+        <File Name="extlibs/sol2/sol/filters.hpp"/>
+        <File Name="extlibs/sol2/sol/feature_test.hpp"/>
+        <File Name="extlibs/sol2/sol/error_handler.hpp"/>
+        <File Name="extlibs/sol2/sol/error.hpp"/>
+        <File Name="extlibs/sol2/sol/environment.hpp"/>
+        <File Name="extlibs/sol2/sol/deprecate.hpp"/>
+        <File Name="extlibs/sol2/sol/demangle.hpp"/>
+        <File Name="extlibs/sol2/sol/debug.hpp"/>
+        <File Name="extlibs/sol2/sol/coroutine.hpp"/>
+        <File Name="extlibs/sol2/sol/container_usertype_metatable.hpp"/>
+        <File Name="extlibs/sol2/sol/container_traits.hpp"/>
+        <File Name="extlibs/sol2/sol/compatibility.hpp"/>
+        <File Name="extlibs/sol2/sol/call.hpp"/>
+        <File Name="extlibs/sol2/sol/bind_traits.hpp"/>
+        <File Name="extlibs/sol2/sol/as_returns.hpp"/>
+        <File Name="extlibs/sol2/sol/as_args.hpp"/>
+        <File Name="extlibs/sol2/sol/stack_iterator.hpp"/>
+        <File Name="extlibs/sol2/sol/overload.hpp"/>
+        <File Name="extlibs/sol2/sol/forward.hpp"/>
+        <VirtualDirectory Name="compatibility">
+          <File Name="extlibs/sol2/sol/compatibility/version.hpp"/>
+          <File Name="extlibs/sol2/sol/compatibility/compat-5.3.h"/>
+          <File Name="extlibs/sol2/sol/compatibility/compat-5.3.c"/>
+        </VirtualDirectory>
+      </VirtualDirectory>
+      <File Name="extlibs/sol2/sol.hpp"/>
+      <File Name="extlibs/sol2/LICENSE.txt"/>
+      <File Name="extlibs/sol2/CMakeLists.txt"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="thor">
+      <File Name="extlibs/thor/License.txt"/>
+      <File Name="extlibs/thor/CMakeLists.txt"/>
+      <VirtualDirectory Name="extlibs">
+        <VirtualDirectory Name="aurora">
+          <File Name="extlibs/thor/extlibs/aurora/License.txt"/>
+          <VirtualDirectory Name="include">
+            <VirtualDirectory Name="Aurora">
+              <File Name="extlibs/thor/extlibs/aurora/include/Aurora/Tools.hpp"/>
+              <File Name="extlibs/thor/extlibs/aurora/include/Aurora/SmartPtr.hpp"/>
+              <File Name="extlibs/thor/extlibs/aurora/include/Aurora/Meta.hpp"/>
+              <File Name="extlibs/thor/extlibs/aurora/include/Aurora/Dispatch.hpp"/>
+              <File Name="extlibs/thor/extlibs/aurora/include/Aurora/Config.hpp"/>
+              <VirtualDirectory Name="Tools">
+                <File Name="extlibs/thor/extlibs/aurora/include/Aurora/Tools/Typeid.hpp"/>
+                <File Name="extlibs/thor/extlibs/aurora/include/Aurora/Tools/Swap.hpp"/>
+                <File Name="extlibs/thor/extlibs/aurora/include/Aurora/Tools/SafeBool.hpp"/>
+                <File Name="extlibs/thor/extlibs/aurora/include/Aurora/Tools/PImpl.hpp"/>
+                <File Name="extlibs/thor/extlibs/aurora/include/Aurora/Tools/Optional.hpp"/>
+                <File Name="extlibs/thor/extlibs/aurora/include/Aurora/Tools/NonCopyable.hpp"/>
+                <File Name="extlibs/thor/extlibs/aurora/include/Aurora/Tools/NamedTuple.hpp"/>
+                <File Name="extlibs/thor/extlibs/aurora/include/Aurora/Tools/Hash.hpp"/>
+                <File Name="extlibs/thor/extlibs/aurora/include/Aurora/Tools/ForEach.hpp"/>
+                <File Name="extlibs/thor/extlibs/aurora/include/Aurora/Tools/Exceptions.hpp"/>
+                <File Name="extlibs/thor/extlibs/aurora/include/Aurora/Tools/Downcast.hpp"/>
+                <File Name="extlibs/thor/extlibs/aurora/include/Aurora/Tools/Any.hpp"/>
+                <File Name="extlibs/thor/extlibs/aurora/include/Aurora/Tools/Algorithms.hpp"/>
+              </VirtualDirectory>
+              <VirtualDirectory Name="SmartPtr">
+                <File Name="extlibs/thor/extlibs/aurora/include/Aurora/SmartPtr/MakeUnique.hpp"/>
+                <File Name="extlibs/thor/extlibs/aurora/include/Aurora/SmartPtr/CopiedPtr.hpp"/>
+                <File Name="extlibs/thor/extlibs/aurora/include/Aurora/SmartPtr/ClonersAndDeleters.hpp"/>
+                <VirtualDirectory Name="Detail">
+                  <File Name="extlibs/thor/extlibs/aurora/include/Aurora/SmartPtr/Detail/PtrOwner.hpp"/>
+                  <File Name="extlibs/thor/extlibs/aurora/include/Aurora/SmartPtr/Detail/Factories.hpp"/>
+                </VirtualDirectory>
+              </VirtualDirectory>
+              <VirtualDirectory Name="Meta">
+                <File Name="extlibs/thor/extlibs/aurora/include/Aurora/Meta/Variadic.hpp"/>
+                <File Name="extlibs/thor/extlibs/aurora/include/Aurora/Meta/Tuple.hpp"/>
+                <File Name="extlibs/thor/extlibs/aurora/include/Aurora/Meta/Templates.hpp"/>
+                <File Name="extlibs/thor/extlibs/aurora/include/Aurora/Meta/Preprocessor.hpp"/>
+              </VirtualDirectory>
+              <VirtualDirectory Name="Dispatch">
+                <File Name="extlibs/thor/extlibs/aurora/include/Aurora/Dispatch/SingleDispatcher.hpp"/>
+                <File Name="extlibs/thor/extlibs/aurora/include/Aurora/Dispatch/DoubleDispatcher.hpp"/>
+                <File Name="extlibs/thor/extlibs/aurora/include/Aurora/Dispatch/DispatchTraits.hpp"/>
+                <VirtualDirectory Name="Detail">
+                  <File Name="extlibs/thor/extlibs/aurora/include/Aurora/Dispatch/Detail/SingleDispatcher.inl"/>
+                  <File Name="extlibs/thor/extlibs/aurora/include/Aurora/Dispatch/Detail/DoubleDispatcher.inl"/>
+                </VirtualDirectory>
+              </VirtualDirectory>
+            </VirtualDirectory>
+          </VirtualDirectory>
+        </VirtualDirectory>
+      </VirtualDirectory>
+      <VirtualDirectory Name="include">
+        <VirtualDirectory Name="Thor">
+          <File Name="extlibs/thor/include/Thor/Vectors.hpp"/>
+          <File Name="extlibs/thor/include/Thor/Time.hpp"/>
+          <File Name="extlibs/thor/include/Thor/Shapes.hpp"/>
+          <File Name="extlibs/thor/include/Thor/Resources.hpp"/>
+          <File Name="extlibs/thor/include/Thor/Particles.hpp"/>
+          <File Name="extlibs/thor/include/Thor/Math.hpp"/>
+          <File Name="extlibs/thor/include/Thor/Input.hpp"/>
+          <File Name="extlibs/thor/include/Thor/Graphics.hpp"/>
+          <File Name="extlibs/thor/include/Thor/Config.hpp"/>
+          <File Name="extlibs/thor/include/Thor/Animations.hpp"/>
+          <VirtualDirectory Name="Vectors">
+            <File Name="extlibs/thor/include/Thor/Vectors/VectorAlgebra3D.hpp"/>
+            <File Name="extlibs/thor/include/Thor/Vectors/VectorAlgebra2D.hpp"/>
+            <File Name="extlibs/thor/include/Thor/Vectors/PolarVector2.hpp"/>
+            <VirtualDirectory Name="Detail">
+              <File Name="extlibs/thor/include/Thor/Vectors/Detail/VectorAlgebra3D.inl"/>
+              <File Name="extlibs/thor/include/Thor/Vectors/Detail/VectorAlgebra2D.inl"/>
+              <File Name="extlibs/thor/include/Thor/Vectors/Detail/PolarVector2.inl"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="Time">
+            <File Name="extlibs/thor/include/Thor/Time/Timer.hpp"/>
+            <File Name="extlibs/thor/include/Thor/Time/StopWatch.hpp"/>
+            <File Name="extlibs/thor/include/Thor/Time/CallbackTimer.hpp"/>
+          </VirtualDirectory>
+          <VirtualDirectory Name="Shapes">
+            <File Name="extlibs/thor/include/Thor/Shapes/Shapes.hpp"/>
+            <File Name="extlibs/thor/include/Thor/Shapes/ConcaveShape.hpp"/>
+            <File Name="extlibs/thor/include/Thor/Shapes/Arrow.hpp"/>
+          </VirtualDirectory>
+          <VirtualDirectory Name="Resources">
+            <File Name="extlibs/thor/include/Thor/Resources/SfmlLoaders.hpp"/>
+            <File Name="extlibs/thor/include/Thor/Resources/ResourceLoader.hpp"/>
+            <File Name="extlibs/thor/include/Thor/Resources/ResourceHolder.hpp"/>
+            <File Name="extlibs/thor/include/Thor/Resources/ResourceExceptions.hpp"/>
+            <File Name="extlibs/thor/include/Thor/Resources/OwnershipModels.hpp"/>
+            <File Name="extlibs/thor/include/Thor/Resources/KnownIdStrategy.hpp"/>
+            <VirtualDirectory Name="Detail">
+              <File Name="extlibs/thor/include/Thor/Resources/Detail/ResourceLoaderHelpers.hpp"/>
+              <File Name="extlibs/thor/include/Thor/Resources/Detail/ResourceHolder.inl"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="Particles">
+            <File Name="extlibs/thor/include/Thor/Particles/ParticleSystem.hpp"/>
+            <File Name="extlibs/thor/include/Thor/Particles/Particle.hpp"/>
+            <File Name="extlibs/thor/include/Thor/Particles/Emitters.hpp"/>
+            <File Name="extlibs/thor/include/Thor/Particles/EmissionInterface.hpp"/>
+            <File Name="extlibs/thor/include/Thor/Particles/Affectors.hpp"/>
+          </VirtualDirectory>
+          <VirtualDirectory Name="Math">
+            <File Name="extlibs/thor/include/Thor/Math/Trigonometry.hpp"/>
+            <File Name="extlibs/thor/include/Thor/Math/TriangulationFigures.hpp"/>
+            <File Name="extlibs/thor/include/Thor/Math/Triangulation.hpp"/>
+            <File Name="extlibs/thor/include/Thor/Math/Random.hpp"/>
+            <File Name="extlibs/thor/include/Thor/Math/Distributions.hpp"/>
+            <File Name="extlibs/thor/include/Thor/Math/Distribution.hpp"/>
+            <VirtualDirectory Name="Detail">
+              <File Name="extlibs/thor/include/Thor/Math/Detail/TriangulationFigures.inl"/>
+              <File Name="extlibs/thor/include/Thor/Math/Detail/Triangulation.inl"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="Input">
+            <File Name="extlibs/thor/include/Thor/Input/Joystick.hpp"/>
+            <File Name="extlibs/thor/include/Thor/Input/InputNames.hpp"/>
+            <File Name="extlibs/thor/include/Thor/Input/EventSystem.hpp"/>
+            <File Name="extlibs/thor/include/Thor/Input/Connection.hpp"/>
+            <File Name="extlibs/thor/include/Thor/Input/ActionMap.hpp"/>
+            <File Name="extlibs/thor/include/Thor/Input/ActionContext.hpp"/>
+            <File Name="extlibs/thor/include/Thor/Input/Action.hpp"/>
+            <VirtualDirectory Name="Detail">
+              <File Name="extlibs/thor/include/Thor/Input/Detail/EventSystem.inl"/>
+              <File Name="extlibs/thor/include/Thor/Input/Detail/EventListener.hpp"/>
+              <File Name="extlibs/thor/include/Thor/Input/Detail/ConnectionImpl.hpp"/>
+              <File Name="extlibs/thor/include/Thor/Input/Detail/ActionOperations.hpp"/>
+              <File Name="extlibs/thor/include/Thor/Input/Detail/ActionMap.inl"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="Graphics">
+            <File Name="extlibs/thor/include/Thor/Graphics/UniformAccess.hpp"/>
+            <File Name="extlibs/thor/include/Thor/Graphics/ToString.hpp"/>
+            <File Name="extlibs/thor/include/Thor/Graphics/ColorGradient.hpp"/>
+            <File Name="extlibs/thor/include/Thor/Graphics/BigTexture.hpp"/>
+            <File Name="extlibs/thor/include/Thor/Graphics/BigSprite.hpp"/>
+            <VirtualDirectory Name="Detail">
+              <File Name="extlibs/thor/include/Thor/Graphics/Detail/UniformAccess.inl"/>
+              <File Name="extlibs/thor/include/Thor/Graphics/Detail/ToString.inl"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="Animations">
+            <File Name="extlibs/thor/include/Thor/Animations/RefAnimation.hpp"/>
+            <File Name="extlibs/thor/include/Thor/Animations/Playback.hpp"/>
+            <File Name="extlibs/thor/include/Thor/Animations/FrameAnimation.hpp"/>
+            <File Name="extlibs/thor/include/Thor/Animations/FadeAnimation.hpp"/>
+            <File Name="extlibs/thor/include/Thor/Animations/ColorAnimation.hpp"/>
+            <File Name="extlibs/thor/include/Thor/Animations/Animator.hpp"/>
+            <File Name="extlibs/thor/include/Thor/Animations/AnimationPrimitives.hpp"/>
+            <File Name="extlibs/thor/include/Thor/Animations/AnimationMap.hpp"/>
+            <VirtualDirectory Name="Detail">
+              <File Name="extlibs/thor/include/Thor/Animations/Detail/RefAnimation.inl"/>
+              <File Name="extlibs/thor/include/Thor/Animations/Detail/PlaybackSchemes.hpp"/>
+              <File Name="extlibs/thor/include/Thor/Animations/Detail/Animator.inl"/>
+              <File Name="extlibs/thor/include/Thor/Animations/Detail/AnimationMap.inl"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+        </VirtualDirectory>
+      </VirtualDirectory>
+    </VirtualDirectory>
+  </VirtualDirectory>
+  <VirtualDirectory Name="test_suite">
+    <File Name="test_suite/sfml_system.cpp"/>
+    <File Name="test_suite/main.cpp"/>
+    <VirtualDirectory Name="utils">
+      <File Name="test_suite/utils/xml_utils.cpp"/>
+      <File Name="test_suite/utils/verifier.cpp"/>
+      <File Name="test_suite/utils/unionfind.cpp"/>
+      <File Name="test_suite/utils/tiling.hpp"/>
+      <File Name="test_suite/utils/spatial_scene.cpp"/>
+      <File Name="test_suite/utils/scope_guard.cpp"/>
+      <File Name="test_suite/utils/resource_cache.cpp"/>
+      <File Name="test_suite/utils/priority_queue.cpp"/>
+      <File Name="test_suite/utils/pathfinder.cpp"/>
+      <File Name="test_suite/utils/ortho_tile.cpp"/>
+      <File Name="test_suite/utils/lua_utils.cpp"/>
+      <File Name="test_suite/utils/logger.cpp"/>
+      <File Name="test_suite/utils/lighting_system.cpp"/>
+      <File Name="test_suite/utils/keybinding.cpp"/>
+      <File Name="test_suite/utils/input_mapper.cpp"/>
+      <File Name="test_suite/utils/event_system.cpp"/>
+      <File Name="test_suite/utils/enum_utils.cpp"/>
+      <File Name="test_suite/utils/enum_map.cpp"/>
+      <File Name="test_suite/utils/delay_system.cpp"/>
+      <File Name="test_suite/utils/component_system.cpp"/>
+      <File Name="test_suite/utils/camera.cpp"/>
+      <File Name="test_suite/utils/binary_utils.cpp"/>
+      <File Name="test_suite/utils/atlas.hpp"/>
+      <File Name="test_suite/utils/assert.cpp"/>
+      <File Name="test_suite/utils/animation_utils.cpp"/>
+      <File Name="test_suite/utils/algorithm.cpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="state">
+      <File Name="test_suite/state/resources.cpp"/>
+      <File Name="test_suite/state/common.cpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="rpg">
+      <File Name="test_suite/rpg/stats.cpp"/>
+      <File Name="test_suite/rpg/resources.cpp"/>
+      <File Name="test_suite/rpg/quickslot.cpp"/>
+      <File Name="test_suite/rpg/projectile.cpp"/>
+      <File Name="test_suite/rpg/player.cpp"/>
+      <File Name="test_suite/rpg/perk.cpp"/>
+      <File Name="test_suite/rpg/item.cpp"/>
+      <File Name="test_suite/rpg/interact.cpp"/>
+      <File Name="test_suite/rpg/input.cpp"/>
+      <File Name="test_suite/rpg/gameplay_integration.cpp"/>
+      <File Name="test_suite/rpg/effect.cpp"/>
+      <File Name="test_suite/rpg/delay.cpp"/>
+      <File Name="test_suite/rpg/combat.cpp"/>
+      <File Name="test_suite/rpg/balance.cpp"/>
+      <File Name="test_suite/rpg/algorithm.cpp"/>
+      <File Name="test_suite/rpg/action.cpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="game">
+      <File Name="test_suite/game/visuals.cpp"/>
+      <File Name="test_suite/game/tracer.cpp"/>
+      <File Name="test_suite/game/script.cpp"/>
+      <File Name="test_suite/game/resources.cpp"/>
+      <File Name="test_suite/game/powerup.cpp"/>
+      <File Name="test_suite/game/path.cpp"/>
+      <File Name="test_suite/game/navigator.cpp"/>
+      <File Name="test_suite/game/mod.cpp"/>
+      <File Name="test_suite/game/lua.cpp"/>
+      <File Name="test_suite/game/generator.cpp"/>
+      <File Name="test_suite/game/factory.cpp"/>
+      <File Name="test_suite/game/common.cpp"/>
+      <File Name="test_suite/game/builder.cpp"/>
+      <File Name="test_suite/game/autocam.cpp"/>
+      <File Name="test_suite/game/audio.cpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="engine">
+      <File Name="test_suite/engine/trigger.cpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="core">
+      <File Name="test_suite/core/teleport.cpp"/>
+      <File Name="test_suite/core/sound.cpp"/>
+      <File Name="test_suite/core/render.cpp"/>
+      <File Name="test_suite/core/physics_integration.cpp"/>
+      <File Name="test_suite/core/physics.cpp"/>
+      <File Name="test_suite/core/movement.cpp"/>
+      <File Name="test_suite/core/focus.cpp"/>
+      <File Name="test_suite/core/collision.cpp"/>
+      <File Name="test_suite/core/animation.cpp"/>
+      <File Name="test_suite/core/algorithm.cpp"/>
+    </VirtualDirectory>
+  </VirtualDirectory>
+  <Description/>
+  <Dependencies/>
+  <Settings Type="Dynamic Library">
+    <GlobalSettings>
+      <Compiler Options="" C_Options="" Assembler="">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Options="">
+        <LibraryPath Value="."/>
+      </Linker>
+      <ResourceCompiler Options=""/>
+    </GlobalSettings>
+    <Configuration Name="Debug" CompilerType="clang" DebuggerType="GNU gdb debugger" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="-g" C_Options="-g" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Options="" Required="yes"/>
+      <ResourceCompiler Options="" Required="no"/>
+      <General OutputFile="" IntermediateDirectory="./Debug" Command="$(WorkspacePath)/cmake-build-$(WorkspaceConfiguration)/output/$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <BuildSystem Name="CMake"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
+        <![CDATA[]]>
+      </Environment>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="" IsExtended="no">
+        <DebuggerSearchPaths/>
+        <PostConnectCommands/>
+        <StartupCommands/>
+      </Debugger>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="yes">
+        <RebuildCommand/>
+        <CleanCommand>make clean</CleanCommand>
+        <BuildCommand>cd build &amp;&amp; make</BuildCommand>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory>$(WorkspacePath)</WorkingDirectory>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+      <Completion EnableCpp11="no" EnableCpp14="no">
+        <ClangCmpFlagsC/>
+        <ClangCmpFlags/>
+        <ClangPP/>
+        <SearchPaths/>
+      </Completion>
+    </Configuration>
+    <Configuration Name="Release" CompilerType="clang" DebuggerType="GNU gdb debugger" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="" C_Options="" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Options="-O2" Required="yes"/>
+      <ResourceCompiler Options="" Required="no"/>
+      <General OutputFile="" IntermediateDirectory="./Release" Command="$(WorkspacePath)/cmake-build-$(WorkspaceConfiguration)/output/$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <BuildSystem Name="CMake"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
+        <![CDATA[]]>
+      </Environment>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="" IsExtended="no">
+        <DebuggerSearchPaths/>
+        <PostConnectCommands/>
+        <StartupCommands/>
+      </Debugger>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="yes">
+        <RebuildCommand/>
+        <CleanCommand>make clean</CleanCommand>
+        <BuildCommand>make</BuildCommand>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory>$(WorkspacePath)</WorkingDirectory>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+      <Completion EnableCpp11="no" EnableCpp14="no">
+        <ClangCmpFlagsC/>
+        <ClangCmpFlags/>
+        <ClangPP/>
+        <SearchPaths/>
+      </Completion>
+    </Configuration>
+  </Settings>
+</CodeLite_Project>
