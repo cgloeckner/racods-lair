@@ -116,7 +116,8 @@ void AppLauncherState::update(sf::Time const& elapsed) {
 		progress -= 1.f;
 	}
 	
-	label.setColor(gradient.sampleColor(progress));
+	label.setFillColor(gradient.sampleColor(progress));
+	label.setOutlineColor(gradient.sampleColor(progress));
 }
 
 } // ::state

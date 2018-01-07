@@ -176,9 +176,11 @@ void LobbyState::onSetNumPlayers() {
 		select.setVisible(i < lobby.num_players);
 		
 		if (lobby.num_players > 1u) {
-			player_labels[i].setColor(context.globals.player_colors[i]);
+			player_labels[i].setFillColor(context.globals.player_colors[i]);
+			player_labels[i].setOutlineColor(context.globals.player_colors[i]);
 		} else {
-			player_labels[i].setColor(sf::Color::White);
+			player_labels[i].setFillColor(sf::Color::White);
+			player_labels[i].setOutlineColor(sf::Color::White);
 		}
 	}
 }

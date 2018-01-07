@@ -62,8 +62,8 @@ sf::Texture createLightmap(float radius, sf::Shader& shader) {
 
 	// render lightmap
 	buffer.clear(sf::Color::Black);
-	shader.setParameter("radius", radius);
-	shader.setParameter("center", {size / 2.f, size / 2.f});
+	shader.setUniform("radius", radius);
+	shader.setUniform("center", sf::Glsl::Vec2{size / 2.f, size / 2.f});
 	buffer.draw(array, &shader);
 	buffer.display();
 

@@ -14,10 +14,10 @@ template <typename Layer>
 void LayeredSprite<Layer>::render(sf::RenderTarget& target,
 	sf::Transform const& matrix, sf::Shader& shader) const {
 	// apply transformations and shader
-	shader.setParameter("brightness", brightness);
-	shader.setParameter("min_saturation", min_saturation);
-	shader.setParameter("max_saturation", max_saturation);
-	shader.setParameter("texture", sf::Shader::CurrentTexture);
+	shader.setUniform("brightness", brightness);
+	shader.setUniform("min_saturation", min_saturation);
+	shader.setUniform("max_saturation", max_saturation);
+	shader.setUniform("texture", sf::Shader::CurrentTexture);
 	// create render states
 	sf::RenderStates states;
 	states.transform = matrix;

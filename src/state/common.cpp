@@ -302,7 +302,8 @@ void GameContext::applySettings() {
 
 void setupTitle(sf::Text& label, std::string const & key, Context& context, std::string const & caption_ext) {
 	label.setString(context.locale(key) + caption_ext);
-	label.setColor(context.globals.ui_color);
+	label.setFillColor(context.globals.ui_color);
+	label.setOutlineColor(context.globals.ui_color);
 	label.setFont(context.mod.get<sf::Font>(context.globals.title.font));
 	label.setCharacterSize(context.globals.title.char_size);
 	ui::centerify(label);
@@ -314,14 +315,16 @@ void setupLabel(sf::Text& label, std::string const & key, Context& context, std:
 		s = context.locale(key);
 	}
 	label.setString(s + caption_ext);
-	label.setColor(context.globals.ui_color);
+	label.setFillColor(context.globals.ui_color);
+	label.setOutlineColor(context.globals.ui_color);
 	label.setFont(context.mod.get<sf::Font>(context.globals.widget.font));
 	label.setCharacterSize(context.globals.widget.char_size);
 	ui::centerify(label);
 }
 
 void setupWarning(sf::Text& label, Context& context) {
-	label.setColor(context.globals.ui_warning);
+	label.setFillColor(context.globals.ui_warning);
+	label.setOutlineColor(context.globals.ui_warning);
 	label.setFont(context.mod.get<sf::Font>(context.globals.widget.font));
 	label.setCharacterSize(context.globals.widget.char_size);
 }

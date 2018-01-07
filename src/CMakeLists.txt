@@ -13,7 +13,6 @@ add_subdirectory(state)
 # build this src
 set(src
     main.cpp
-    #sfml-fix.cpp
 )
 add_executable(racod_game ${src})
 

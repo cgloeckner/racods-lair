@@ -55,7 +55,8 @@ GameState::GameState(App& app)
 	game.engine.ui.hud.setup(combat_font, combat_size, hud_deco_corner, hud_deco_border);
 	difficulty.setFont(hud_font);
 	difficulty.setCharacterSize(hud_size);
-	difficulty.setColor(sf::Color::White);
+	difficulty.setFillColor(sf::Color::White);
+	difficulty.setOutlineColor(sf::Color::White);
 	difficulty.setString(context.locale("lobby.difficulty") + ": "
 		+ context.locale("difficulty." + to_string(context.settings.difficulty)));
 	{
@@ -65,7 +66,8 @@ GameState::GameState(App& app)
 	}
 	fps.setFont(hud_font);
 	fps.setCharacterSize(hud_size);
-	fps.setColor(sf::Color::White);
+	fps.setFillColor(sf::Color::White);
+	fps.setOutlineColor(sf::Color::White);
 	
 	// -------------------------------------------- TEST IMPLEMENTATION
 	
