@@ -3,20 +3,21 @@ project (racod)
 
 set(CMAKE_CXX_STANDARD 14)
 
-# build depending libs
+# include and build SFML from submodule
 include_directories(extlibs/sfml/include)
 add_subdirectory(extlibs/sfml)
 
+# include and build Thor from submodule
 include_directories(extlibs/thor/include)
 include_directories(extlibs/thor/extlibs/aurora/include)
 add_subdirectory(extlibs/thor)
 
+# include Sol2 from submodule (using the specified lua version)
 include_directories(${LUA_INCLUDE_DIR})
 include_directories(extlibs/sol2)
-include_directories(extlibs/sol2/sol)
-add_subdirectory(extlibs/sol2) # does this build anything at all?
 
-include_directories(extlibs) # imgui isn't using a dedicatad imgui/ folder -- see #include <imgui/foo.hpp>
+# include ImGui from submodule (custom repo, due to imconfig.h)
+include_directories(extlibs/imgui)
 
 # build Racod's Lair
 include_directories(include)

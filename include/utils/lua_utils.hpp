@@ -3,7 +3,7 @@
 
 #include <type_traits>
 #include <vector>
-#include <sol2/sol.hpp>
+#include <sol.hpp>
 
 #include <utils/enum_map.hpp>
 

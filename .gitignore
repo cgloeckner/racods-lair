@@ -1,8 +1,5 @@
 build/
-bin/
-racod.geany
-run
-release
+release/
 imgui.ini
 *~
 .codelite/

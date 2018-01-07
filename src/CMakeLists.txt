@@ -29,6 +29,6 @@ target_link_libraries(racod_game utils)
 # link depending libs
 target_link_libraries(racod_game sfml-system sfml-graphics sfml-window sfml-audio sfml-network)
 target_link_libraries(racod_game thor)
-target_link_libraries(racod_game lua5.2)
+target_link_libraries(racod_game ${LUA_LIBRARY})
 target_link_libraries(racod_game boost_filesystem)
 

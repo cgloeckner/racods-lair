@@ -676,10 +676,10 @@ void RoomEditorState::handle(sf::Event const & event) {
 	}
 }
 
-void RoomEditorState::update(sf::Time const & elapsed) {
-	ImGui::SFML::Update();
-	
+void RoomEditorState::update(sf::Time const & elapsed) {	
 	auto const & context = getContext();
+	
+	ImGui::SFML::Update(context.app.getWindow(), elapsed);
 	
 	// setup menu bar
 	if (ImGui::BeginMainMenuBar()) {

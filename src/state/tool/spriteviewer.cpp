@@ -335,7 +335,9 @@ void SpriteViewerState::handle(sf::Event const & event) {
 }
 
 void SpriteViewerState::update(sf::Time const & elapsed) {
-	ImGui::SFML::Update();
+	auto& window = getApplication().getWindow();
+	
+	ImGui::SFML::Update(window, elapsed);
 	
 	ImGui::Begin("Base Sprite");
 		if (ui::InputText("Mod path", modname)) {

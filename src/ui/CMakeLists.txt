@@ -9,9 +9,9 @@ set(src
 	common.cpp
 	floatingtext.cpp
 	imgui.cpp
-	imgui-SFML.cpp
 	../../extlibs/imgui/imgui.cpp
 	../../extlibs/imgui/imgui_draw.cpp
+	../../extlibs/imgui/imgui-SFML.cpp
 	input.cpp
 	notificationtext.cpp
 	playerhud.cpp

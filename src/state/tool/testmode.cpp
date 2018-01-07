@@ -691,7 +691,9 @@ bool TestMode::handle(sf::Event const& event) {
 }
 
 void TestMode::update(sf::Time const& elapsed) {
-	ImGui::SFML::Update();
+	auto& window = parent.getApplication().getWindow();
+	
+	ImGui::SFML::Update(window, elapsed);
 	
 	event_logger.update();
 	

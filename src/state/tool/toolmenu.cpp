@@ -64,9 +64,11 @@ void ToolMenuState::handle(sf::Event const & event) {
 }
 
 void ToolMenuState::update(sf::Time const & elapsed) {
-	ImGui::SFML::Update();
+	auto& window = getApplication().getWindow();
 	
-	auto size = getApplication().getWindow().getSize();
+	ImGui::SFML::Update(window, elapsed);
+	
+	auto size = window.getSize();
 	ImGui::SetNextWindowSize(ImVec2(size * 3u / 4u));
 	ImGui::SetNextWindowPosCenter();
 	
