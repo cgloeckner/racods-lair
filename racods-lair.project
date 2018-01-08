@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CodeLite_Project Name="racods-lair" Version="10.0.0" InternalType="">
   <Plugins>
+    <Plugin Name="qmake">
+      <![CDATA[00020001N0005Debug0000000000000001N0007Release000000000000]]>
+    </Plugin>
     <Plugin Name="CMakePlugin">
       <![CDATA[[{
   "name": "Debug",
@@ -21,9 +24,6 @@
   "arguments": [],
   "parentProject": ""
  }]]]>
-    </Plugin>
-    <Plugin Name="qmake">
-      <![CDATA[00020001N0005Debug0000000000000001N0007Release000000000000]]>
     </Plugin>
   </Plugins>
   <VirtualDirectory Name="_work">
@@ -84,7 +84,6 @@
       <File Name="src/utils/filesystem.cpp"/>
       <File Name="src/utils/fader.cpp"/>
       <File Name="src/utils/event_system.cpp"/>
-      <File Name="src/utils/CMakeLists.txt"/>
       <File Name="src/utils/camera.cpp"/>
       <File Name="src/utils/binary_utils.cpp"/>
       <File Name="src/utils/assert.cpp"/>
@@ -102,7 +101,6 @@
       <File Name="src/ui/imgui-SFML.cpp"/>
       <File Name="src/ui/floatingtext.cpp"/>
       <File Name="src/ui/common.cpp"/>
-      <File Name="src/ui/CMakeLists.txt"/>
       <File Name="src/ui/checkbox.cpp"/>
       <File Name="src/ui/button.cpp"/>
       <File Name="src/ui/animation.cpp"/>
@@ -123,7 +121,6 @@
       <File Name="src/state/controls_viewer.cpp"/>
       <File Name="src/state/controls_editor.cpp"/>
       <File Name="src/state/common.cpp"/>
-      <File Name="src/state/CMakeLists.txt"/>
       <File Name="src/state/character_viewer.cpp"/>
       <File Name="src/state/camera_editor.cpp"/>
       <File Name="src/state/app_launcher.cpp"/>
@@ -157,7 +154,6 @@
       <File Name="src/rpg/delay.cpp"/>
       <File Name="src/rpg/common.cpp"/>
       <File Name="src/rpg/combat.cpp"/>
-      <File Name="src/rpg/CMakeLists.txt"/>
       <File Name="src/rpg/balance.cpp"/>
       <File Name="src/rpg/algorithm.cpp"/>
       <File Name="src/rpg/action.cpp"/>
@@ -181,7 +177,6 @@
       <File Name="src/game/event.cpp"/>
       <File Name="src/game/entity.cpp"/>
       <File Name="src/game/common.cpp"/>
-      <File Name="src/game/CMakeLists.txt"/>
       <File Name="src/game/builder.cpp"/>
       <File Name="src/game/autocam.cpp"/>
       <File Name="src/game/audio.cpp"/>
@@ -193,7 +188,6 @@
       <File Name="src/engine/event.cpp"/>
       <File Name="src/engine/engine.cpp"/>
       <File Name="src/engine/common.cpp"/>
-      <File Name="src/engine/CMakeLists.txt"/>
       <File Name="src/engine/behavior.cpp"/>
       <File Name="src/engine/avatar.cpp"/>
       <File Name="src/engine/ai.cpp"/>
@@ -211,7 +205,6 @@
       <File Name="src/core/dungeon.cpp"/>
       <File Name="src/core/common.cpp"/>
       <File Name="src/core/collision.cpp"/>
-      <File Name="src/core/CMakeLists.txt"/>
       <File Name="src/core/animation.cpp"/>
       <File Name="src/core/algorithm.cpp"/>
     </VirtualDirectory>
@@ -353,6 +346,7 @@
     </VirtualDirectory>
   </VirtualDirectory>
   <VirtualDirectory Name="racods-lair">
+    <File Name="README.md"/>
     <File Name="ROADMAP.txt"/>
     <File Name="Readme.txt"/>
     <File Name="old.CMakeLists.txt"/>
@@ -942,6 +936,7 @@
     </VirtualDirectory>
   </VirtualDirectory>
   <VirtualDirectory Name="test_suite">
+    <File Name="test_suite/CMakeLists.txt"/>
     <File Name="test_suite/sfml_system.cpp"/>
     <File Name="test_suite/main.cpp"/>
     <VirtualDirectory Name="utils">
@@ -1046,6 +1041,7 @@
       <Linker Options="" Required="yes"/>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="" IntermediateDirectory="./Debug" Command="./build/src/racod_game" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <BuildSystem Name="Default"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[]]>
       </Environment>
@@ -1059,7 +1055,7 @@
       <CustomBuild Enabled="yes">
         <RebuildCommand/>
         <CleanCommand>make clean</CleanCommand>
-        <BuildCommand>cd build &amp;&amp; make</BuildCommand>
+        <BuildCommand>cd build &amp;&amp; make -j4</BuildCommand>
         <PreprocessFileCommand/>
         <SingleFileCommand/>
         <MakefileGenerationCommand/>
@@ -1084,6 +1080,7 @@
       <Linker Options="-O2" Required="yes"/>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="" IntermediateDirectory="./Release" Command="./release/src/racod_game" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <BuildSystem Name="Default"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[]]>
       </Environment>

@@ -58,7 +58,8 @@ void FloatingTexts::add(sf::Font const & font, std::string const & string,
 	node.caption.setFont(font);
 	node.caption.setString(string);
 	node.caption.setCharacterSize(size);
-	node.caption.setColor(color);
+	node.caption.setFillColor(color);
+	node.caption.setOutlineColor(color);
 	node.max_age = max_age;
 	node.decay = 1.f / max_age.asMilliseconds();
 	if (random_dir) {

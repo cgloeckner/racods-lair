@@ -2,6 +2,13 @@ cmake_minimum_required (VERSION 3.0)
 project (racod)
 
 set(CMAKE_CXX_STANDARD 14)
+set(FULL_DEPS sfml-system sfml-graphics sfml-window sfml-audio sfml-network thor
+    boost_filesystem ${LUA_LIBRARY})
+
+if (RELEASE_BUILD)
+else()
+    add_definitions(-DUNIT_TEST)
+endif()
 
 # include and build SFML from submodule
 include_directories(extlibs/sfml/include)
@@ -19,7 +26,14 @@ include_directories(extlibs/sol2)
 # include ImGui from submodule (custom repo, due to imconfig.h)
 include_directories(extlibs/imgui)
 
-# build Racod's Lair
 include_directories(include)
+
+if (RELEASE_BUILD)
+else()
+    # build Unit Tests
+    add_subdirectory(test_suite)
+endif()
+
+# build Racod's Lair
 add_subdirectory(src)
 

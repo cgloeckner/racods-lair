@@ -120,7 +120,8 @@ void PlayerHud::resize(sf::Vector2u const& screen_size, std::size_t column) {
 }
 
 void PlayerHud::setColor(sf::Color const & color) {
-	name.setColor(color);
+	name.setFillColor(color);
+	name.setOutlineColor(color);
 }
 
 void PlayerHud::setName(std::string const & display_name) {
@@ -155,7 +156,8 @@ void PlayerHud::setFocus(std::string const & name, sf::Color const & color, std:
 	ui::centerify(focus_name);
 	focus_level.setString("Lvl. " + std::to_string(level));
 	ui::centerify(focus_level);
-	focus_name.setColor(color);
+	focus_name.setFillColor(color);
+	focus_name.setOutlineColor(color);
 	if (life == 0u) {
 		// note: causes bar to disappear
 		max_life = 0u;

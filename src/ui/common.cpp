@@ -19,7 +19,8 @@ TextWidget::TextWidget()
 
 void TextWidget::onFocused(bool focused) {
 	if (focused) {
-		label.setColor(highlight);
+		label.setFillColor(highlight);
+		label.setOutlineColor(highlight);
 		ani.startAnimation();
 		
 		if (channel != nullptr && navigate_sfx != nullptr) {
@@ -27,7 +28,8 @@ void TextWidget::onFocused(bool focused) {
 			channel->play();
 		}
 	} else {
-		label.setColor(color);
+		label.setFillColor(color);
+		label.setOutlineColor(color);
 		ani.stopAnimation();
 	}
 	onStateChanged();

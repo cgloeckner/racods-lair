@@ -6,7 +6,7 @@ More information can be found in the [SFML forum](http://en.sfml-dev.org/forums/
 
 ## Build
 
-recommanded: -DCMAKE_CXX_COMPILER=clang++-5.0 -DCMAKE_C_COMPILER=clang-5.0 -DLUA_INCLUDE_DIR=/usr/include/lua5.2
+recommanded: -DCMAKE_CXX_COMPILER=clang++-5.0 -DCMAKE_C_COMPILER=clang-5.0 -DLUA_INCLUDE_DIR=/usr/include/lua5.2 -DLUA_LIBRARY=lua5.2
 
 ## Dependencies
 
