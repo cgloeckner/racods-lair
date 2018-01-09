@@ -25,13 +25,13 @@ endmacro(test_module)
 
 set(utils_test_deps utils)
 set(core_test_deps utils core)
-
+set(rpg_test_deps utils core rpg)
 
 # build all unit tests (linking against some module libs)
 test_module(utils "${utils_test_deps}")
 #test_module(ui) # not implemented yet
 test_module(core "${core_test_deps}")
-#test_module(rpg)
+test_module(rpg "${rpg_test_deps}")
 #test_module(game)
 #test_module(engine)
 #test_module(state)

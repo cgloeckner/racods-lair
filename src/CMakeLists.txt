@@ -31,9 +31,18 @@ build_module(game)
 build_module(engine)
 build_module(state)
 
+# setup module dependencies
 add_dependencies(ui utils)
 add_dependencies(core utils)
 add_dependencies(rpg core)
 add_dependencies(game rpg)
 add_dependencies(engine game)
 add_dependencies(state engine)
+
+if (RELEASE_BUILD)
+else()
+    # build modules only after depending modules' tests were successful
+    add_dependencies(core utils_test)
+    add_dependencies(rpg core_test)
+    add_dependencies(game rpg_test)
+endif()

@@ -1,17 +1,31 @@
 ![alt text](http://media.indiedb.com/images/games/1/41/40378/add.png "Racod's Lair")
 
-Since I'm out of time, the development for [Racod's Lair](http://www.indiedb.com/games/racods-lair/) is paused pending further notice. Feel free to contribute to the project if you like to. I plan to return at one time, but I'm totally not sure when this will be. Sure you'll be added as author if you want to participate :)
+Racod, scourge for mankind, escaped to its lair to regenerate for his next decade of terror.
+You and your brave fellows are willed to find and defeat Racod.
+
+It's a Coop Dungeon Crawling / Hack'n'Slashing RPG (or it will be some day^^).
 
 More information can be found in the [SFML forum](http://en.sfml-dev.org/forums/index.php?topic=16367.0) and at [Spieleprogrammierer.de](https://www.spieleprogrammierer.de/12-projektvorstellungen-und-stellenangebote/23552-racod-s-lair-ein-coop-dungeoncrawler). You can follow Racod's Lair on [Twitter](http://www.twitter.com/racodslair) and [Facebook](http://www.facebook.com/racodslair).
 
 ## Build
 
-recommanded: -DCMAKE_CXX_COMPILER=clang++-5.0 -DCMAKE_C_COMPILER=clang-5.0 -DLUA_INCLUDE_DIR=/usr/include/lua5.2 -DLUA_LIBRARY=lua5.2
+Feel free to adjust the CMake-Parameters to your needs:
+
+```
+mkdir build
+cd build
+cmake -G Ninja .. -DCMAKE_CXX_COMPILER=clang++-5.0 -DCMAKE_C_COMPILER=clang-5.0 -DLUA_INCLUDE_DIR=/usr/include/lua5.2 -DLUA_LIBRARY=lua5.2
+ninja
+```
 
 ## Dependencies
 
-liblua5.2-dev
-boost (filesystem, property tree, preprocessor)
+```
+Building:
+    lua 5.2
+    boost >= 1.36.x
+    Dependencies for SFML
+```
 
 ## Issue
 

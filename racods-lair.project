@@ -1054,8 +1054,8 @@
       <PostBuild/>
       <CustomBuild Enabled="yes">
         <RebuildCommand/>
-        <CleanCommand>make clean</CleanCommand>
-        <BuildCommand>cd build &amp;&amp; make -j4</BuildCommand>
+        <CleanCommand>cd build &amp;&amp; ninja clean</CleanCommand>
+        <BuildCommand>cd build &amp;&amp; ninja</BuildCommand>
         <PreprocessFileCommand/>
         <SingleFileCommand/>
         <MakefileGenerationCommand/>
@@ -1093,8 +1093,8 @@
       <PostBuild/>
       <CustomBuild Enabled="yes">
         <RebuildCommand/>
-        <CleanCommand>cd release &amp;&amp; make clean</CleanCommand>
-        <BuildCommand>cd release &amp;&amp; make</BuildCommand>
+        <CleanCommand>cd release &amp;&amp; ninja clean</CleanCommand>
+        <BuildCommand>cd release &amp;&amp; ninja</BuildCommand>
         <PreprocessFileCommand/>
         <SingleFileCommand/>
         <MakefileGenerationCommand/>

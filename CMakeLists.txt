@@ -10,6 +10,13 @@ else()
     add_definitions(-DUNIT_TEST)
 endif()
 
+include(ProcessorCount)
+ProcessorCount(N)
+if(NOT N EQUAL 0)
+  set(CTEST_BUILD_FLAGS -j${N})
+  set(ctest_test_args ${ctest_test_args} PARALLEL_LEVEL ${N})
+endif()
+
 # include and build SFML from submodule
 include_directories(extlibs/sfml/include)
 add_subdirectory(extlibs/sfml)
