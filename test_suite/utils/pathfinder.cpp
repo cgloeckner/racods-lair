@@ -80,6 +80,50 @@ using Testfinder = utils::Pathfinder<FakeScene, FakeEntity>;
 
 BOOST_AUTO_TEST_SUITE(Pathfinder_test)
 
+BOOST_AUTO_TEST_CASE(Pathfinder_trivial_path) {
+	FakeScene scene;
+	Testfinder pathfinder{scene};
+
+	/*
+	##########
+	#........#
+	#.S..#...#
+	#.T..#...#
+	#....#...#
+	#....#...#
+	#....#...#
+	###..#...#
+	#.#......#
+	##########
+	*/
+	auto path = pathfinder(1, {2u, 2u}, {2u, 3u}, 20u);
+	std::vector<sf::Vector2u> predicted{{2u, 3u}, {2u, 2u}};
+	BOOST_CHECK(predicted == path);
+}
+
+BOOST_AUTO_TEST_CASE(Pathfinder_simple_path) {
+	FakeScene scene;
+	Testfinder pathfinder{scene};
+
+	/*
+	##########
+	#........#
+	#.S..#...#
+	#.x..#...#
+	#.x..#...#
+	#..x.#...#
+	#..T.#...#
+	###..#...#
+	#.#......#
+	##########
+	*/
+	auto path = pathfinder(1, {2u, 2u}, {3u, 6u}, 20u);
+	std::vector<sf::Vector2u> predicted{
+		{3u, 6u}, {3u, 5u}, {2u, 4u}, {2u, 3u}, {2u, 2u}};
+	
+	BOOST_CHECK(predicted == path);
+}
+
 BOOST_AUTO_TEST_CASE(Pathfinder_invalid_start_pos) {
 	FakeScene scene;
 	Testfinder pathfinder{scene};
@@ -113,28 +157,6 @@ BOOST_AUTO_TEST_CASE(Pathfinder_invalid_target_pos) {
 		{6u, 2u}, {5u, 1u}, {4u, 2u}, {3u, 2u}, {2u, 2u}};
 	
 	BOOST_CHECK(path == predicted);
-}
-
-BOOST_AUTO_TEST_CASE(Pathfinder_trivial_path) {
-	FakeScene scene;
-	Testfinder pathfinder{scene};
-
-	/*
-	##########
-	#........#
-	#.S..#...#
-	#.x..#...#
-	#.x..#...#
-	#..x.#...#
-	#..T.#...#
-	###..#...#
-	#.#......#
-	##########
-	*/
-	auto path = pathfinder(1, {2u, 2u}, {3u, 6u}, 20u);
-	std::vector<sf::Vector2u> predicted{
-		{3u, 6u}, {3u, 5u}, {2u, 4u}, {2u, 3u}, {2u, 2u}};
-	BOOST_CHECK(predicted == path);
 }
 
 BOOST_AUTO_TEST_CASE(Pathfinder_avoid_walls) {

@@ -6,11 +6,11 @@
       <Environment/>
       <Project Name="racods-lair" ConfigName="Debug"/>
     </WorkspaceConfiguration>
-    <WorkspaceConfiguration Name="Release" Selected="yes">
+    <WorkspaceConfiguration Name="Release" Selected="no">
       <Environment/>
       <Project Name="racods-lair" ConfigName="Release"/>
     </WorkspaceConfiguration>
-    <WorkspaceConfiguration Name="Unit Test" Selected="no">
+    <WorkspaceConfiguration Name="Unit Test" Selected="yes">
       <Environment/>
       <Project Name="racods-lair" ConfigName="Unit Test"/>
     </WorkspaceConfiguration>

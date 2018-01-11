@@ -13,6 +13,10 @@ Pathfinder<Scene, Entity>::Pathfinder(Scene const& scene)
 	, origin{}
 	, target{}
 	, max_length{} {
+	// pre-allocate openlist
+	auto size = scene.getSize();
+	auto n = size.x * size.y;
+	openlist.reserve(n);
 }
 
 template <typename Scene, typename Entity>
@@ -49,15 +53,17 @@ Path Pathfinder<Scene, Entity>::operator()(Entity entity_id,
 	while (!openlist.empty()) {
 		// extract min
 		std::pop_heap(openlist.begin(), openlist.end(), compare);
+		// note: copy node, because of pop_back()
 		auto node = openlist.back();
-		openlist.pop_back();
 		
 		if (node.pos == target) {
 			// reconstruct path to target
-			closest = &node;
+			// note: point to end of openlist, because node is a local copy
+			closest = &openlist.back();
 			break;
 		}
 		
+		openlist.pop_back();
 		auto it = closedlist.insert(node);
 		if (!it.second) {
 			// position already on closed list - skip further stuff
