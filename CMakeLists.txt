@@ -2,45 +2,57 @@ cmake_minimum_required (VERSION 3.0)
 project (racod)
 
 set(CMAKE_CXX_STANDARD 14)
-set(FULL_DEPS sfml-system sfml-graphics sfml-window sfml-audio sfml-network thor
+set(FULL_DEPS sfml-system sfml-graphics sfml-window sfml-audio sfml-network thor imgui
     boost_filesystem ${LUA_LIBRARY})
 
-if (RELEASE_BUILD)
-else()
-    add_definitions(-DUNIT_TEST)
-endif()
+# required for proper sol2
+include_directories(${LUA_INCLUDE_DIR})
 
-include(ProcessorCount)
-ProcessorCount(N)
-if(NOT N EQUAL 0)
-  set(CTEST_BUILD_FLAGS -j${N})
-  set(ctest_test_args ${ctest_test_args} PARALLEL_LEVEL ${N})
-endif()
+# ----------------------------------------------------------------------------------------
+# extlibs --------------------------------------------------------------------------------
 
-# include and build SFML from submodule
 include_directories(extlibs/sfml/include)
-add_subdirectory(extlibs/sfml)
-
-# include and build Thor from submodule
 include_directories(extlibs/thor/include)
 include_directories(extlibs/thor/extlibs/aurora/include)
-add_subdirectory(extlibs/thor)
-
-# include Sol2 from submodule (using the specified lua version)
-include_directories(${LUA_INCLUDE_DIR})
 include_directories(extlibs/sol2)
+include_directories(extlibs/imgui) # custom repo due to imconfig.h
 
-# include ImGui from submodule (custom repo, due to imconfig.h)
-include_directories(extlibs/imgui)
+# build extlibs
+add_subdirectory(extlibs)
+
+# ----------------------------------------------------------------------------------------
+# Racod's Lair ---------------------------------------------------------------------------
 
 include_directories(include)
 
-if (RELEASE_BUILD)
-else()
-    # build Unit Tests
+if (CMAKE_BUILD_TYPE STREQUAL "Release")
+    message(STATUS "Racod's Lair -- Release Build -----------------------------------------")
+    # optimize build
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
+    
+elseif(CMAKE_BUILD_TYPE STREQUAL "Test")
+    message(STATUS "Racod's Lair -- Unit Test Build ---------------------------------------")
+    set(UNIT_TEST 1)
+    # enable unit testing
+    add_definitions(-DUNIT_TEST)
+    
+    # enable debug options
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0")
+    
+    # enable sanitizers
+    #set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS}  -fsanitize=undefined,address,leak")
+    #set(CMAKE_LINK_FLAGS "${CMAKE_LINK_FLAGS} -fsanitize=undefined,address,leak")
+    
+    # build test suites
     add_subdirectory(test_suite)
+    
+else()
+    message(STATUS "Racod's Lair -- Debug Build -------------------------------------------")
+    # enable debug options
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0")
+    
 endif()
+message(STATUS "-----------------------------------------------------------------------")
 
 # build Racod's Lair
 add_subdirectory(src)
-

@@ -1,4 +1,10 @@
 #!/bin/bash
+# -------------------------------------------------------------
+# --- Count Lines of Code of ----------------------------------
+#   (1) Header and Inline Files
+#   (2) Source Files
+#   (3) Unit Test Files
+# -------------------------------------------------------------
 
 cd include
 LOC=$((`( find ./ -name '*.hpp' -print0 | xargs -0 cat ) | wc -l` + `( find ./ -name '*.inl' -print0 | xargs -0 cat ) | wc -l`))

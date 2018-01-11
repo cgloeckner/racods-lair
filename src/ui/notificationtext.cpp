@@ -67,7 +67,8 @@ void NotificationTexts::add(std::string const & string, sf::Color const & color,
 	node.caption.setFont(*font);
 	node.caption.setString(string);
 	node.caption.setCharacterSize(char_size);
-	node.caption.setColor(color);
+	node.caption.setFillColor(color);
+	node.caption.setOutlineColor(color);
 	node.max_age = max_age;
 	node.decay = 1.f / max_age.asMilliseconds();
 	node.alpha = color.a / 255.f;

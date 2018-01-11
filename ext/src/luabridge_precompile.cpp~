@@ -1,8 +1,0 @@
-// used to ignore all warnings caused by LuaBridge
-#include <lua5.2/lua.hpp>
-#include <LuaBridge/LuaBridge.h>
-
-namespace luabridge {
-#include <LuaBridge/detail/Userdata.h>
-} // ::luabridge
-

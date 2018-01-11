@@ -61,8 +61,10 @@ int main(int argc, char** argv) {
 		app.run();
 	}
 	*/
-	
+
+#if !defined(UNIT_TEST)
 	assert_impl::fname = engine::get_preference_dir() + "crash.log";
+#endif
 	
 	setlocale(LC_NUMERIC, "");
 	

@@ -1,5 +1,6 @@
-build/
-release/
+build-debug/
+build-test/
+build-release/
 imgui.ini
 *~
 .codelite/

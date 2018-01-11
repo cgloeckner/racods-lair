@@ -2,13 +2,17 @@
 <CodeLite_Workspace Name="racods-lair" Database="" Version="10.0.0">
   <Project Name="racods-lair" Path="racods-lair.project" Active="Yes"/>
   <BuildMatrix>
-    <WorkspaceConfiguration Name="Debug" Selected="yes">
+    <WorkspaceConfiguration Name="Debug" Selected="no">
       <Environment/>
       <Project Name="racods-lair" ConfigName="Debug"/>
     </WorkspaceConfiguration>
-    <WorkspaceConfiguration Name="Release" Selected="no">
+    <WorkspaceConfiguration Name="Release" Selected="yes">
       <Environment/>
       <Project Name="racods-lair" ConfigName="Release"/>
+    </WorkspaceConfiguration>
+    <WorkspaceConfiguration Name="Unit Test" Selected="no">
+      <Environment/>
+      <Project Name="racods-lair" ConfigName="Unit Test"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>

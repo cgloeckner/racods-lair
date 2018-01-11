@@ -2,7 +2,7 @@
 <CodeLite_Project Name="racods-lair" Version="10.0.0" InternalType="">
   <Plugins>
     <Plugin Name="qmake">
-      <![CDATA[00020001N0005Debug0000000000000001N0007Release000000000000]]>
+      <![CDATA[00030001N0005Debug0000000000000001N0007Release0000000000000001N0009Unit Test000000000000]]>
     </Plugin>
     <Plugin Name="CMakePlugin">
       <![CDATA[[{
@@ -543,7 +543,115 @@
     </VirtualDirectory>
   </VirtualDirectory>
   <VirtualDirectory Name="extlibs">
+    <File Name="extlibs/CMakeLists.txt"/>
     <VirtualDirectory Name="imgui">
+      <File Name="extlibs/imgui/README_imgui.md"/>
+      <File Name="extlibs/imgui/README_imgui-sfml.md"/>
+      <File Name="extlibs/imgui/imgui-SFML.h"/>
+      <File Name="extlibs/imgui/imgui-SFML.cpp"/>
+      <File Name="extlibs/imgui/imconfig-SFML.h"/>
+      <VirtualDirectory Name="extra_fonts">
+        <File Name="extlibs/imgui/extra_fonts/README.txt"/>
+        <File Name="extlibs/imgui/extra_fonts/binary_to_compressed_c.cpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="examples">
+        <File Name="extlibs/imgui/examples/README.txt"/>
+        <File Name="extlibs/imgui/examples/main.cpp"/>
+        <File Name="extlibs/imgui/examples/imconfig.h"/>
+        <File Name="extlibs/imgui/examples/CMakeLists.txt"/>
+        <VirtualDirectory Name="vulkan_example">
+          <File Name="extlibs/imgui/examples/vulkan_example/main.cpp"/>
+          <File Name="extlibs/imgui/examples/vulkan_example/imgui_impl_glfw_vulkan.h"/>
+          <File Name="extlibs/imgui/examples/vulkan_example/imgui_impl_glfw_vulkan.cpp"/>
+          <File Name="extlibs/imgui/examples/vulkan_example/CMakeLists.txt"/>
+        </VirtualDirectory>
+        <VirtualDirectory Name="sdl_opengl3_example">
+          <File Name="extlibs/imgui/examples/sdl_opengl3_example/README.md"/>
+          <File Name="extlibs/imgui/examples/sdl_opengl3_example/main.cpp"/>
+          <File Name="extlibs/imgui/examples/sdl_opengl3_example/imgui_impl_sdl_gl3.h"/>
+          <File Name="extlibs/imgui/examples/sdl_opengl3_example/imgui_impl_sdl_gl3.cpp"/>
+        </VirtualDirectory>
+        <VirtualDirectory Name="sdl_opengl2_example">
+          <File Name="extlibs/imgui/examples/sdl_opengl2_example/README.md"/>
+          <File Name="extlibs/imgui/examples/sdl_opengl2_example/main.cpp"/>
+          <File Name="extlibs/imgui/examples/sdl_opengl2_example/imgui_impl_sdl.h"/>
+          <File Name="extlibs/imgui/examples/sdl_opengl2_example/imgui_impl_sdl.cpp"/>
+        </VirtualDirectory>
+        <VirtualDirectory Name="opengl3_example">
+          <File Name="extlibs/imgui/examples/opengl3_example/main.cpp"/>
+          <File Name="extlibs/imgui/examples/opengl3_example/imgui_impl_glfw_gl3.h"/>
+          <File Name="extlibs/imgui/examples/opengl3_example/imgui_impl_glfw_gl3.cpp"/>
+        </VirtualDirectory>
+        <VirtualDirectory Name="opengl2_example">
+          <File Name="extlibs/imgui/examples/opengl2_example/main.cpp"/>
+          <File Name="extlibs/imgui/examples/opengl2_example/imgui_impl_glfw.h"/>
+          <File Name="extlibs/imgui/examples/opengl2_example/imgui_impl_glfw.cpp"/>
+        </VirtualDirectory>
+        <VirtualDirectory Name="null_example">
+          <File Name="extlibs/imgui/examples/null_example/main.cpp"/>
+        </VirtualDirectory>
+        <VirtualDirectory Name="marmalade_example">
+          <File Name="extlibs/imgui/examples/marmalade_example/main.cpp"/>
+          <File Name="extlibs/imgui/examples/marmalade_example/imgui_impl_marmalade.h"/>
+          <File Name="extlibs/imgui/examples/marmalade_example/imgui_impl_marmalade.cpp"/>
+        </VirtualDirectory>
+        <VirtualDirectory Name="libs">
+          <VirtualDirectory Name="usynergy">
+            <File Name="extlibs/imgui/examples/libs/usynergy/uSynergy.h"/>
+            <File Name="extlibs/imgui/examples/libs/usynergy/uSynergy.c"/>
+          </VirtualDirectory>
+          <VirtualDirectory Name="glfw">
+            <File Name="extlibs/imgui/examples/libs/glfw/COPYING.txt"/>
+            <VirtualDirectory Name="include">
+              <VirtualDirectory Name="GLFW">
+                <File Name="extlibs/imgui/examples/libs/glfw/include/GLFW/glfw3native.h"/>
+                <File Name="extlibs/imgui/examples/libs/glfw/include/GLFW/glfw3.h"/>
+              </VirtualDirectory>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="gl3w">
+            <VirtualDirectory Name="GL">
+              <File Name="extlibs/imgui/examples/libs/gl3w/GL/glcorearb.h"/>
+              <File Name="extlibs/imgui/examples/libs/gl3w/GL/gl3w.h"/>
+              <File Name="extlibs/imgui/examples/libs/gl3w/GL/gl3w.c"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="directx9_example">
+          <File Name="extlibs/imgui/examples/directx9_example/main.cpp"/>
+          <File Name="extlibs/imgui/examples/directx9_example/imgui_impl_dx9.h"/>
+          <File Name="extlibs/imgui/examples/directx9_example/imgui_impl_dx9.cpp"/>
+        </VirtualDirectory>
+        <VirtualDirectory Name="directx11_example">
+          <File Name="extlibs/imgui/examples/directx11_example/main.cpp"/>
+          <File Name="extlibs/imgui/examples/directx11_example/imgui_impl_dx11.h"/>
+          <File Name="extlibs/imgui/examples/directx11_example/imgui_impl_dx11.cpp"/>
+        </VirtualDirectory>
+        <VirtualDirectory Name="directx10_example">
+          <File Name="extlibs/imgui/examples/directx10_example/main.cpp"/>
+          <File Name="extlibs/imgui/examples/directx10_example/imgui_impl_dx10.h"/>
+          <File Name="extlibs/imgui/examples/directx10_example/imgui_impl_dx10.cpp"/>
+        </VirtualDirectory>
+        <VirtualDirectory Name="apple_example">
+          <File Name="extlibs/imgui/examples/apple_example/README.md"/>
+          <VirtualDirectory Name="imguiex-osx">
+            <File Name="extlibs/imgui/examples/apple_example/imguiex-osx/AppDelegate.h"/>
+          </VirtualDirectory>
+          <VirtualDirectory Name="imguiex-ios">
+            <File Name="extlibs/imgui/examples/apple_example/imguiex-ios/imgui_impl_ios.h"/>
+            <File Name="extlibs/imgui/examples/apple_example/imguiex-ios/GameViewController.h"/>
+            <File Name="extlibs/imgui/examples/apple_example/imguiex-ios/debug_hud.h"/>
+            <File Name="extlibs/imgui/examples/apple_example/imguiex-ios/debug_hud.cpp"/>
+            <File Name="extlibs/imgui/examples/apple_example/imguiex-ios/AppDelegate.h"/>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="allegro5_example">
+          <File Name="extlibs/imgui/examples/allegro5_example/README.md"/>
+          <File Name="extlibs/imgui/examples/allegro5_example/main.cpp"/>
+          <File Name="extlibs/imgui/examples/allegro5_example/imgui_impl_a5.h"/>
+          <File Name="extlibs/imgui/examples/allegro5_example/imgui_impl_a5.cpp"/>
+        </VirtualDirectory>
+      </VirtualDirectory>
       <File Name="extlibs/imgui/TODO.txt"/>
       <File Name="extlibs/imgui/stb_truetype.h"/>
       <File Name="extlibs/imgui/stb_textedit.h"/>
@@ -557,6 +665,483 @@
       <File Name="extlibs/imgui/imconfig.h"/>
     </VirtualDirectory>
     <VirtualDirectory Name="sfml">
+      <File Name="extlibs/sfml/readme.md"/>
+      <File Name="extlibs/sfml/license.md"/>
+      <File Name="extlibs/sfml/CONTRIBUTING.md"/>
+      <File Name="extlibs/sfml/changelog.md"/>
+      <VirtualDirectory Name="tools">
+        <VirtualDirectory Name="xcode">
+          <VirtualDirectory Name="templates">
+            <File Name="extlibs/sfml/tools/xcode/templates/readme.txt"/>
+            <VirtualDirectory Name="SFML">
+              <VirtualDirectory Name="SFML CLT.xctemplate">
+                <File Name="extlibs/sfml/tools/xcode/templates/SFML/SFML CLT.xctemplate/main.cpp"/>
+              </VirtualDirectory>
+              <VirtualDirectory Name="SFML App.xctemplate">
+                <File Name="extlibs/sfml/tools/xcode/templates/SFML/SFML App.xctemplate/ResourcePath.hpp"/>
+                <File Name="extlibs/sfml/tools/xcode/templates/SFML/SFML App.xctemplate/main.cpp"/>
+              </VirtualDirectory>
+            </VirtualDirectory>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="android">
+          <File Name="extlibs/sfml/tools/android/readme.txt"/>
+        </VirtualDirectory>
+      </VirtualDirectory>
+      <VirtualDirectory Name="src">
+        <VirtualDirectory Name="SFML">
+          <File Name="extlibs/sfml/src/SFML/CMakeLists.txt"/>
+          <VirtualDirectory Name="Window">
+            <File Name="extlibs/sfml/src/SFML/Window/WindowImpl.hpp"/>
+            <File Name="extlibs/sfml/src/SFML/Window/WindowImpl.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Window/Window.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Window/VideoModeImpl.hpp"/>
+            <File Name="extlibs/sfml/src/SFML/Window/VideoMode.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Window/Touch.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Window/SensorManager.hpp"/>
+            <File Name="extlibs/sfml/src/SFML/Window/SensorManager.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Window/SensorImpl.hpp"/>
+            <File Name="extlibs/sfml/src/SFML/Window/Sensor.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Window/Mouse.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Window/Keyboard.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Window/JoystickManager.hpp"/>
+            <File Name="extlibs/sfml/src/SFML/Window/JoystickManager.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Window/JoystickImpl.hpp"/>
+            <File Name="extlibs/sfml/src/SFML/Window/Joystick.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Window/InputImpl.hpp"/>
+            <File Name="extlibs/sfml/src/SFML/Window/GlResource.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Window/GlContext.hpp"/>
+            <File Name="extlibs/sfml/src/SFML/Window/GlContext.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Window/EglContext.hpp"/>
+            <File Name="extlibs/sfml/src/SFML/Window/EglContext.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Window/EGLCheck.hpp"/>
+            <File Name="extlibs/sfml/src/SFML/Window/EGLCheck.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Window/CursorImpl.hpp"/>
+            <File Name="extlibs/sfml/src/SFML/Window/Cursor.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Window/Context.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Window/CMakeLists.txt"/>
+            <File Name="extlibs/sfml/src/SFML/Window/ClipboardImpl.hpp"/>
+            <File Name="extlibs/sfml/src/SFML/Window/Clipboard.cpp"/>
+            <VirtualDirectory Name="Win32">
+              <File Name="extlibs/sfml/src/SFML/Window/Win32/WindowImplWin32.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Win32/WindowImplWin32.cpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Win32/WglExtensions.txt"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Win32/WglExtensions.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Win32/WglExtensions.cpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Win32/WglContext.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Win32/WglContext.cpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Win32/VideoModeImpl.cpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Win32/SensorImpl.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Win32/SensorImpl.cpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Win32/JoystickImpl.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Win32/JoystickImpl.cpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Win32/InputImpl.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Win32/InputImpl.cpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Win32/CursorImpl.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Win32/CursorImpl.cpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Win32/ClipboardImpl.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Win32/ClipboardImpl.cpp"/>
+            </VirtualDirectory>
+            <VirtualDirectory Name="Unix">
+              <File Name="extlibs/sfml/src/SFML/Window/Unix/WindowImplX11.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Unix/WindowImplX11.cpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Unix/VideoModeImpl.cpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Unix/SensorImpl.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Unix/SensorImpl.cpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Unix/JoystickImpl.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Unix/JoystickImpl.cpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Unix/InputImpl.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Unix/InputImpl.cpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Unix/GlxExtensions.txt"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Unix/GlxExtensions.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Unix/GlxExtensions.cpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Unix/GlxContext.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Unix/GlxContext.cpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Unix/Display.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Unix/Display.cpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Unix/CursorImpl.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Unix/CursorImpl.cpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Unix/ClipboardImpl.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Unix/ClipboardImpl.cpp"/>
+            </VirtualDirectory>
+            <VirtualDirectory Name="OSX">
+              <File Name="extlibs/sfml/src/SFML/Window/OSX/WindowImplDelegateProtocol.h"/>
+              <File Name="extlibs/sfml/src/SFML/Window/OSX/WindowImplCocoa.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/OSX/VideoModeImpl.cpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/OSX/SFWindowController.h"/>
+              <File Name="extlibs/sfml/src/SFML/Window/OSX/SFWindow.h"/>
+              <File Name="extlibs/sfml/src/SFML/Window/OSX/SFViewController.h"/>
+              <File Name="extlibs/sfml/src/SFML/Window/OSX/SFSilentResponder.h"/>
+              <File Name="extlibs/sfml/src/SFML/Window/OSX/SFOpenGLView.h"/>
+              <File Name="extlibs/sfml/src/SFML/Window/OSX/SFOpenGLView+mouse_priv.h"/>
+              <File Name="extlibs/sfml/src/SFML/Window/OSX/SFOpenGLView+keyboard_priv.h"/>
+              <File Name="extlibs/sfml/src/SFML/Window/OSX/SFKeyboardModifiersHelper.h"/>
+              <File Name="extlibs/sfml/src/SFML/Window/OSX/SFContext.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/OSX/SFApplicationDelegate.h"/>
+              <File Name="extlibs/sfml/src/SFML/Window/OSX/SensorImpl.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/OSX/SensorImpl.cpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/OSX/Scaling.h"/>
+              <File Name="extlibs/sfml/src/SFML/Window/OSX/NSImage+raw.h"/>
+              <File Name="extlibs/sfml/src/SFML/Window/OSX/JoystickImpl.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/OSX/JoystickImpl.cpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/OSX/InputImpl.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/OSX/HIDJoystickManager.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/OSX/HIDJoystickManager.cpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/OSX/HIDInputManager.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/OSX/CursorImpl.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/OSX/cpp_objc_conversion.h"/>
+              <File Name="extlibs/sfml/src/SFML/Window/OSX/ClipboardImpl.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/OSX/cg_sf_conversion.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/OSX/AutoreleasePoolWrapper.h"/>
+              <File Name="extlibs/sfml/src/SFML/Window/OSX/SFApplication.h"/>
+            </VirtualDirectory>
+            <VirtualDirectory Name="iOS">
+              <File Name="extlibs/sfml/src/SFML/Window/iOS/WindowImplUIKit.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/iOS/SFViewController.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/iOS/SFView.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/iOS/SFMain.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/iOS/SFAppDelegate.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/iOS/SensorImpl.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/iOS/ObjCType.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/iOS/JoystickImpl.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/iOS/InputImpl.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/iOS/EaglContext.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/iOS/CursorImpl.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/iOS/CursorImpl.cpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/iOS/ClipboardImpl.hpp"/>
+            </VirtualDirectory>
+            <VirtualDirectory Name="FreeBSD">
+              <File Name="extlibs/sfml/src/SFML/Window/FreeBSD/JoystickImpl.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/FreeBSD/JoystickImpl.cpp"/>
+            </VirtualDirectory>
+            <VirtualDirectory Name="Android">
+              <File Name="extlibs/sfml/src/SFML/Window/Android/WindowImplAndroid.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Android/WindowImplAndroid.cpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Android/VideoModeImpl.cpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Android/SensorImpl.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Android/SensorImpl.cpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Android/JoystickImpl.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Android/JoystickImpl.cpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Android/InputImpl.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Android/InputImpl.cpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Android/CursorImpl.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Android/CursorImpl.cpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Android/ClipboardImpl.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Window/Android/ClipboardImpl.cpp"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="System">
+            <File Name="extlibs/sfml/src/SFML/System/Time.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/System/ThreadLocal.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/System/Thread.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/System/String.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/System/Sleep.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/System/Mutex.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/System/MemoryInputStream.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/System/Lock.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/System/FileInputStream.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/System/Err.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/System/CMakeLists.txt"/>
+            <File Name="extlibs/sfml/src/SFML/System/Clock.cpp"/>
+            <VirtualDirectory Name="Win32">
+              <File Name="extlibs/sfml/src/SFML/System/Win32/ThreadLocalImpl.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/System/Win32/ThreadLocalImpl.cpp"/>
+              <File Name="extlibs/sfml/src/SFML/System/Win32/ThreadImpl.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/System/Win32/ThreadImpl.cpp"/>
+              <File Name="extlibs/sfml/src/SFML/System/Win32/SleepImpl.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/System/Win32/SleepImpl.cpp"/>
+              <File Name="extlibs/sfml/src/SFML/System/Win32/MutexImpl.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/System/Win32/MutexImpl.cpp"/>
+              <File Name="extlibs/sfml/src/SFML/System/Win32/ClockImpl.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/System/Win32/ClockImpl.cpp"/>
+            </VirtualDirectory>
+            <VirtualDirectory Name="Unix">
+              <File Name="extlibs/sfml/src/SFML/System/Unix/ThreadLocalImpl.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/System/Unix/ThreadLocalImpl.cpp"/>
+              <File Name="extlibs/sfml/src/SFML/System/Unix/ThreadImpl.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/System/Unix/ThreadImpl.cpp"/>
+              <File Name="extlibs/sfml/src/SFML/System/Unix/SleepImpl.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/System/Unix/SleepImpl.cpp"/>
+              <File Name="extlibs/sfml/src/SFML/System/Unix/MutexImpl.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/System/Unix/MutexImpl.cpp"/>
+              <File Name="extlibs/sfml/src/SFML/System/Unix/ClockImpl.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/System/Unix/ClockImpl.cpp"/>
+            </VirtualDirectory>
+            <VirtualDirectory Name="Android">
+              <File Name="extlibs/sfml/src/SFML/System/Android/ResourceStream.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/System/Android/ResourceStream.cpp"/>
+              <File Name="extlibs/sfml/src/SFML/System/Android/NativeActivity.cpp"/>
+              <File Name="extlibs/sfml/src/SFML/System/Android/Activity.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/System/Android/Activity.cpp"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="Network">
+            <File Name="extlibs/sfml/src/SFML/Network/UdpSocket.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Network/TcpSocket.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Network/TcpListener.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Network/SocketSelector.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Network/SocketImpl.hpp"/>
+            <File Name="extlibs/sfml/src/SFML/Network/Socket.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Network/Packet.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Network/IpAddress.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Network/Http.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Network/Ftp.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Network/CMakeLists.txt"/>
+            <VirtualDirectory Name="Win32">
+              <File Name="extlibs/sfml/src/SFML/Network/Win32/SocketImpl.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Network/Win32/SocketImpl.cpp"/>
+            </VirtualDirectory>
+            <VirtualDirectory Name="Unix">
+              <File Name="extlibs/sfml/src/SFML/Network/Unix/SocketImpl.hpp"/>
+              <File Name="extlibs/sfml/src/SFML/Network/Unix/SocketImpl.cpp"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="Main">
+            <File Name="extlibs/sfml/src/SFML/Main/SFMLActivity.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Main/MainWin32.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Main/MainAndroid.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Main/CMakeLists.txt"/>
+          </VirtualDirectory>
+          <VirtualDirectory Name="Graphics">
+            <File Name="extlibs/sfml/src/SFML/Graphics/View.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Graphics/VertexArray.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Graphics/Vertex.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Graphics/Transformable.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Graphics/Transform.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Graphics/TextureSaver.hpp"/>
+            <File Name="extlibs/sfml/src/SFML/Graphics/TextureSaver.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Graphics/Texture.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Graphics/Text.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Graphics/Sprite.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Graphics/Shape.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Graphics/Shader.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Graphics/RenderWindow.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Graphics/RenderTextureImplFBO.hpp"/>
+            <File Name="extlibs/sfml/src/SFML/Graphics/RenderTextureImplFBO.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Graphics/RenderTextureImplDefault.hpp"/>
+            <File Name="extlibs/sfml/src/SFML/Graphics/RenderTextureImplDefault.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Graphics/RenderTextureImpl.hpp"/>
+            <File Name="extlibs/sfml/src/SFML/Graphics/RenderTextureImpl.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Graphics/RenderTexture.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Graphics/RenderTarget.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Graphics/RenderStates.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Graphics/ImageLoader.hpp"/>
+            <File Name="extlibs/sfml/src/SFML/Graphics/ImageLoader.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Graphics/Image.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Graphics/Glsl.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Graphics/GLLoader.hpp"/>
+            <File Name="extlibs/sfml/src/SFML/Graphics/GLLoader.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Graphics/GLExtensions.txt"/>
+            <File Name="extlibs/sfml/src/SFML/Graphics/GLExtensions.hpp"/>
+            <File Name="extlibs/sfml/src/SFML/Graphics/GLExtensions.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Graphics/GLCheck.hpp"/>
+            <File Name="extlibs/sfml/src/SFML/Graphics/GLCheck.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Graphics/Font.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Graphics/ConvexShape.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Graphics/Color.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Graphics/CMakeLists.txt"/>
+            <File Name="extlibs/sfml/src/SFML/Graphics/CircleShape.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Graphics/BlendMode.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Graphics/RectangleShape.cpp"/>
+          </VirtualDirectory>
+          <VirtualDirectory Name="Audio">
+            <File Name="extlibs/sfml/src/SFML/Audio/SoundStream.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Audio/SoundSource.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Audio/SoundRecorder.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Audio/SoundFileWriterWav.hpp"/>
+            <File Name="extlibs/sfml/src/SFML/Audio/SoundFileWriterWav.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Audio/SoundFileWriterOgg.hpp"/>
+            <File Name="extlibs/sfml/src/SFML/Audio/SoundFileWriterOgg.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Audio/SoundFileWriterFlac.hpp"/>
+            <File Name="extlibs/sfml/src/SFML/Audio/SoundFileWriterFlac.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Audio/SoundFileReaderWav.hpp"/>
+            <File Name="extlibs/sfml/src/SFML/Audio/SoundFileReaderWav.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Audio/SoundFileReaderOgg.hpp"/>
+            <File Name="extlibs/sfml/src/SFML/Audio/SoundFileReaderOgg.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Audio/SoundFileReaderFlac.hpp"/>
+            <File Name="extlibs/sfml/src/SFML/Audio/SoundFileReaderFlac.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Audio/SoundFileFactory.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Audio/SoundBufferRecorder.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Audio/SoundBuffer.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Audio/Sound.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Audio/OutputSoundFile.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Audio/Music.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Audio/Listener.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Audio/InputSoundFile.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Audio/CMakeLists.txt"/>
+            <File Name="extlibs/sfml/src/SFML/Audio/AudioDevice.hpp"/>
+            <File Name="extlibs/sfml/src/SFML/Audio/AudioDevice.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Audio/AlResource.cpp"/>
+            <File Name="extlibs/sfml/src/SFML/Audio/ALCheck.hpp"/>
+            <File Name="extlibs/sfml/src/SFML/Audio/ALCheck.cpp"/>
+          </VirtualDirectory>
+        </VirtualDirectory>
+      </VirtualDirectory>
+      <VirtualDirectory Name="extlibs">
+        <VirtualDirectory Name="headers">
+          <VirtualDirectory Name="vorbis">
+            <File Name="extlibs/sfml/extlibs/headers/vorbis/vorbisfile.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/vorbis/vorbisenc.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/vorbis/codec.h"/>
+          </VirtualDirectory>
+          <VirtualDirectory Name="stb_image">
+            <File Name="extlibs/sfml/extlibs/headers/stb_image/stb_image_write.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/stb_image/stb_image.h"/>
+          </VirtualDirectory>
+          <VirtualDirectory Name="ogg">
+            <File Name="extlibs/sfml/extlibs/headers/ogg/os_types.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/ogg/ogg.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/ogg/config_types.h"/>
+          </VirtualDirectory>
+          <VirtualDirectory Name="freetype2">
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/ttunpat.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/tttags.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/tttables.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/ttnameid.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/t1tables.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/ftxf86.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/ftwinfnt.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/fttypes.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/ftttdrv.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/fttrigon.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/ftsystem.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/ftsynth.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/ftstroke.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/ftsnames.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/ftsizes.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/ftrender.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/ftpfr.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/ftoutln.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/ftotval.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/ftmoderr.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/ftmodapi.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/ftmm.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/ftmac.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/ftlzw.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/ftlist.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/ftlcdfil.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/ftincrem.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/ftgzip.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/ftgxval.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/ftglyph.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/ftgasp.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/fterrors.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/fterrdef.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/ftcid.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/ftchapters.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/ftcffdrv.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/ftcache.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/ftbzip2.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/ftbitmap.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/ftbdf.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/ftbbox.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/ftautoh.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/ftadvanc.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/ft2build.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/freetype.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/freetype2/ftimage.h"/>
+            <VirtualDirectory Name="config">
+              <File Name="extlibs/sfml/extlibs/headers/freetype2/config/ftstdlib.h"/>
+              <File Name="extlibs/sfml/extlibs/headers/freetype2/config/ftoption.h"/>
+              <File Name="extlibs/sfml/extlibs/headers/freetype2/config/ftmodule.h"/>
+              <File Name="extlibs/sfml/extlibs/headers/freetype2/config/ftheader.h"/>
+              <File Name="extlibs/sfml/extlibs/headers/freetype2/config/ftconfig.h"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="FLAC">
+            <File Name="extlibs/sfml/extlibs/headers/FLAC/stream_encoder.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/FLAC/stream_decoder.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/FLAC/ordinals.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/FLAC/metadata.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/FLAC/format.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/FLAC/export.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/FLAC/callback.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/FLAC/assert.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/FLAC/all.h"/>
+          </VirtualDirectory>
+          <VirtualDirectory Name="AL">
+            <File Name="extlibs/sfml/extlibs/headers/AL/efx.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/AL/efx-presets.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/AL/efx-creative.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/AL/alext.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/AL/alc.h"/>
+            <File Name="extlibs/sfml/extlibs/headers/AL/al.h"/>
+          </VirtualDirectory>
+        </VirtualDirectory>
+      </VirtualDirectory>
+      <VirtualDirectory Name="examples">
+        <File Name="extlibs/sfml/examples/CMakeLists.txt"/>
+        <VirtualDirectory Name="X11">
+          <File Name="extlibs/sfml/examples/X11/X11.cpp"/>
+          <File Name="extlibs/sfml/examples/X11/CMakeLists.txt"/>
+        </VirtualDirectory>
+        <VirtualDirectory Name="window">
+          <File Name="extlibs/sfml/examples/window/Window.cpp"/>
+          <File Name="extlibs/sfml/examples/window/CMakeLists.txt"/>
+        </VirtualDirectory>
+        <VirtualDirectory Name="win32">
+          <File Name="extlibs/sfml/examples/win32/Win32.cpp"/>
+          <File Name="extlibs/sfml/examples/win32/CMakeLists.txt"/>
+        </VirtualDirectory>
+        <VirtualDirectory Name="voip">
+          <File Name="extlibs/sfml/examples/voip/VoIP.cpp"/>
+          <File Name="extlibs/sfml/examples/voip/Server.cpp"/>
+          <File Name="extlibs/sfml/examples/voip/CMakeLists.txt"/>
+          <File Name="extlibs/sfml/examples/voip/Client.cpp"/>
+        </VirtualDirectory>
+        <VirtualDirectory Name="sound_capture">
+          <File Name="extlibs/sfml/examples/sound_capture/SoundCapture.cpp"/>
+          <File Name="extlibs/sfml/examples/sound_capture/CMakeLists.txt"/>
+        </VirtualDirectory>
+        <VirtualDirectory Name="sound">
+          <File Name="extlibs/sfml/examples/sound/Sound.cpp"/>
+          <File Name="extlibs/sfml/examples/sound/CMakeLists.txt"/>
+        </VirtualDirectory>
+        <VirtualDirectory Name="sockets">
+          <File Name="extlibs/sfml/examples/sockets/UDP.cpp"/>
+          <File Name="extlibs/sfml/examples/sockets/TCP.cpp"/>
+          <File Name="extlibs/sfml/examples/sockets/Sockets.cpp"/>
+          <File Name="extlibs/sfml/examples/sockets/CMakeLists.txt"/>
+        </VirtualDirectory>
+        <VirtualDirectory Name="shader">
+          <File Name="extlibs/sfml/examples/shader/Shader.cpp"/>
+          <File Name="extlibs/sfml/examples/shader/Effect.hpp"/>
+          <File Name="extlibs/sfml/examples/shader/CMakeLists.txt"/>
+        </VirtualDirectory>
+        <VirtualDirectory Name="pong">
+          <File Name="extlibs/sfml/examples/pong/Pong.cpp"/>
+          <File Name="extlibs/sfml/examples/pong/CMakeLists.txt"/>
+        </VirtualDirectory>
+        <VirtualDirectory Name="opengl">
+          <File Name="extlibs/sfml/examples/opengl/OpenGL.cpp"/>
+          <File Name="extlibs/sfml/examples/opengl/CMakeLists.txt"/>
+        </VirtualDirectory>
+        <VirtualDirectory Name="ftp">
+          <File Name="extlibs/sfml/examples/ftp/Ftp.cpp"/>
+          <File Name="extlibs/sfml/examples/ftp/CMakeLists.txt"/>
+        </VirtualDirectory>
+        <VirtualDirectory Name="cocoa">
+          <File Name="extlibs/sfml/examples/cocoa/readme.txt"/>
+          <File Name="extlibs/sfml/examples/cocoa/NSString+stdstring.h"/>
+          <File Name="extlibs/sfml/examples/cocoa/CocoaAppDelegate.h"/>
+          <File Name="extlibs/sfml/examples/cocoa/CMakeLists.txt"/>
+        </VirtualDirectory>
+        <VirtualDirectory Name="android">
+          <File Name="extlibs/sfml/examples/android/AndroidManifest.xml"/>
+          <VirtualDirectory Name="res">
+            <VirtualDirectory Name="values">
+              <File Name="extlibs/sfml/examples/android/res/values/strings.xml"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="jni">
+            <File Name="extlibs/sfml/examples/android/jni/main.cpp"/>
+          </VirtualDirectory>
+        </VirtualDirectory>
+      </VirtualDirectory>
+      <VirtualDirectory Name="doc">
+        <File Name="extlibs/sfml/doc/mainpage.hpp"/>
+        <File Name="extlibs/sfml/doc/CMakeLists.txt"/>
+      </VirtualDirectory>
       <VirtualDirectory Name="include">
         <VirtualDirectory Name="SFML">
           <File Name="extlibs/sfml/include/SFML/Window.hpp"/>
@@ -679,6 +1264,128 @@
       <File Name="extlibs/sfml/CMakeLists.txt"/>
     </VirtualDirectory>
     <VirtualDirectory Name="sol2">
+      <File Name="extlibs/sol2/README.md"/>
+      <File Name="extlibs/sol2/CONTRIBUTING.md"/>
+      <VirtualDirectory Name="tests">
+        <File Name="extlibs/sol2/tests/test_variadics.cpp"/>
+        <File Name="extlibs/sol2/tests/test_utility.cpp"/>
+        <File Name="extlibs/sol2/tests/test_usertypes.cpp"/>
+        <File Name="extlibs/sol2/tests/test_tables.cpp"/>
+        <File Name="extlibs/sol2/tests/test_strings.cpp"/>
+        <File Name="extlibs/sol2/tests/test_storage.cpp"/>
+        <File Name="extlibs/sol2/tests/test_state.cpp"/>
+        <File Name="extlibs/sol2/tests/test_stack_guard.hpp"/>
+        <File Name="extlibs/sol2/tests/test_simple_usertypes.cpp"/>
+        <File Name="extlibs/sol2/tests/test_proxies.cpp"/>
+        <File Name="extlibs/sol2/tests/test_plain_types.cpp"/>
+        <File Name="extlibs/sol2/tests/test_overflow.cpp"/>
+        <File Name="extlibs/sol2/tests/test_operators.cpp"/>
+        <File Name="extlibs/sol2/tests/test_large_integer.cpp"/>
+        <File Name="extlibs/sol2/tests/test_inheritance.cpp"/>
+        <File Name="extlibs/sol2/tests/test_gc.cpp"/>
+        <File Name="extlibs/sol2/tests/test_functions.cpp"/>
+        <File Name="extlibs/sol2/tests/test_filters.cpp"/>
+        <File Name="extlibs/sol2/tests/test_environments.cpp"/>
+        <File Name="extlibs/sol2/tests/test_customizations.cpp"/>
+        <File Name="extlibs/sol2/tests/test_coroutines.cpp"/>
+        <File Name="extlibs/sol2/tests/test_container_semantics.cpp"/>
+        <File Name="extlibs/sol2/tests/test_containers.cpp"/>
+        <File Name="extlibs/sol2/tests/test_abort_clean.cpp"/>
+        <File Name="extlibs/sol2/tests/tests.cpp"/>
+        <File Name="extlibs/sol2/tests/CMakeLists.txt"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="single">
+        <VirtualDirectory Name="sol">
+          <File Name="extlibs/sol2/single/sol/sol_forward.hpp"/>
+          <File Name="extlibs/sol2/single/sol/sol.hpp"/>
+        </VirtualDirectory>
+      </VirtualDirectory>
+      <VirtualDirectory Name="examples">
+        <File Name="extlibs/sol2/examples/variadic_args.cpp"/>
+        <File Name="extlibs/sol2/examples/variables.cpp"/>
+        <File Name="extlibs/sol2/examples/usertype_var.cpp"/>
+        <File Name="extlibs/sol2/examples/usertype_special_functions.cpp"/>
+        <File Name="extlibs/sol2/examples/usertype_simple.cpp"/>
+        <File Name="extlibs/sol2/examples/usertype_initializers.cpp"/>
+        <File Name="extlibs/sol2/examples/usertype_dynamic_getter_setter.cpp"/>
+        <File Name="extlibs/sol2/examples/usertype_call_from_c++.cpp"/>
+        <File Name="extlibs/sol2/examples/usertype_bitfields.cpp"/>
+        <File Name="extlibs/sol2/examples/usertype_automatic_operators.cpp"/>
+        <File Name="extlibs/sol2/examples/usertype_advanced.cpp"/>
+        <File Name="extlibs/sol2/examples/usertype.cpp"/>
+        <File Name="extlibs/sol2/examples/tables.cpp"/>
+        <File Name="extlibs/sol2/examples/static_variables.cpp"/>
+        <File Name="extlibs/sol2/examples/stack_aligned_function.cpp"/>
+        <File Name="extlibs/sol2/examples/singleton.cpp"/>
+        <File Name="extlibs/sol2/examples/self_from_lua.cpp"/>
+        <File Name="extlibs/sol2/examples/script_error_handling.cpp"/>
+        <File Name="extlibs/sol2/examples/require.cpp"/>
+        <File Name="extlibs/sol2/examples/protected_functions.cpp"/>
+        <File Name="extlibs/sol2/examples/pairs_with_raw_functions.cpp"/>
+        <File Name="extlibs/sol2/examples/pairs.cpp"/>
+        <File Name="extlibs/sol2/examples/overloading_with_fallback.cpp"/>
+        <File Name="extlibs/sol2/examples/overloading.cpp"/>
+        <File Name="extlibs/sol2/examples/optional_with_iteration.cpp"/>
+        <File Name="extlibs/sol2/examples/multi_results.cpp"/>
+        <File Name="extlibs/sol2/examples/indirect_function_calls.cpp"/>
+        <File Name="extlibs/sol2/examples/functions.cpp"/>
+        <File Name="extlibs/sol2/examples/environment_state_2.cpp"/>
+        <File Name="extlibs/sol2/examples/environment_state.cpp"/>
+        <File Name="extlibs/sol2/examples/environment_snooping.cpp"/>
+        <File Name="extlibs/sol2/examples/environments.cpp"/>
+        <File Name="extlibs/sol2/examples/dynamic_object.cpp"/>
+        <File Name="extlibs/sol2/examples/customization_convert_on_get.cpp"/>
+        <File Name="extlibs/sol2/examples/customization.cpp"/>
+        <File Name="extlibs/sol2/examples/coroutine_state.cpp"/>
+        <File Name="extlibs/sol2/examples/coroutine.cpp"/>
+        <File Name="extlibs/sol2/examples/container_usertype_as_container.cpp"/>
+        <File Name="extlibs/sol2/examples/containers_as_table.cpp"/>
+        <File Name="extlibs/sol2/examples/containers.cpp"/>
+        <File Name="extlibs/sol2/examples/config.cpp"/>
+        <File Name="extlibs/sol2/examples/CMakeLists.txt"/>
+        <File Name="extlibs/sol2/examples/calling_lua_functions.cpp"/>
+        <File Name="extlibs/sol2/examples/basic.cpp"/>
+        <File Name="extlibs/sol2/examples/assert.hpp"/>
+        <File Name="extlibs/sol2/examples/any_return.cpp"/>
+        <File Name="extlibs/sol2/examples/runtime_additions.cpp"/>
+        <File Name="extlibs/sol2/examples/environments_on_functions.cpp"/>
+        <VirtualDirectory Name="wip">
+          <File Name="extlibs/sol2/examples/wip/lua_inheritance.cpp"/>
+        </VirtualDirectory>
+        <VirtualDirectory Name="tutorials">
+          <VirtualDirectory Name="quick_n_dirty">
+            <File Name="extlibs/sol2/examples/tutorials/quick_n_dirty/usertypes.cpp"/>
+            <File Name="extlibs/sol2/examples/tutorials/quick_n_dirty/userdata.cpp"/>
+            <File Name="extlibs/sol2/examples/tutorials/quick_n_dirty/tables_and_nesting.cpp"/>
+            <File Name="extlibs/sol2/examples/tutorials/quick_n_dirty/set_and_get_variables_exists.cpp"/>
+            <File Name="extlibs/sol2/examples/tutorials/quick_n_dirty/set_and_get_variables.cpp"/>
+            <File Name="extlibs/sol2/examples/tutorials/quick_n_dirty/self_call.cpp"/>
+            <File Name="extlibs/sol2/examples/tutorials/quick_n_dirty/running_lua_code_low_level.cpp"/>
+            <File Name="extlibs/sol2/examples/tutorials/quick_n_dirty/running_lua_code.cpp"/>
+            <File Name="extlibs/sol2/examples/tutorials/quick_n_dirty/opening_state_on_raw_lua.cpp"/>
+            <File Name="extlibs/sol2/examples/tutorials/quick_n_dirty/opening_a_state.cpp"/>
+            <File Name="extlibs/sol2/examples/tutorials/quick_n_dirty/namespacing.cpp"/>
+            <File Name="extlibs/sol2/examples/tutorials/quick_n_dirty/multiple_returns_to_lua.cpp"/>
+            <File Name="extlibs/sol2/examples/tutorials/quick_n_dirty/multiple_returns_from_lua.cpp"/>
+            <File Name="extlibs/sol2/examples/tutorials/quick_n_dirty/make_tables.cpp"/>
+            <File Name="extlibs/sol2/examples/tutorials/quick_n_dirty/functions_easy.cpp"/>
+            <File Name="extlibs/sol2/examples/tutorials/quick_n_dirty/functions_all.cpp"/>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="require_dll_example">
+          <File Name="extlibs/sol2/examples/require_dll_example/require_from_dll.cpp"/>
+          <File Name="extlibs/sol2/examples/require_dll_example/my_object_api.hpp"/>
+          <File Name="extlibs/sol2/examples/require_dll_example/my_object.hpp"/>
+          <File Name="extlibs/sol2/examples/require_dll_example/my_object.cpp"/>
+        </VirtualDirectory>
+        <VirtualDirectory Name="interop">
+          <File Name="extlibs/sol2/examples/interop/tolua.cpp"/>
+          <File Name="extlibs/sol2/examples/interop/Player.h"/>
+          <File Name="extlibs/sol2/examples/interop/luwra.cpp"/>
+          <File Name="extlibs/sol2/examples/interop/LuaBridge.cpp"/>
+          <File Name="extlibs/sol2/examples/interop/kaguya.cpp"/>
+        </VirtualDirectory>
+      </VirtualDirectory>
       <VirtualDirectory Name="sol">
         <File Name="extlibs/sol2/sol/wrapper.hpp"/>
         <File Name="extlibs/sol2/sol/variadic_results.hpp"/>
@@ -770,10 +1477,65 @@
       <File Name="extlibs/sol2/CMakeLists.txt"/>
     </VirtualDirectory>
     <VirtualDirectory Name="thor">
+      <File Name="extlibs/thor/ReadMe.md"/>
+      <VirtualDirectory Name="src">
+        <File Name="extlibs/thor/src/UniformAccess.cpp"/>
+        <File Name="extlibs/thor/src/Trigonometry.cpp"/>
+        <File Name="extlibs/thor/src/Triangulation.cpp"/>
+        <File Name="extlibs/thor/src/ToString.cpp"/>
+        <File Name="extlibs/thor/src/Timer.cpp"/>
+        <File Name="extlibs/thor/src/StopWatch.cpp"/>
+        <File Name="extlibs/thor/src/Shapes.cpp"/>
+        <File Name="extlibs/thor/src/Random.cpp"/>
+        <File Name="extlibs/thor/src/ParticleSystem.cpp"/>
+        <File Name="extlibs/thor/src/Particle.cpp"/>
+        <File Name="extlibs/thor/src/Joystick.cpp"/>
+        <File Name="extlibs/thor/src/InputNames.cpp"/>
+        <File Name="extlibs/thor/src/FrameAnimation.cpp"/>
+        <File Name="extlibs/thor/src/FadeAnimation.cpp"/>
+        <File Name="extlibs/thor/src/Emitters.cpp"/>
+        <File Name="extlibs/thor/src/Distributions.cpp"/>
+        <File Name="extlibs/thor/src/Connection.cpp"/>
+        <File Name="extlibs/thor/src/ConcaveShape.cpp"/>
+        <File Name="extlibs/thor/src/ColorGradient.cpp"/>
+        <File Name="extlibs/thor/src/ColorAnimation.cpp"/>
+        <File Name="extlibs/thor/src/CMakeLists.txt"/>
+        <File Name="extlibs/thor/src/CallbackTimer.cpp"/>
+        <File Name="extlibs/thor/src/BigTexture.cpp"/>
+        <File Name="extlibs/thor/src/BigSprite.cpp"/>
+        <File Name="extlibs/thor/src/Arrow.cpp"/>
+        <File Name="extlibs/thor/src/Affectors.cpp"/>
+        <File Name="extlibs/thor/src/ActionOperations.cpp"/>
+        <File Name="extlibs/thor/src/Action.cpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="examples">
+        <File Name="extlibs/thor/examples/Vectors.cpp"/>
+        <File Name="extlibs/thor/examples/UserEvents.cpp"/>
+        <File Name="extlibs/thor/examples/Triangulation.cpp"/>
+        <File Name="extlibs/thor/examples/Time.cpp"/>
+        <File Name="extlibs/thor/examples/Shapes.cpp"/>
+        <File Name="extlibs/thor/examples/Resources.cpp"/>
+        <File Name="extlibs/thor/examples/Particles.cpp"/>
+        <File Name="extlibs/thor/examples/Fireworks.cpp"/>
+        <File Name="extlibs/thor/examples/CMakeLists.txt"/>
+        <File Name="extlibs/thor/examples/Animations.cpp"/>
+        <File Name="extlibs/thor/examples/Action.cpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="doc">
+        <File Name="extlibs/thor/doc/Layout.xml"/>
+        <File Name="extlibs/thor/doc/Doxyfile.txt"/>
+        <File Name="extlibs/thor/doc/Documentation.hpp"/>
+        <File Name="extlibs/thor/doc/CMakeLists.txt"/>
+      </VirtualDirectory>
       <File Name="extlibs/thor/License.txt"/>
       <File Name="extlibs/thor/CMakeLists.txt"/>
       <VirtualDirectory Name="extlibs">
         <VirtualDirectory Name="aurora">
+          <File Name="extlibs/thor/extlibs/aurora/ReadMe.md"/>
+          <VirtualDirectory Name="doc">
+            <File Name="extlibs/thor/extlibs/aurora/doc/doxyfile.txt"/>
+            <File Name="extlibs/thor/extlibs/aurora/doc/Documentation.hpp"/>
+          </VirtualDirectory>
           <File Name="extlibs/thor/extlibs/aurora/License.txt"/>
           <VirtualDirectory Name="include">
             <VirtualDirectory Name="Aurora">
@@ -1040,7 +1802,7 @@
       </Compiler>
       <Linker Options="" Required="yes"/>
       <ResourceCompiler Options="" Required="no"/>
-      <General OutputFile="" IntermediateDirectory="./Debug" Command="./build/src/racod_game" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <General OutputFile="" IntermediateDirectory="./Debug" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
       <BuildSystem Name="Default"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[]]>
@@ -1054,8 +1816,8 @@
       <PostBuild/>
       <CustomBuild Enabled="yes">
         <RebuildCommand/>
-        <CleanCommand>cd build &amp;&amp; ninja clean</CleanCommand>
-        <BuildCommand>cd build &amp;&amp; ninja</BuildCommand>
+        <CleanCommand>cd build-debug &amp;&amp; ninja clean</CleanCommand>
+        <BuildCommand>cd build-debug &amp;&amp; ninja</BuildCommand>
         <PreprocessFileCommand/>
         <SingleFileCommand/>
         <MakefileGenerationCommand/>
@@ -1093,8 +1855,47 @@
       <PostBuild/>
       <CustomBuild Enabled="yes">
         <RebuildCommand/>
-        <CleanCommand>cd release &amp;&amp; ninja clean</CleanCommand>
-        <BuildCommand>cd release &amp;&amp; ninja</BuildCommand>
+        <CleanCommand>cd build-release &amp;&amp; ninja clean</CleanCommand>
+        <BuildCommand>cd build-release &amp;&amp; ninja</BuildCommand>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory>$(WorkspacePath)</WorkingDirectory>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+      <Completion EnableCpp11="no" EnableCpp14="no">
+        <ClangCmpFlagsC/>
+        <ClangCmpFlags/>
+        <ClangPP/>
+        <SearchPaths/>
+      </Completion>
+    </Configuration>
+    <Configuration Name="Unit Test" CompilerType="clang" DebuggerType="GNU gdb debugger" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="-g" C_Options="-g" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Options="" Required="yes"/>
+      <ResourceCompiler Options="" Required="no"/>
+      <General OutputFile="" IntermediateDirectory="./Debug" Command="./build-debug/src/racod_game" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <BuildSystem Name="Default"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
+        <![CDATA[]]>
+      </Environment>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="" IsExtended="no">
+        <DebuggerSearchPaths/>
+        <PostConnectCommands/>
+        <StartupCommands/>
+      </Debugger>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="yes">
+        <RebuildCommand/>
+        <CleanCommand>cd build-test &amp;&amp; ninja clean</CleanCommand>
+        <BuildCommand>cd build-test &amp;&amp; ninja</BuildCommand>
         <PreprocessFileCommand/>
         <SingleFileCommand/>
         <MakefileGenerationCommand/>

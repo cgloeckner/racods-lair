@@ -1,14 +1,3 @@
-=== Prepare Build ===
-cd ~/.build/racod
-cmake ~/Dokumente/racod.git -DCMAKE_CXX_COMPILER=clang++ [-DCMAKE_BUILD_TYPE=RELEASE]
-make
-
-cd C:\%HOMEPATH%\.build\racod
-cmake C:\%HOMEPATH%\Documents\racod.git -DCMAKE_CXX_COMPILER=g++ -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=RELEASE
-	oder
-cmake Z:\home\christian\Dokumente\racod.git -DCMAKE_CXX_COMPILER=g++ -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=RELEASE
-mingw32-make
-
 ==============================================================================
 @racodslair #roguelike #dungeoncrawler #pixelart #indiedev #gamedev #sfml #cpp
 ==============================================================================
@@ -21,10 +10,6 @@ v0.2-alpha
     less square-looking terrain (smooth, intelligent edge tiling, fake perspective!!)
     mehr eye-candy bei Animationen (zb fetter weißer schweif bei nahkampf ani) - crawl-like
     hud overhaul (target health direkt neben ziel sprite)
-- drop dependencies
-    boost-filesystem by filesystem-ts
-    boost-ptree by tinyxml2
-    boost-test by catch
 - improved dungeon generation
 - mouse at menu
 - fix reported bugs (github)
@@ -32,25 +17,12 @@ v0.2-alpha
     warn via imgui ui on startup
     disable all shader-related options
 
-- chiptune music (https://www.youtube.com/watch?v=64R-10xNfmk)
 
 
 pixelart
 	dunkle tiles
 	helle sprites
 
-
-chiptune
-	square wave \o/
-
-	title theme: auf basis des bisherigen
-	overworld theme: major, using parallel minor
-	dungeon theme: minor, using parallel major
-		kurze, chromatische, wiederholte 16tel melo
-		tritone harmonization
-			steigt langsam an, bis zusätzliche melodie
-				die verschwindet -> anfang
-	=> theme attached to tileset
 
 
 Beta Roadmap
