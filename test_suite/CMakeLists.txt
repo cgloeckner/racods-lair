@@ -33,6 +33,6 @@ test_module(utils	"${utils_test_deps}")
 #test_module(ui) # not implemented yet
 test_module(core	"${core_test_deps}")
 test_module(rpg		"${rpg_test_deps}")
-test_module(game	""${game_test_deps}")
+test_module(game	"${game_test_deps}")
 #test_module(engine) # not implemented yet
 test_module(state	"${state_test_deps}")
