@@ -1,4 +1,4 @@
-#include <utils/algorithm.hpp>
+#include <utils/math2d.hpp>
 #include <utils/assert.hpp>
 #include <core/collision.hpp>
 #include <core/teleport.hpp>

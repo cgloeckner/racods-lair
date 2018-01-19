@@ -3,6 +3,7 @@
 #include <testsuite/singleton.hpp>
 
 #include <utils/assert.hpp>
+#include <utils/math2d.hpp>
 #include <rpg/balance.hpp>
 #include <rpg/combat.hpp>
 #include <rpg/item.hpp>

@@ -1,3 +1,4 @@
+#include <utils/math2d.hpp>
 #include <game/autocam.hpp>
 
 namespace game {

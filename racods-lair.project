@@ -71,6 +71,7 @@
     <File Name="src/main.cpp"/>
     <File Name="src/CMakeLists.txt"/>
     <VirtualDirectory Name="utils">
+      <File Name="src/utils/math2d.cpp"/>
       <File Name="src/utils/verifier.cpp"/>
       <File Name="src/utils/unionfind.cpp"/>
       <File Name="src/utils/scope_guard.cpp"/>
@@ -88,7 +89,6 @@
       <File Name="src/utils/binary_utils.cpp"/>
       <File Name="src/utils/assert.cpp"/>
       <File Name="src/utils/animation_utils.cpp"/>
-      <File Name="src/utils/algorithm.cpp"/>
     </VirtualDirectory>
     <VirtualDirectory Name="ui">
       <File Name="src/ui/systemgraph.cpp"/>
@@ -355,6 +355,8 @@
   <VirtualDirectory Name="include">
     <File Name="include/tools.hpp"/>
     <VirtualDirectory Name="utils">
+      <File Name="include/utils/math2d.inl"/>
+      <File Name="include/utils/math2d.hpp"/>
       <File Name="include/utils/xml_utils.inl"/>
       <File Name="include/utils/xml_utils.hpp"/>
       <File Name="include/utils/verifier.hpp"/>
@@ -1702,6 +1704,7 @@
     <File Name="test_suite/sfml_system.cpp"/>
     <File Name="test_suite/main.cpp"/>
     <VirtualDirectory Name="utils">
+      <File Name="test_suite/utils/math2d.cpp"/>
       <File Name="test_suite/utils/xml_utils.cpp"/>
       <File Name="test_suite/utils/verifier.cpp"/>
       <File Name="test_suite/utils/unionfind.cpp"/>
@@ -1724,7 +1727,6 @@
       <File Name="test_suite/utils/component_system.cpp"/>
       <File Name="test_suite/utils/camera.cpp"/>
       <File Name="test_suite/utils/binary_utils.cpp"/>
-      <File Name="test_suite/utils/atlas.hpp"/>
       <File Name="test_suite/utils/assert.cpp"/>
       <File Name="test_suite/utils/animation_utils.cpp"/>
       <File Name="test_suite/utils/algorithm.cpp"/>

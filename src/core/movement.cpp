@@ -1,5 +1,5 @@
 #include <utils/assert.hpp>
-#include <utils/algorithm.hpp>
+#include <utils/math2d.hpp>
 
 #include <core/algorithm.hpp>
 #include <core/movement.hpp>

@@ -6,13 +6,6 @@
 namespace utils {
 
 template <typename T>
-T distance(sf::Vector2<T> const& u, sf::Vector2<T> const& v) {
-	T dx = u.x - v.x;
-	T dy = u.y - v.y;
-	return dx * dx + dy * dy;
-}
-
-template <typename T>
 sf::Rect<T> enlarge(sf::Rect<T> const & lhs, sf::Rect<T> const & rhs) {
 	sf::Vector2<T> topleft, bottomright;
 	topleft.x = std::min(lhs.left, rhs.left);

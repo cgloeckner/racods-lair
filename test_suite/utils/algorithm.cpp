@@ -5,22 +5,6 @@
 
 BOOST_AUTO_TEST_SUITE(algorithm_test)
 
-BOOST_AUTO_TEST_CASE(algorithm_int_distance) {
-	sf::Vector2u x{12, 15};
-	sf::Vector2u y{23, 7};
-
-	BOOST_CHECK_EQUAL(185u, utils::distance(x, y));
-}
-
-BOOST_AUTO_TEST_CASE(algorithm_float_distance) {
-	sf::Vector2f x{12.5f, 15.25f};
-	sf::Vector2f y{23.0f, 7.3f};
-
-	BOOST_CHECK_CLOSE(173.4525f, utils::distance(x, y), 0.0001f);
-}
-
-// ---------------------------------------------------------------------------
-
 BOOST_AUTO_TEST_CASE(can_enlarge_rect_to_topleft) {
 	///	####
 	///	# *#**

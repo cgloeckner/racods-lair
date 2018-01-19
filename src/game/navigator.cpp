@@ -1,5 +1,5 @@
 #include <utils/assert.hpp>
-
+#include <utils/math2d.hpp>
 #include <core/collision.hpp>
 #include <core/teleport.hpp>
 #include <game/navigator.hpp>

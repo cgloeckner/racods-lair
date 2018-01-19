@@ -3,7 +3,6 @@
 #include <memory>
 #include <vector>
 #include <string>
-#include <SFML/System/Vector2.hpp>
 #include <SFML/Graphics/Rect.hpp>
 
 namespace utils {
@@ -19,13 +18,6 @@ struct pack_contains<T, Head, Types...> : pack_contains<T, Types...> {};
 
 template <typename T>
 struct pack_contains<T> : std::false_type {};
-
-// ---------------------------------------------------------------------------
-
-unsigned int distance(unsigned int u, unsigned int v);
-
-template <typename T>
-T distance(sf::Vector2<T> const& u, sf::Vector2<T> const& v);
 
 // ---------------------------------------------------------------------------
 

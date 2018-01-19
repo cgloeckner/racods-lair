@@ -1,6 +1,6 @@
 #include <boost/test/unit_test.hpp>
 
-#include <utils/algorithm.hpp>
+#include <utils/math2d.hpp>
 #include <utils/pathfinder.hpp>
 
 using FakeEntity = unsigned short;

@@ -1,7 +1,7 @@
 #include <algorithm>
 #include <Thor/Math.hpp>
 
-#include <utils/algorithm.hpp>
+#include <utils/math2d.hpp>
 #include <game/builder.hpp>
 
 namespace game {

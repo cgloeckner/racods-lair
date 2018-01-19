@@ -1,3 +1,4 @@
+#include <utils/math2d.hpp>
 #include <utils/camera.hpp>
 
 namespace utils {

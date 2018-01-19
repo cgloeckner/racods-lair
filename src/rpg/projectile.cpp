@@ -1,3 +1,4 @@
+#include <utils/math2d.hpp>
 #include <core/collision.hpp>
 #include <rpg/projectile.hpp>
 

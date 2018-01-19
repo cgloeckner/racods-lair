@@ -1,3 +1,4 @@
+#include <utils/math2d.hpp>
 #include <core/animation.hpp>
 #include <core/focus.hpp>
 #include <rpg/delay.hpp>

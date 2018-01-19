@@ -1,5 +1,6 @@
 #include <Thor/Math.hpp>
 
+#include <utils/math2d.hpp>
 #include <rpg/algorithm.hpp>
 #include <rpg/balance.hpp>
 #include <rpg/combat.hpp>
