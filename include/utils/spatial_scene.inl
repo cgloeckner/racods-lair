@@ -1,3 +1,6 @@
+#include <utils/algorithm.hpp>
+#include <utils/math2d.hpp>
+
 namespace utils {
 
 template <typename Cell, typename Entity>
@@ -49,22 +52,56 @@ SpatialCell<Cell, Entity> const& SpatialScene<Cell, Entity, Mode>::getCell(
 	return cells.at(index);
 }
 
-/*
 template <typename Cell, typename Entity, utils::GridMode Mode>
-float SpatialScene<Cell, Entity, Mode>::getDistance(sf::Vector2u const & u,
-sf::Vector2u const & v) const {
-	auto dx = utils::distance(u.x, v.x);
-	auto dy = utils::distance(u.y, v.y);
-	auto max = std::max(dx, dy);
-	auto min = std::min(dx, dy);
-	// max-min		: straight distance
-	// min * 1.414f	: diagonale distance
-	return (max-min) + min * 1.414f;
+void SpatialScene<Cell, Entity, Mode>::query(std::vector<Entity>& entities, sf::FloatRect const & rect) const {
+	// get min/max coordinates from rect + applying scene bounds
+	auto min_x = static_cast<std::size_t>(std::max(std::floor(rect.left),               0.f));
+	auto min_y = static_cast<std::size_t>(std::max(std::floor(rect.top),                0.f));
+	auto max_x = static_cast<std::size_t>(std::min(std::ceil (rect.left + rect.width),  scene_size.x - 1.f));
+	auto max_y = static_cast<std::size_t>(std::min(std::ceil (rect.top  + rect.height), scene_size.y - 1.f));
+	
+	// traverse cells
+	sf::Vector2u pos;
+	for (pos.y = min_y; pos.y <= max_y; ++pos.y) {
+		for (pos.x = min_x; pos.x <= max_x; ++pos.x) {
+			// append entitiy ids
+			auto const & cell = getCell(pos);
+			utils::append(entities, cell.entities);
+		}
+	}
 }
-*/
+
+template <typename Cell, typename Entity, utils::GridMode Mode>
+void SpatialScene<Cell, Entity, Mode>::query(std::vector<Entity>& entities, sf::Vector2f const & center, sf::Vector2f const & size) const {
+	return query(entities, {center - size / 2.f, size});
+}
+
+template <typename Cell, typename Entity, utils::GridMode Mode>
+void SpatialScene<Cell, Entity, Mode>::query(std::vector<Entity>& entities, sf::Vector2f const & center, float radius) const {
+	// get min/max coordinates from rect + apply scene bounds
+	auto min_x = static_cast<std::size_t>(std::max(std::floor(center.x - radius), 0.f));
+	auto min_y = static_cast<std::size_t>(std::max(std::floor(center.y - radius), 0.f));
+	auto max_x = static_cast<std::size_t>(std::min(std::ceil (center.x + radius), scene_size.x - 1.f));
+	auto max_y = static_cast<std::size_t>(std::min(std::ceil (center.y + radius), scene_size.y - 1.f));
+	
+	// traverse cells
+	sf::Vector2u pos;
+	for (pos.y = min_y; pos.y <= max_y; ++pos.y) {
+		for (pos.x = min_x; pos.x <= max_x; ++pos.x) {
+			// test radius
+			auto d = utils::distance(sf::Vector2f{pos}, center);
+			if (d <= radius * radius) { // 'cause d is squared
+				// append entitiy ids
+				auto const & cell = getCell(pos);
+				utils::append(entities, cell.entities);
+			}
+		}
+	}
+}
 
 template <typename Cell, typename Entity, utils::GridMode Mode>
 sf::Vector2u SpatialScene<Cell, Entity, Mode>::getSize() const {
 	return scene_size;
 }
-}
+
+} // ::utils

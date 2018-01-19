@@ -55,4 +55,144 @@ BOOST_AUTO_TEST_CASE(scene_throws_when_query_invalid_cell) {
 	BOOST_CHECK_THROW(const_scene.getCell({7u, 12u}), std::out_of_range);
 }
 
+// -------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE(scene_query_using_rect_queries_all_entities_within_an_oversized_area) {
+	sf::Texture tileset;
+	TestScene scene{1u, tileset, {10u, 8u}, {32.f, 32.f}};
+	
+	sf::FloatRect rect{-1.f, -1.f, 15.f, 13.f}; // way to large to test pos adjustment
+	scene.getCell({1u, 3u}).entities.push_back(3);
+	scene.getCell({4u, 5u}).entities.push_back(10);
+	
+	std::vector<EntityID> result;
+	scene.query(result, rect);
+	
+	BOOST_REQUIRE_EQUAL(result.size(), 2u);
+	BOOST_CHECK(utils::contains(result, 3u));
+	BOOST_CHECK(utils::contains(result, 10u));
+}
+
+BOOST_AUTO_TEST_CASE(scene_query_using_rect_queries_only_relevant_entities) {
+	sf::Texture tileset;
+	TestScene scene{1u, tileset, {10u, 8u}, {32.f, 32.f}};
+	
+	sf::FloatRect rect{2.f, 3.f, 2.f, 3.f};
+	scene.getCell({1u, 3u}).entities.push_back(3);
+	scene.getCell({4u, 5u}).entities.push_back(10);
+	
+	std::vector<EntityID> result;
+	scene.query(result, rect);
+	
+	BOOST_REQUIRE_EQUAL(result.size(), 1u);
+	BOOST_CHECK(!utils::contains(result, 3u));
+	BOOST_CHECK(utils::contains(result, 10u));
+}
+
+BOOST_AUTO_TEST_CASE(scene_query_using_minimal_rect_queries_single_cell) {
+	sf::Texture tileset;
+	TestScene scene{1u, tileset, {10u, 8u}, {32.f, 32.f}};
+	
+	sf::FloatRect rect{4.f, 5.f, 0.f, 0.f};
+	scene.getCell({1u, 3u}).entities.push_back(3);
+	scene.getCell({4u, 5u}).entities.push_back(10);
+	
+	std::vector<EntityID> result;
+	scene.query(result, rect);
+	
+	BOOST_REQUIRE_EQUAL(result.size(), 1u);
+	BOOST_CHECK(!utils::contains(result, 3u));
+	BOOST_CHECK(utils::contains(result, 10u));
+}
+
+BOOST_AUTO_TEST_CASE(scene_query_using_alterantive_rect_queries_all_entities_within_an_oversized_area) {
+	sf::Texture tileset;
+	TestScene scene{1u, tileset, {10u, 8u}, {32.f, 32.f}};
+	
+	scene.getCell({1u, 3u}).entities.push_back(3);
+	scene.getCell({4u, 5u}).entities.push_back(10);
+	
+	std::vector<EntityID> result;
+	scene.query(result, {4.f, 5.f}, {15.f, 13.f});
+	
+	BOOST_REQUIRE_EQUAL(result.size(), 2u);
+	BOOST_CHECK(utils::contains(result, 3u));
+	BOOST_CHECK(utils::contains(result, 10u));
+}
+
+BOOST_AUTO_TEST_CASE(scene_query_using_alterantive_rect_queries_only_relevant_entities) {
+	sf::Texture tileset;
+	TestScene scene{1u, tileset, {10u, 8u}, {32.f, 32.f}};
+	
+	scene.getCell({1u, 3u}).entities.push_back(3);
+	scene.getCell({4u, 5u}).entities.push_back(10);
+	
+	std::vector<EntityID> result;
+	scene.query(result, {4.f, 5.f}, {2.f, 2.f});
+	
+	BOOST_REQUIRE_EQUAL(result.size(), 1u);
+	BOOST_CHECK(!utils::contains(result, 3u));
+	BOOST_CHECK(utils::contains(result, 10u));
+}
+
+BOOST_AUTO_TEST_CASE(scene_query_using_alterantive_minimal_rect_queries_single_cell) {
+	sf::Texture tileset;
+	TestScene scene{1u, tileset, {10u, 8u}, {32.f, 32.f}};
+	
+	scene.getCell({1u, 3u}).entities.push_back(3);
+	scene.getCell({4u, 5u}).entities.push_back(10);
+	
+	std::vector<EntityID> result;
+	scene.query(result, {4.f, 5.f}, {0.f, 0.f});
+	
+	BOOST_REQUIRE_EQUAL(result.size(), 1u);
+	BOOST_CHECK(!utils::contains(result, 3u));
+	BOOST_CHECK(utils::contains(result, 10u));
+}
+
+BOOST_AUTO_TEST_CASE(scene_query_using_circle_queries_all_entities_within_an_oversized_area) {
+	sf::Texture tileset;
+	TestScene scene{1u, tileset, {10u, 8u}, {32.f, 32.f}};
+	
+	scene.getCell({1u, 3u}).entities.push_back(3);
+	scene.getCell({4u, 5u}).entities.push_back(10);
+	
+	std::vector<EntityID> result;
+	scene.query(result, {4.f, 5.f}, 30.f);
+	
+	BOOST_REQUIRE_EQUAL(result.size(), 2u);
+	BOOST_CHECK(utils::contains(result, 3u));
+	BOOST_CHECK(utils::contains(result, 10u));
+}
+
+BOOST_AUTO_TEST_CASE(scene_query_using_circle_queries_only_relevant_entities) {
+	sf::Texture tileset;
+	TestScene scene{1u, tileset, {10u, 8u}, {32.f, 32.f}};
+	
+	scene.getCell({1u, 3u}).entities.push_back(3);
+	scene.getCell({4u, 5u}).entities.push_back(10);
+	
+	std::vector<EntityID> result;
+	scene.query(result, {4.f, 5.f}, 2.f);
+	
+	BOOST_REQUIRE_EQUAL(result.size(), 1u);
+	BOOST_CHECK(!utils::contains(result, 3u));
+	BOOST_CHECK(utils::contains(result, 10u));
+}
+
+BOOST_AUTO_TEST_CASE(scene_query_using_minimal_circle_queries_single_cell) {
+	sf::Texture tileset;
+	TestScene scene{1u, tileset, {10u, 8u}, {32.f, 32.f}};
+	
+	scene.getCell({1u, 3u}).entities.push_back(3);
+	scene.getCell({4u, 5u}).entities.push_back(10);
+	
+	std::vector<EntityID> result;
+	scene.query(result, {4.f, 5.f}, 0.f);
+	
+	BOOST_REQUIRE_EQUAL(result.size(), 1u);
+	BOOST_CHECK(!utils::contains(result, 3u));
+	BOOST_CHECK(utils::contains(result, 10u));
+}
+
 BOOST_AUTO_TEST_SUITE_END()

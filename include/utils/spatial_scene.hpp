@@ -39,6 +39,13 @@ class SpatialScene : public utils::Tiling<Mode> {
 	SpatialCell<Cell, Entity>& getCell(sf::Vector2u const& pos);
 	SpatialCell<Cell, Entity> const& getCell(sf::Vector2u const& pos) const;
 
+	// rectangle-based query of entities
+	void query(std::vector<Entity>& entities, sf::FloatRect const & rect) const;
+	void query(std::vector<Entity>& entities, sf::Vector2f const & center, sf::Vector2f const & size) const;
+
+	// circle-based query of entities
+	void query(std::vector<Entity>& entities, sf::Vector2f const & center, float radius) const;
+
 	// float getDistance(sf::Vector2u const & u, sf::Vector2u const & v) const;
 	sf::Vector2u getSize() const;
 };
