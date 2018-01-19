@@ -1,9 +1,8 @@
 #pragma once
 #include <ostream>
 #include <ctime>
-#include <SFML/System.hpp>
-#include <SFML/Graphics.hpp>
-#include <SFML/Window.hpp>
+#include <SFML/System/Time.hpp>
+#include <SFML/Window/VideoMode.hpp>
 #include <Thor/Input.hpp>
 #include <Thor/Graphics.hpp>
 

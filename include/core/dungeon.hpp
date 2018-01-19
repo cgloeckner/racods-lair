@@ -4,7 +4,6 @@
 
 #include <utils/ortho_tile.hpp>
 #include <utils/spatial_scene.hpp>
-#include <utils/enum_map.hpp>
 
 #include <core/common.hpp>
 

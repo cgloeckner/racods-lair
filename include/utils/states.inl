@@ -1,3 +1,5 @@
+#include <SFML/System/Time.hpp>
+
 namespace utils {
 
 template <typename Context>

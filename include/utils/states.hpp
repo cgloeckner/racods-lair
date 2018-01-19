@@ -1,7 +1,6 @@
 #pragma once
 #include <vector>
 #include <memory>
-#include <SFML/System/Time.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>

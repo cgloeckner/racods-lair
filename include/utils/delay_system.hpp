@@ -1,7 +1,7 @@
 #pragma once
-#include <SFML/System/Time.hpp>
 #include <vector>
 #include <functional>
+#include <SFML/System/Time.hpp>
 
 namespace utils {
 

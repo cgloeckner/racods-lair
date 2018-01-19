@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include <utils/assert.hpp>
 #include <utils/enum_utils.hpp>
 
 namespace utils {

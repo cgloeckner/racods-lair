@@ -1,7 +1,6 @@
 #pragma once
 #include <limits>
 #include <array>
-#include <utils/enum_utils.hpp>
 
 namespace utils {
 

@@ -1,3 +1,5 @@
+#include <utils/enum_utils.hpp>
+
 namespace utils {
 
 template <typename Key, typename Value>

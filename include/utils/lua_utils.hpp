@@ -1,6 +1,4 @@
 #pragma once
-#include <utils/assert.hpp>
-
 #include <type_traits>
 #include <vector>
 #include <sol.hpp>

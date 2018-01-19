@@ -2,12 +2,9 @@
 #include <cstdint>
 #include <vector>
 #include <SFML/System/Vector2.hpp>
-#include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/Texture.hpp>
 
 #include <utils/tiling.hpp>
-
-#include <utils/pathfinder.hpp>
 
 namespace utils {
 

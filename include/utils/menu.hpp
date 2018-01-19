@@ -5,7 +5,6 @@
 #include <memory>
 #include <unordered_map>
 #include <SFML/System/Vector2.hpp>
-#include <SFML/System/Time.hpp>
 #include <SFML/System/String.hpp>
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>

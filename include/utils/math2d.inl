@@ -1,3 +1,4 @@
+#include <SFML/System/Time.hpp>
 #include <Thor/Vectors.hpp>
 
 namespace utils {

@@ -1,5 +1,3 @@
-#include <utils/algorithm.hpp>
-
 namespace core {
 
 template <typename... Args>
