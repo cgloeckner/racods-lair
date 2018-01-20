@@ -21,6 +21,45 @@ BOOST_AUTO_TEST_CASE(float_distance) {
 
 // ---------------------------------------------------------------------------
 
+BOOST_AUTO_TEST_CASE(evalPos_evaluates_dist_wise_close_pos_as_better) {
+	sf::Vector2f center{5.f, 2.f};
+	sf::Vector2f direction{0.f, 1.f};
+	float fov{160.f};
+	float max_dist{3.f};
+	
+	auto eval1 = utils::evalPos(center, direction, fov, max_dist, {5.f, 5.f});
+	auto eval2 = utils::evalPos(center, direction, fov, max_dist, {5.2f, 5.2f});
+	auto eval3 = utils::evalPos(center, direction, fov, max_dist, {5.2f, 6.f});
+	BOOST_CHECK_LT(eval1, eval2);
+	BOOST_CHECK_LT(eval2, eval3);
+}
+
+BOOST_AUTO_TEST_CASE(evalPos_evaluates_angle_wise_close_pos_as_better) {
+	sf::Vector2f center{5.f, 2.f};
+	sf::Vector2f direction{0.f, 1.f};
+	float fov{16.f};
+	float max_dist{3.f};
+	
+	auto eval1 = utils::evalPos(center, direction, fov, max_dist, {5.f, 5.f});
+	auto eval2 = utils::evalPos(center, direction, fov, max_dist, {6.f, 5.f});
+	auto eval3 = utils::evalPos(center, direction, fov, max_dist, {7.f, 4.f});
+	BOOST_CHECK_LT(eval1, eval2);
+	BOOST_CHECK_LT(eval2, eval3);
+}
+
+BOOST_AUTO_TEST_CASE(evalPos_evaluates_way_distance_close_pos_better_then_angle_wise_close_pos) {
+	sf::Vector2f center{5.f, 2.f};
+	sf::Vector2f direction{0.f, 1.f};
+	float fov{180.f};
+	float max_dist{3.f};
+	
+	auto eval1 = utils::evalPos(center, direction, fov, max_dist, {5.f, 5.f});
+	auto eval2 = utils::evalPos(center, direction, fov, max_dist, {2.f, 3.f});
+	BOOST_CHECK_LT(eval1, eval2);
+}
+
+// ---------------------------------------------------------------------------
+
 BOOST_AUTO_TEST_CASE(AABB_broadphase_radius_update_does_not_work_on_circle) {
 	utils::Collider c;
 	c.is_aabb = false;

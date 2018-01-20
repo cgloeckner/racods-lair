@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include <utils/algorithm.hpp>
 #include <utils/math2d.hpp>
 

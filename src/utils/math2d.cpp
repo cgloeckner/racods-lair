@@ -11,6 +11,23 @@ unsigned int distance(unsigned int u, unsigned int v) {
 	}
 }
 
+// --------------------------------------------------------------------------------
+
+float evalPos(sf::Vector2f const & center, sf::Vector2f const & direction, float fov,
+	float max_dist, sf::Vector2f const & pos) {
+	auto delta = pos - center;
+	auto dist  = thor::squaredLength(delta);
+	auto angle = thor::signedAngle(direction, delta);
+	ASSERT(angle <= fov / 2.f);
+	
+	auto normalized_dist  = dist  / max_dist;
+	auto normalized_angle = angle / (fov / 2.f); // center equals angle of 0°
+	
+	return normalized_dist + normalized_angle * normalized_angle;
+}
+
+// --------------------------------------------------------------------------------
+
 Collider::Collider()
 	: is_aabb{false}
 	, radius{0.f}

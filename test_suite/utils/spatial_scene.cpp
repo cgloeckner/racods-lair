@@ -140,7 +140,6 @@ BOOST_AUTO_TEST_CASE(scene_traverse_queries_all_requested_entities) {
 	scene.getCell({4u, 5u}).entities.push_back(10);
 	
 	TestAABBQuery query{{4.f, 5.f}, {3.f, 4.f}};
-	std::cout << "----\n";
 	scene.traverse(query);
 	
 	BOOST_REQUIRE_EQUAL(query.entities.size(), 2u);
