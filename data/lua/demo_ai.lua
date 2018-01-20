@@ -94,7 +94,7 @@ function Flock.new()
 		if n > 0 then
 			center.x = math.ceil(center.x / n);
 			center.y = math.ceil(center.y / n);
-			api:moveTowards(center);
+			self.entities[api.id]:move(center);
 		end
 	end
 	
