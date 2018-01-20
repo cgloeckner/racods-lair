@@ -5,6 +5,7 @@
 #include <SFML/Graphics/Texture.hpp>
 
 #include <utils/tiling.hpp>
+#include <utils/math2d.hpp>
 
 namespace utils {
 
@@ -15,6 +16,41 @@ struct SpatialCell : public Cell {
 	std::vector<Entity> entities;
 
 	SpatialCell();
+};
+
+// ---------------------------------------------------------------------------
+
+/// Traversion class for AABB entity query
+template <typename Entity>
+class AABBEntityQuery {
+	private:
+		sf::FloatRect range;
+		
+	public:
+		AABBEntityQuery(sf::Vector2f const & center, sf::Vector2f const & size);
+		
+		sf::IntRect getRange() const;
+		void operator()(sf::Vector2f const & pos, std::vector<Entity> const & cell);
+		
+		std::vector<Entity> entities;
+};
+
+// ---------------------------------------------------------------------------
+
+/// Traversion class for circular entity query
+template <typename Entity>
+class CircEntityQuery {
+	private:
+		sf::Vector2f center;
+		Collider collider;
+		
+	public:
+		CircEntityQuery(sf::Vector2f const & center, float radius);
+		
+		sf::IntRect getRange() const;
+		void operator()(sf::Vector2f const & pos, std::vector<Entity>  const & cell);
+		
+		std::vector<Entity> entities;
 };
 
 // ---------------------------------------------------------------------------
@@ -31,7 +67,6 @@ class SpatialScene : public utils::Tiling<Mode> {
 	SpatialScene(SceneID id, sf::Texture const& tileset,
 		sf::Vector2u const& scene_size, sf::Vector2f const& tile_size);
 
-	// Pathfinder<SpatialScene<Cell, Entity, Mode>, Entity> pathfinder;
 	SceneID const id;
 	sf::Texture const& tileset;
 
@@ -39,14 +74,12 @@ class SpatialScene : public utils::Tiling<Mode> {
 	SpatialCell<Cell, Entity>& getCell(sf::Vector2u const& pos);
 	SpatialCell<Cell, Entity> const& getCell(sf::Vector2u const& pos) const;
 
-	// rectangle-based query of entities
-	void query(std::vector<Entity>& entities, sf::FloatRect const & rect) const;
-	void query(std::vector<Entity>& entities, sf::Vector2f const & center, sf::Vector2f const & size) const;
+	/// Traverse scene's entities using a custom traversion object
+	/// using a templated traverser type
+	/// @trav Traversion object
+	template <typename Traverser>
+	void traverse(Traverser& trav) const;
 
-	// circle-based query of entities
-	void query(std::vector<Entity>& entities, sf::Vector2f const & center, float radius) const;
-
-	// float getDistance(sf::Vector2u const & u, sf::Vector2u const & v) const;
 	sf::Vector2u getSize() const;
 };
 

@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include <utils/algorithm.hpp>
 #include <utils/math2d.hpp>
 
@@ -6,6 +8,56 @@ namespace utils {
 template <typename Cell, typename Entity>
 SpatialCell<Cell, Entity>::SpatialCell()
 	: Cell{}, entities{} {}
+
+// ---------------------------------------------------------------------------
+
+template <typename Entity>
+AABBEntityQuery<Entity>::AABBEntityQuery(sf::Vector2f const & center, sf::Vector2f const & size)
+	: range{center - size/2.f, size}
+	, entities{} {
+}
+
+template <typename Entity>
+sf::IntRect AABBEntityQuery<Entity>::getRange() const {
+	sf::IntRect rect;
+	rect.left   = static_cast<int>(std::floor(range.left));
+	rect.top    = static_cast<int>(std::floor(range.top));
+	rect.width  = static_cast<int>(std::ceil (range.width));
+	rect.height = static_cast<int>(std::ceil (range.height));
+	return rect;
+}
+
+template <typename Entity>
+void AABBEntityQuery<Entity>::operator()(sf::Vector2f const & pos, std::vector<Entity>  const & cell) {
+	utils::append(entities, cell);
+}
+
+// ---------------------------------------------------------------------------
+
+template <typename Entity>
+CircEntityQuery<Entity>::CircEntityQuery(sf::Vector2f const & center, float radius)
+	: center{center}
+	, collider{}
+	, entities{} {
+	collider.radius = radius;
+}
+
+template <typename Entity>
+sf::IntRect CircEntityQuery<Entity>::getRange() const {
+	sf::IntRect rect;
+	rect.left   = static_cast<int>(std::floor(center.x - collider.radius));
+	rect.top    = static_cast<int>(std::floor(center.y - collider.radius));
+	rect.width  = static_cast<int>(std::ceil (2.f * collider.radius));
+	rect.height = static_cast<int>(std::ceil (2.f * collider.radius));
+	return rect;
+}
+
+template <typename Entity>
+void CircEntityQuery<Entity>::operator()(sf::Vector2f const & pos, std::vector<Entity>  const & cell) {
+	if (testPointCirc(pos, center, collider)) {
+		utils::append(entities, cell);
+	}
+}
 
 // ---------------------------------------------------------------------------
 
@@ -53,48 +105,21 @@ SpatialCell<Cell, Entity> const& SpatialScene<Cell, Entity, Mode>::getCell(
 }
 
 template <typename Cell, typename Entity, utils::GridMode Mode>
-void SpatialScene<Cell, Entity, Mode>::query(std::vector<Entity>& entities, sf::FloatRect const & rect) const {
-	// get min/max coordinates from rect + applying scene bounds
-	auto min_x = static_cast<std::size_t>(std::max(std::floor(rect.left),               0.f));
-	auto min_y = static_cast<std::size_t>(std::max(std::floor(rect.top),                0.f));
-	auto max_x = static_cast<std::size_t>(std::min(std::ceil (rect.left + rect.width),  scene_size.x - 1.f));
-	auto max_y = static_cast<std::size_t>(std::min(std::ceil (rect.top  + rect.height), scene_size.y - 1.f));
+template <typename Traverser>
+void SpatialScene<Cell, Entity, Mode>::traverse(Traverser& trav) const {
+	auto rect = trav.getRange();
+	auto size = sf::Vector2i{scene_size};
 	
-	// traverse cells
+	// adjust to scene bounds
+	auto min_x = std::max(rect.left,               0);
+	auto min_y = std::max(rect.top,                0);
+	auto max_x = std::min(rect.left + rect.width,  size.x - 1);
+	auto max_y = std::min(rect.top  + rect.height, size.y - 1);
+	
 	sf::Vector2u pos;
 	for (pos.y = min_y; pos.y <= max_y; ++pos.y) {
 		for (pos.x = min_x; pos.x <= max_x; ++pos.x) {
-			// append entitiy ids
-			auto const & cell = getCell(pos);
-			utils::append(entities, cell.entities);
-		}
-	}
-}
-
-template <typename Cell, typename Entity, utils::GridMode Mode>
-void SpatialScene<Cell, Entity, Mode>::query(std::vector<Entity>& entities, sf::Vector2f const & center, sf::Vector2f const & size) const {
-	return query(entities, {center - size / 2.f, size});
-}
-
-template <typename Cell, typename Entity, utils::GridMode Mode>
-void SpatialScene<Cell, Entity, Mode>::query(std::vector<Entity>& entities, sf::Vector2f const & center, float radius) const {
-	// get min/max coordinates from rect + apply scene bounds
-	auto min_x = static_cast<std::size_t>(std::max(std::floor(center.x - radius), 0.f));
-	auto min_y = static_cast<std::size_t>(std::max(std::floor(center.y - radius), 0.f));
-	auto max_x = static_cast<std::size_t>(std::min(std::ceil (center.x + radius), scene_size.x - 1.f));
-	auto max_y = static_cast<std::size_t>(std::min(std::ceil (center.y + radius), scene_size.y - 1.f));
-	
-	// traverse cells
-	sf::Vector2u pos;
-	for (pos.y = min_y; pos.y <= max_y; ++pos.y) {
-		for (pos.x = min_x; pos.x <= max_x; ++pos.x) {
-			// test radius
-			auto d = utils::distance(sf::Vector2f{pos}, center);
-			if (d <= radius * radius) { // 'cause d is squared
-				// append entitiy ids
-				auto const & cell = getCell(pos);
-				utils::append(entities, cell.entities);
-			}
+			trav(sf::Vector2f{pos}, getCell(pos).entities);
 		}
 	}
 }
