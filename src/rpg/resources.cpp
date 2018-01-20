@@ -333,6 +333,7 @@ EntityTemplate::EntityTemplate()
 	, flying{false}
 	, max_sight{0.f}
 	, max_speed{0.f}
+	, fov{0.f}
 	, display_name{}
 	, sprite_name{}
 	, sprite{nullptr}
@@ -349,6 +350,7 @@ void EntityTemplate::loadFromTree(utils::ptree_type const& ptree) {
 	flying = ptree.get<bool>("general.<xmlattr>.flying", false);
 	max_sight = ptree.get<float>("general.<xmlattr>.max_sight");
 	max_speed = ptree.get<float>("general.<xmlattr>.max_speed");
+	fov = ptree.get<float>("general.<xmlattr>.fov");
 	display_name = ptree.get<std::string>("general.<xmlattr>.display_name", "");
 	sprite_name = ptree.get<std::string>("general.<xmlattr>.sprite_name");
 	// parse interact data
@@ -394,6 +396,7 @@ void EntityTemplate::saveToTree(utils::ptree_type& ptree) const {
 	ptree.put("general.<xmlattr>.flying", flying);
 	ptree.put("general.<xmlattr>.max_sight", max_sight);
 	ptree.put("general.<xmlattr>.max_speed", max_speed);
+	ptree.put("general.<xmlattr>.fov", fov);
 	ptree.put("general.<xmlattr>.sprite_name", sprite_name);
 	ptree.put("general.<xmlattr>.display_name", display_name);
 	if (interact != nullptr) {

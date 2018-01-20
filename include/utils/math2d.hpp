@@ -15,6 +15,16 @@ T distance(sf::Vector2<T> const& u, sf::Vector2<T> const& v);
 
 // ---------------------------------------------------------------------------
 
+/// Check whether point is inside Field of View
+/// @param center Center position of the FoV
+/// @param direction Direction vector of the FoV (no unit vector required)
+/// @param fov total angle of the FoV
+/// @param max_dist Maximum distance used for the FoV
+/// @param pos Position to evaluate
+/// @return evaluation result
+bool isWithinFov(sf::Vector2f const & center, sf::Vector2f const & direction, float fov,
+	float max_dist, sf::Vector2f const & pos);
+
 /// Evaluation position within a Field of View
 /// The Field of View is arranged around the center using the direction. The
 /// view's size is determined by the given angle and max distance.

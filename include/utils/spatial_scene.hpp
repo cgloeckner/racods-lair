@@ -20,6 +20,11 @@ struct SpatialCell : public Cell {
 
 // ---------------------------------------------------------------------------
 
+sf::IntRect toIntRect(sf::FloatRect const & range);
+sf::IntRect toIntRect(sf::Vector2f const & center, float radius);
+
+// ---------------------------------------------------------------------------
+
 /// Traversion class for AABB entity query
 template <typename Entity>
 class AABBEntityQuery {
@@ -48,7 +53,7 @@ class CircEntityQuery {
 		CircEntityQuery(sf::Vector2f const & center, float radius);
 		
 		sf::IntRect getRange() const;
-		void operator()(sf::Vector2f const & pos, std::vector<Entity>  const & cell);
+		void operator()(sf::Vector2f const & pos, std::vector<Entity> const & cell);
 		
 		std::vector<Entity> entities;
 };

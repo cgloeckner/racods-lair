@@ -13,10 +13,8 @@ CollisionData::CollisionData()
 FocusData::FocusData()
 	: ComponentData{}
 	, display_name{}
-	, look{0, 1}
 	, sight{0.f}
-	, focus{0u}
-	, observers{}
+	, fov{0.f}
 	, is_active{true}
 	, has_changed{true} {}
 

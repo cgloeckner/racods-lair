@@ -1,5 +1,6 @@
 #include <utils/math2d.hpp>
 #include <core/algorithm.hpp>
+#include <core/focus.hpp>
 #include <core/teleport.hpp>
 #include <core/focus.hpp>
 #include <rpg/combat.hpp>
@@ -73,8 +74,16 @@ sf::Vector2i LuaApi::getDirection(core::ObjectID id) const {
 }
 
 core::ObjectID LuaApi::getFocus() const {
+	ASSERT(session.movement.has(id));
 	ASSERT(session.focus.has(id));
-	return session.focus.query(id).focus;
+	
+	auto const & stats = session.stats.query(id);
+	auto const & move  = session.movement.query(id);
+	ASSERT(move.scene > 0u);
+	auto const & dungeon = session.dungeon[move.scene];
+	
+	// query focus
+	return core::focus_impl::getFocus(id, dungeon, session.focus, session.movement);
 }
 
 float LuaApi::getDistance(core::ObjectID other) const {

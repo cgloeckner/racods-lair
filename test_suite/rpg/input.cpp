@@ -54,9 +54,9 @@ struct InputFixture {
 		move.pos = {1.f, 1.f};
 		move.target = {1u, 1u};
 		move.scene = scene;
+		move.look = {1, 0};
 		d.getCell({1u, 1u}).entities.push_back(1u);
 		auto& f = focus.acquire(1u);
-		f.look = {1, 0};
 		// connect gamepad
 		sf::Event event;
 		std::size_t gamepad_id = 0u;

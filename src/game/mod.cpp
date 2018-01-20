@@ -72,6 +72,8 @@ bool verify<rpg::EntityTemplate>(utils::Logger& log,
 	verify(resource.max_speed <= core::movement_impl::MAX_SPEED,
 		"            max speed <= " +
 			std::to_string(core::movement_impl::MAX_SPEED) + " required");
+	verify(resource.fov >= 0.f, "            fov >= 0.f required");
+	verify(resource.fov <= 180.f, "            fov <= 180.f required");
 	verify(!resource.sprite_name.empty(), "            sprite name required");
 	verify(resource.sprite != nullptr, "            sprite cannot be loaded");
 	for (auto const& pair : resource.sounds) {

@@ -81,6 +81,7 @@ function Flock.new()
 		local origin = api:getPosition(api.id);
 		local scene = api:getScene(api.id);
 		n = 0;
+		-- iterate all entities inside this flock to determine the flock's center
 		for id, flag in pairs(self.entities) do
 			if flag ~= nil and id ~= api.id and scene == api:getScene(id) then
 				pos = api:getPosition(id);
@@ -89,10 +90,11 @@ function Flock.new()
 				n = n + 1;
 			end
 		end
+		-- trigger movement to direction
 		if n > 0 then
-			center.x = center.x / n;
-			center.y = center.y / n;
-			self.entities[api.id]:move(center);
+			center.x = math.ceil(center.x / n);
+			center.y = math.ceil(center.y / n);
+			api:moveTowards(center);
 		end
 	end
 	

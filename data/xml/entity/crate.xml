@@ -1,2 +1,2 @@
-<general is_projectile="false" collide="true" interact="barrier" max_sight="0.0" max_speed="50.0" sprite_name="crate" display_name="Crate" />
+<general is_projectile="false" collide="true" interact="barrier" max_sight="0.0" max_speed="50.0" fov="0.0" sprite_name="crate" display_name="Crate" />
 <sounds />

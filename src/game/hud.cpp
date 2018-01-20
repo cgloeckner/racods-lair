@@ -1,3 +1,4 @@
+#include <core/focus.hpp>
 #include <game/hud.hpp>
 
 namespace game {
@@ -164,20 +165,23 @@ void onUpdate(Context const & context, HudData& hud, sf::Time const & elapsed) {
 	ASSERT(hud.hud != nullptr);
 	
 	auto const & stats = context.stats.query(hud.id);
-		
-	// update focus hud
-	auto const & focus = context.focus.query(hud.id);
+	auto const & move  = context.movements.query(hud.id);
+	ASSERT(move.scene > 0u);
+	auto const & dungeon = context.dungeons[move.scene];
+	
+	// query focus to update hud
+	auto focus = core::focus_impl::getFocus(hud.id, dungeon, context.focus, context.movements);
 	std::uint32_t life{0u}, max_life{0u}, level{0u};
 	std::string name{};
 	auto color = sf::Color::White;
-	if (focus.focus > 0u && stats.stats[rpg::Stat::Life] > 0) {
+	if (focus > 0u && context.focus.has(focus) && stats.stats[rpg::Stat::Life] > 0) {
 		// set focus (only if actor is alive)
-		name = context.focus.query(focus.focus).display_name;
-		if (context.stats.has(focus.focus)) {
-			if (!context.players.has(focus.focus)) {
+		name = context.focus.query(focus).display_name;
+		if (context.stats.has(focus)) {
+			if (!context.players.has(focus)) {
 				color = sf::Color::Red;
 			}
-			auto const & tmp = context.stats.query(focus.focus);
+			auto const & tmp = context.stats.query(focus);
 			life = tmp.stats[rpg::Stat::Life];
 			max_life = tmp.properties[rpg::Property::MaxLife];
 			level = tmp.level;

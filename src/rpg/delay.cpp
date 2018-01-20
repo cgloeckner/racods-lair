@@ -35,25 +35,29 @@ Context::Context(core::LogContext& log, core::AnimationSender& animation_sender,
 // ---------------------------------------------------------------------------
 
 core::ObjectID queryInteractable(Context& context, core::ObjectID actor) {
-	// fetch neighbor cell in looking direction
 	auto const& actor_move = context.movement.query(actor);
+	auto const& actor_focus = context.focus.query(actor);
 	ASSERT(actor_move.scene > 0u);
 	auto const& dungeon = context.dungeon[actor_move.scene];
-	auto const& actor_focus = context.focus.query(actor);
-	auto pos = sf::Vector2u{sf::Vector2i{actor_move.pos} + actor_focus.look};
-	ASSERT(dungeon.has(pos));
-	auto const& cell = dungeon.getCell(pos);
-
+	
+	// query all entities in range
+	utils::CircEntityQuery<core::ObjectID> query{actor_move.pos, combat_impl::MAX_MELEE_DISTANCE};
+	dungeon.traverse(query);
+	
 	// seek interactables
 	std::vector<InteractData const*> objects;
 	bool found_barrier{false};
-	for (auto id : cell.entities) {
+	for (auto id : query.entities) {
 		if (!context.interact.has(id)) {
 			continue;
 		}
-		auto ptr = &context.interact.query(id);
-		objects.push_back(ptr);
-		found_barrier = found_barrier || (ptr->type == InteractType::Barrier);
+		// check fov
+		auto const & move = context.movement.query(id);
+		if (utils::isWithinFov(actor_move.pos, sf::Vector2f{actor_move.look}, actor_focus.fov, combat_impl::MAX_MELEE_DISTANCE, move.pos)) {
+			auto ptr = &context.interact.query(id);
+			objects.push_back(ptr);
+			found_barrier = found_barrier || (ptr->type == InteractType::Barrier);
+		}
 	}
 
 	// pick most recent interactable
@@ -81,30 +85,38 @@ core::ObjectID queryInteractable(Context& context, core::ObjectID actor) {
 }
 
 core::ObjectID queryAttackable(Context& context, core::ObjectID actor) {
-	// search attackable
-	auto const & move = context.movement.query(actor);
-	auto const & focus = context.focus.query(actor);
-	ASSERT(move.scene > 0u);
-	auto const & dungeon = context.dungeon[move.scene];
+	auto const& actor_move = context.movement.query(actor);
+	auto const& actor_focus = context.focus.query(actor);
+	ASSERT(actor_move.scene > 0u);
+	auto const& dungeon = context.dungeon[actor_move.scene];
 	
-	return core::focus_impl::traverseCells(dungeon, move.target, focus.look,
-		std::ceil(combat_impl::MAX_MELEE_DISTANCE), [&](core::ObjectID other, int) {
-		if (other == actor) {
-			return false;
-		}
-		// check distance
-		auto const & tmp = context.movement.query(other);
-		auto dist = utils::distance(move.pos, tmp.pos);
-		if (dist > combat_impl::MAX_MELEE_DISTANCE * combat_impl::MAX_MELEE_DISTANCE) {
-			return false;
+	// query all entities in range
+	utils::CircEntityQuery<core::ObjectID> query{actor_move.pos, combat_impl::MAX_MELEE_DISTANCE};
+	dungeon.traverse(query);
+	
+	core::ObjectID target{0u};
+	float closest{std::numeric_limits<float>::max()};
+	for (auto id : query.entities) {
+		if (id == actor) {
+			continue;
 		}
 		// check attackability
-		if (!context.stats.has(other)) {
-			return false;
+		if (!context.stats.has(id)) {
+			continue;
 		}
-		auto const & stats = context.stats.query(other);
-		return stats.stats[Stat::Life] > 0;
-	});
+		// check fov
+		auto const & move = context.movement.query(id);
+		auto value = utils::evalPos(actor_move.pos, sf::Vector2f{actor_move.look}, actor_focus.fov, combat_impl::MAX_MELEE_DISTANCE, move.pos);
+		if (value >= 0.f && value < closest) {
+			auto const & stats = context.stats.query(id);
+			if (stats.stats[Stat::Life] > 0) {
+				target = id;
+				closest = value;
+			}
+		}
+	}
+	
+	return target;
 }
 
 void onAttack(Context& context, core::ObjectID actor) {
@@ -246,13 +258,6 @@ void onPerk(Context& context, core::ObjectID actor, PerkTemplate const& perk) {
 			default:
 				// real target is specified later
 				break;
-				/*
-				case PerkType::Enemy:
-				case PerkType::Allied:
-					// apply to focused target (despite it is set or not)
-					target = context.focus.query(actor).focus;
-					break;
-				*/
 		}
 
 		// trigger delayed combat
@@ -265,7 +270,6 @@ void onPerk(Context& context, core::ObjectID actor, PerkTemplate const& perk) {
 
 	} else {
 		auto const& move_data = context.movement.query(actor);
-		// auto const & focus_data = context.focus.query(actor);
 
 		// trigger projectile creation
 		ProjectileEvent proj_event;
@@ -273,9 +277,7 @@ void onPerk(Context& context, core::ObjectID actor, PerkTemplate const& perk) {
 		proj_event.id = actor;  // owner
 		proj_event.spawn.scene = move_data.scene;
 		// note: position and direction are assigned later, because owner
-		// specifies it
-		// proj_event.spawn.pos = move_data.target;
-		// proj_event.spawn.direction = focus_data.look;
+		// specifies it;
 		proj_event.meta_data.emitter = EmitterType::Perk;
 		proj_event.meta_data.perk = &perk;
 		context.projectiles.push(proj_event, delay);
@@ -290,14 +292,18 @@ void onUpdate(Context& context, sf::Time const& elapsed) {
 
 	// propagate recent combat events
 	for (auto event : context.combats.ready) {
-		// seek suitable target
+		// seek suitable targets
 		if (event.target == 0u) {
-			event.target = queryAttackable(context, event.actor);
-			if (event.target == 0u) {
-				continue;
+			// trigger target
+			auto target = queryAttackable(context, event.actor);
+			if (target > 0u) {
+				event.target = target;
+				context.combat_sender.send(event);
 			}
+		} else {
+			// use specified target (e.g. defensive perk)
+			context.combat_sender.send(event);
 		}
-		context.combat_sender.send(event);
 	}
 	context.combats.ready.clear();
 

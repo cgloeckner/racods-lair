@@ -40,8 +40,8 @@ struct InteractFixture {
 		auto& m = movement.acquire(id);
 		m.pos = pos;
 		m.target = sf::Vector2u{pos};
+		m.look = {1, 0};
 		auto& f = focus.acquire(id);
-		f.look = {1, 0};
 		auto& p = player.acquire(id);
 		p.player_id = player_id;
 		return p;

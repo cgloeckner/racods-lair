@@ -308,6 +308,7 @@ BOOST_AUTO_TEST_CASE(loading_and_save_entity_iterates_all_existing_data) {
 	entity.interact = std::make_unique<rpg::InteractType>(rpg::InteractType::Barrier); // doesn't fit neither
 	entity.max_sight = 7.5f;
 	entity.max_speed = 12.667f;
+	entity.fov = 120.f;
 	entity.display_name = "Goblin";
 	entity.sprite_name = "goblin";
 	entity.sounds[core::default_value<core::SoundAction>()].emplace_back("goblin-sfx", nullptr);
@@ -334,6 +335,7 @@ BOOST_AUTO_TEST_CASE(loading_and_save_entity_iterates_all_existing_data) {
 	BOOST_REQUIRE(data.interact != nullptr);
 	BOOST_CHECK(*data.interact == rpg::InteractType::Barrier);
 	BOOST_CHECK_CLOSE(data.max_speed, 12.667f, 0.0001f);
+	BOOST_CHECK_CLOSE(data.fov, 120.f, 0.0001f);
 	BOOST_CHECK_EQUAL(data.display_name, "Goblin");
 	BOOST_CHECK_EQUAL(data.sprite_name, "goblin");
 	BOOST_CHECK_EQUAL(entity.sounds[core::default_value<core::SoundAction>()].front().first, "goblin-sfx");

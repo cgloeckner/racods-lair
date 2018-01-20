@@ -29,10 +29,8 @@ struct CollisionData : ComponentData {
 
 struct FocusData : ComponentData {
 	std::string display_name;
-	sf::Vector2i look;
 	float sight;					  // range of sight
-	ObjectID focus;					  // 0 : nothing focused
-	std::vector<ObjectID> observers;  // focused by
+	float fov;						  // angle of fov
 	bool is_active;
 
 	mutable bool has_changed;  // dirty flag

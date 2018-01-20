@@ -1,4 +1,4 @@
-<general is_projectile="false" collide="true" max_sight="13.0" max_speed="40.0" sprite_name="skeleton" display_name="Skeleton" />
+<general is_projectile="false" collide="true" max_sight="13.0" max_speed="40.0" fov="120.0" sprite_name="skeleton" display_name="Skeleton" />
 <sounds>
 	<Death>
 		<sound name="skeleton-death-0" />

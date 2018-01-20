@@ -40,10 +40,10 @@ struct Context {
 
 // ---------------------------------------------------------------------------
 
-/// Query interaction target
+/// Query closest interaction target
 core::ObjectID queryInteractable(Context& context, core::ObjectID actor);
 
-/// Query melee target
+/// Query closest melee target
 core::ObjectID queryAttackable(Context& context, core::ObjectID actor);
 
 /// Use the actor's weapon

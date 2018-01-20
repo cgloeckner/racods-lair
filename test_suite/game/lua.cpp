@@ -216,6 +216,7 @@ struct LuaFixture
 		entity_tpl = rpg::EntityTemplate{};
 		entity_tpl.sprite = &sprite_tpl;
 		entity_tpl.max_sight = 5.f;
+		entity_tpl.fov = 120.f;
 		entity_tpl.display_name = "foo";
 		entity_tpl.collide = true;
 		bot_tpl = game::BotTemplate{};
@@ -340,10 +341,9 @@ BOOST_AUTO_TEST_CASE(getFocus_returns_actors_focus_if_set) {
 	fix.reset();
 
 	auto& bot = fix.createBot({0u, 0u}, true);
-	auto& data = fix.session.focus.query(bot.id);
-	data.focus = 17u;
+	auto& other = fix.createBot({1u, 0u}, true);
 	auto focus = bot.getFocus();
-	BOOST_CHECK_EQUAL(focus, 17u);
+	BOOST_CHECK_EQUAL(focus, other.id);
 }
 
 BOOST_AUTO_TEST_CASE(getFocus_returns_zero_if_no_focus) {

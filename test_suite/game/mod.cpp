@@ -338,6 +338,7 @@ BOOST_AUTO_TEST_CASE(complete_entity_is_valid) {
 	resource.is_projectile = false;
 	resource.max_sight = 0.f;
 	resource.max_speed = 10.f;
+	resource.fov = 120.f;
 	resource.display_name = "bar";
 	resource.sprite_name = "foo";
 	resource.sprite = &fix.sprite;
@@ -462,6 +463,62 @@ BOOST_AUTO_TEST_CASE(entity_with_negative_sight_is_invalid) {
 	resource.is_projectile = false;
 	resource.max_sight = -2.f;
 	resource.max_speed = 10.f;
+	resource.display_name = "bar";
+	resource.sprite_name = "foo";
+	resource.sprite = &fix.sprite;
+	BOOST_CHECK(!game::mod_impl::verify(fix.log.debug, "", resource));
+}
+
+BOOST_AUTO_TEST_CASE(entity_with_negative_fov_is_invalid) {
+	auto& fix = Singleton<ModFixture>::get();
+
+	rpg::EntityTemplate resource;
+	resource.is_projectile = false;
+	resource.max_sight = 2.f;
+	resource.max_speed = 10.f;
+	resource.fov = -1.f;
+	resource.display_name = "bar";
+	resource.sprite_name = "foo";
+	resource.sprite = &fix.sprite;
+	BOOST_CHECK(!game::mod_impl::verify(fix.log.debug, "", resource));
+}
+
+BOOST_AUTO_TEST_CASE(entity_with_zero_fov_is_valid) {
+	auto& fix = Singleton<ModFixture>::get();
+
+	rpg::EntityTemplate resource;
+	resource.is_projectile = false;
+	resource.max_sight = 2.f;
+	resource.max_speed = 10.f;
+	resource.fov = 0.f;
+	resource.display_name = "bar";
+	resource.sprite_name = "foo";
+	resource.sprite = &fix.sprite;
+	BOOST_CHECK(game::mod_impl::verify(fix.log.debug, "", resource));
+}
+
+BOOST_AUTO_TEST_CASE(entity_with_180_degree_fov_is_valid) {
+	auto& fix = Singleton<ModFixture>::get();
+
+	rpg::EntityTemplate resource;
+	resource.is_projectile = false;
+	resource.max_sight = 2.f;
+	resource.max_speed = 10.f;
+	resource.fov = 180.f;
+	resource.display_name = "bar";
+	resource.sprite_name = "foo";
+	resource.sprite = &fix.sprite;
+	BOOST_CHECK(game::mod_impl::verify(fix.log.debug, "", resource));
+}
+
+BOOST_AUTO_TEST_CASE(entity_with_fov_larger_then_is_invalid) {
+	auto& fix = Singleton<ModFixture>::get();
+
+	rpg::EntityTemplate resource;
+	resource.is_projectile = false;
+	resource.max_sight = 2.f;
+	resource.max_speed = 10.f;
+	resource.fov = 180.1f;
 	resource.display_name = "bar";
 	resource.sprite_name = "foo";
 	resource.sprite = &fix.sprite;

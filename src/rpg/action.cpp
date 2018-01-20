@@ -65,7 +65,7 @@ void onCollision(
 	// will handle the legs' animation
 }
 
-void onAction(Context& context, ActionData& data, ActionEvent const& event) {
+void onAction(Context& context, ActionData& data, ActionEvent const& event) {	
 	if (data.dead && (event.action != PlayerAction::Pause)) {
 		context.log.debug << "[Rpg/Action] " << "Ignored action '"
 			<< rpg::to_string(event.action) << "' by dead actor\n";
@@ -78,6 +78,8 @@ void onAction(Context& context, ActionData& data, ActionEvent const& event) {
 		case PlayerAction::Interact:
 		case PlayerAction::UseSlot:
 			if (data.idle) {
+				if (event.action == PlayerAction::UseSlot) {
+				}
 				data.idle = false;
 				context.action_sender.send(event);
 			}

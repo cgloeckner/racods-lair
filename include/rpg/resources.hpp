@@ -196,7 +196,7 @@ struct EntityTemplate : BaseResource {
 	using SoundNode = std::pair<std::string, sf::SoundBuffer const *>;
 	
 	bool is_projectile, collide, flying;
-	float max_sight, radius, max_speed;
+	float max_sight, radius, max_speed, fov;
 	std::string display_name, sprite_name;
 	SpriteTemplate const* sprite;
 	utils::EnumMap<core::SoundAction, std::vector<SoundNode>> sounds;

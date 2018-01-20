@@ -131,8 +131,6 @@ struct GameplayFixture
 		, frozen{}
 		, trap{}
 		, keys{} {
-		// log.debug.add(std::cout);
-
 		// connect animation events
 		animation.bind<core::AnimationEvent>(
 			action);  // react on finished action
@@ -643,9 +641,9 @@ struct GameplayFixture
 		d.getCell(pos).entities.push_back(id);
 		*/
 		auto& focus_data = focus.acquire(id);
-		focus_data.look = look;
 		focus_data.sight = 10.f;
 		focus_data.display_name = "not empty";
+		focus_data.fov = 120.f;
 		collision.acquire(id);
 		auto& ani = animation.acquire(id);
 		ani.tpl.torso[core::SpriteTorsoLayer::Base] = &body_sprite.torso;
@@ -719,7 +717,7 @@ struct GameplayFixture
 			p.y = std::round(p.y);
 			// spawn.pos = sf::Vector2u{sf::Vector2i{p} + f.look};
 			spawn.pos = sf::Vector2u{p};
-			spawn.direction = f.look;
+			spawn.direction = m.look;
 		}
 
 		auto id = createObject(spawn.pos, spawn.direction);
@@ -851,8 +849,7 @@ BOOST_AUTO_TEST_CASE(player_will_move_one_tile_if_arrowkeys_are_tapped) {
 	auto& move = fix.movement.query(id);
 	BOOST_CHECK_VECTOR_CLOSE(move.pos, sf::Vector2f(2.f, 3.f), 0.0001f);
 	BOOST_CHECK_VECTOR_EQUAL(move.target, sf::Vector2u(2u, 3u));
-	auto& focus = fix.focus.query(id);
-	BOOST_CHECK_VECTOR_EQUAL(focus.look, sf::Vector2i(0, 1));
+	BOOST_CHECK_VECTOR_EQUAL(move.look, sf::Vector2i(0, 1));
 	// test action
 	auto& action = fix.action.query(id);
 	BOOST_CHECK(!action.moving);
@@ -871,8 +868,7 @@ BOOST_AUTO_TEST_CASE(player_will_strife_if_move_and_look_are_triggered) {
 	auto& move = fix.movement.query(id);
 	BOOST_CHECK_GT(move.pos.x, 1.f);
 	BOOST_CHECK_CLOSE(move.pos.y, 2.f, 0.0001f);
-	auto& focus = fix.focus.query(id);
-	BOOST_CHECK_VECTOR_EQUAL(focus.look, sf::Vector2i(0, -1));
+	BOOST_CHECK_VECTOR_EQUAL(move.look, sf::Vector2i(0, -1));
 }
 
 BOOST_AUTO_TEST_CASE(player_will_at_least_look_if_movement_is_impossible) {
@@ -886,8 +882,7 @@ BOOST_AUTO_TEST_CASE(player_will_at_least_look_if_movement_is_impossible) {
 	// test body
 	auto& move = fix.movement.query(id);
 	BOOST_CHECK_VECTOR_CLOSE(move.pos, sf::Vector2f(1.f, 2.f), 0.0001f);
-	auto& focus = fix.focus.query(id);
-	BOOST_CHECK_VECTOR_EQUAL(focus.look, sf::Vector2i(-1, 0));
+	BOOST_CHECK_VECTOR_EQUAL(move.look, sf::Vector2i(-1, 0));
 }
 
 BOOST_AUTO_TEST_CASE(player_will_not_move_or_look_if_dead) {
@@ -903,8 +898,7 @@ BOOST_AUTO_TEST_CASE(player_will_not_move_or_look_if_dead) {
 	// test body
 	auto& move = fix.movement.query(id);
 	BOOST_CHECK_VECTOR_CLOSE(move.pos, sf::Vector2f(1.f, 2.f), 0.0001f);
-	auto& focus = fix.focus.query(id);
-	BOOST_CHECK_VECTOR_EQUAL(focus.look, sf::Vector2i(1, 0));
+	BOOST_CHECK_VECTOR_EQUAL(move.look, sf::Vector2i(1, 0));
 }
 
 BOOST_AUTO_TEST_CASE(player_is_stopped_after_collision) {
@@ -918,8 +912,7 @@ BOOST_AUTO_TEST_CASE(player_is_stopped_after_collision) {
 	// test body
 	auto& move = fix.movement.query(id);
 	BOOST_CHECK_VECTOR_CLOSE(move.pos, sf::Vector2f(1.f, 2.f), 0.0001f);
-	auto& focus = fix.focus.query(id);
-	BOOST_CHECK_VECTOR_EQUAL(focus.look, sf::Vector2i(-1, 0));
+	BOOST_CHECK_VECTOR_EQUAL(move.look, sf::Vector2i(-1, 0));
 	// test ani
 	auto& ani = fix.animation.query(id);
 	BOOST_CHECK(!ani.is_moving);
@@ -1271,11 +1264,14 @@ BOOST_AUTO_TEST_CASE(player_can_use_defensive_perk_via_quickslot) {
 	qslot.slots[2u] = {fix.healing};
 	auto& stats = fix.stats.query(id);
 	stats.stats[rpg::Stat::Life] = 20;
+	
 	// trigger input
+	fix.log.debug << "---\n";
+	
 	fix.setInput(rpg::PlayerAction::UseSlot, true);
 	fix.update(sf::milliseconds(100));
 	fix.setInput(rpg::PlayerAction::UseSlot, false);
-	fix.update(sf::milliseconds(100000));
+	fix.update(sf::milliseconds(10000));
 	// expect increased life
 	BOOST_CHECK_GT(stats.stats[rpg::Stat::Life], 20);
 }
@@ -1293,6 +1289,7 @@ BOOST_AUTO_TEST_CASE(player_can_damage_enemy_by_offensive_perk_via_quickslot) {
 	auto other = fix.createCharacter({3u, 2u}, {0, 1});
 	auto& target = fix.stats.query(other);
 	auto prev = target.stats[rpg::Stat::Life];
+	
 	// trigger input
 	fix.setInput(rpg::PlayerAction::UseSlot, true);
 	fix.update(sf::milliseconds(100));

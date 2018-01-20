@@ -17,16 +17,11 @@ AABBEntityQuery<Entity>::AABBEntityQuery(sf::Vector2f const & center, sf::Vector
 
 template <typename Entity>
 sf::IntRect AABBEntityQuery<Entity>::getRange() const {
-	sf::IntRect rect;
-	rect.left   = static_cast<int>(std::floor(range.left));
-	rect.top    = static_cast<int>(std::floor(range.top));
-	rect.width  = static_cast<int>(std::ceil (range.width));
-	rect.height = static_cast<int>(std::ceil (range.height));
-	return rect;
+	return toIntRect(range);
 }
 
 template <typename Entity>
-void AABBEntityQuery<Entity>::operator()(sf::Vector2f const & pos, std::vector<Entity>  const & cell) {
+void AABBEntityQuery<Entity>::operator()(sf::Vector2f const & pos, std::vector<Entity> const & cell) {
 	utils::append(entities, cell);
 }
 
@@ -42,16 +37,11 @@ CircEntityQuery<Entity>::CircEntityQuery(sf::Vector2f const & center, float radi
 
 template <typename Entity>
 sf::IntRect CircEntityQuery<Entity>::getRange() const {
-	sf::IntRect rect;
-	rect.left   = static_cast<int>(std::floor(center.x - collider.radius));
-	rect.top    = static_cast<int>(std::floor(center.y - collider.radius));
-	rect.width  = static_cast<int>(std::ceil (2.f * collider.radius));
-	rect.height = static_cast<int>(std::ceil (2.f * collider.radius));
-	return rect;
+	return toIntRect(center, collider.radius);
 }
 
 template <typename Entity>
-void CircEntityQuery<Entity>::operator()(sf::Vector2f const & pos, std::vector<Entity>  const & cell) {
+void CircEntityQuery<Entity>::operator()(sf::Vector2f const & pos, std::vector<Entity> const & cell) {
 	if (testPointCirc(pos, center, collider)) {
 		utils::append(entities, cell);
 	}

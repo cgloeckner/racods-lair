@@ -81,6 +81,7 @@ void Factory::setupObject(core::ObjectID id, rpg::EntityTemplate const & entity)
 		auto& f = session.focus.query(id);
 		f.display_name = entity.display_name;
 		f.sight = entity.max_sight;
+		f.fov = entity.fov;
 		f.is_active = true;
 	}
 	if (entity.collide) {
@@ -219,7 +220,6 @@ core::ObjectID Factory::createObject(
 	core::spawn(session.dungeon[data.scene], m, data.pos);
 	if (entity.max_sight > 0.f || !entity.display_name.empty()) {
 		auto& f = session.focus.acquire(id);
-		f.look = data.direction;
 	}
 	if (entity.collide) {
 		session.collision.acquire(id);
@@ -318,15 +318,13 @@ core::ObjectID Factory::createBullet(rpg::CombatMetaData const& meta,
 	auto spwn = spawn;
 	if (owner > 0u) {
 		ASSERT(session.movement.has(owner));
-		ASSERT(session.focus.has(owner));
 		auto const& m = session.movement.query(owner);
-		auto const& f = session.focus.query(owner);
 
 		auto pos = m.pos;
 		pos.x = std::round(pos.x);
 		pos.y = std::round(pos.y);
 		spwn.pos = sf::Vector2u{pos};
-		spwn.direction = f.look;
+		spwn.direction = m.look;
 	}
 
 	auto id = createObject(*bullet->entity, spwn);

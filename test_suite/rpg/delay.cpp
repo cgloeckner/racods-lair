@@ -90,9 +90,10 @@ struct DelayFixture {
 		move.pos = sf::Vector2f{pos};
 		move.target = pos;
 		move.scene = 1u;
+		move.look = look;
 		dungeon[1u].getCell(pos).entities.push_back(id);
 		auto& foc = focus.acquire(id);
-		foc.look = look;
+		foc.fov = 120.f;
 		auto& ani = animation.acquire(id);
 		ani.tpl.torso = &demo_ani;
 		item.acquire(id);
@@ -192,8 +193,8 @@ BOOST_AUTO_TEST_CASE(cannot_attack_far_enemy) {
 	fix.reset();
 
 	auto actor = fix.addActor({1u, 1u}, {1, 0}, 1u);
-	auto target = fix.addActor({2u, 1u}, {0, 1});
-	fix.movement.query(target).pos.x = 3.01f;
+	auto target = fix.addActor({3u, 1u}, {0, 1});
+	fix.movement.query(target).pos.x = 3.1f;
 	auto found = rpg::delay_impl::queryAttackable(fix.context, actor);
 	BOOST_CHECK_EQUAL(found, 0u);
 }

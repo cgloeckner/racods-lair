@@ -444,10 +444,11 @@ BOOST_AUTO_TEST_CASE(object_with_sight_has_focus_component) {
 	fix.objects.push_back(id);
 
 	BOOST_REQUIRE(fix.focus.has(id));
-	auto const& data = fix.focus.query(id);
-	BOOST_CHECK_VECTOR_EQUAL(data.look, spawn.direction);
-	BOOST_CHECK_EQUAL(data.display_name, "foo");
-	BOOST_CHECK_CLOSE(data.sight, 2.5f, 0.0001f);
+	auto const& m_data = fix.movement.query(id);
+	auto const& f_data = fix.focus.query(id);
+	BOOST_CHECK_VECTOR_EQUAL(m_data.look, spawn.direction);
+	BOOST_CHECK_EQUAL(f_data.display_name, "foo");
+	BOOST_CHECK_CLOSE(f_data.sight, 2.5f, 0.0001f);
 }
 
 BOOST_AUTO_TEST_CASE(object_with_sight_requires_display_name) {

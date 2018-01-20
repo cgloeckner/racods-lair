@@ -79,10 +79,8 @@ void ComponentInspector<core::FocusData>::update() {
 	ImGui::Separator();
 	
 	ui::editString("Display Name", data.display_name);
-	ui::showPair("Look Vector", thor::toString(data.look));
 	ui::showPair("Sight Radius", std::to_string(data.sight));
-	ui::showPair("Focused Entity", std::to_string(data.focus));
-	ui::showPair("Observers", concat(data.observers));
+	ui::showPair("FoV Angle", std::to_string(data.fov));
 	
 	ImGui::Columns();
 }

@@ -13,17 +13,38 @@ unsigned int distance(unsigned int u, unsigned int v) {
 
 // --------------------------------------------------------------------------------
 
-float evalPos(sf::Vector2f const & center, sf::Vector2f const & direction, float fov,
+bool isWithinFov(sf::Vector2f const & center, sf::Vector2f const & direction, float fov,
 	float max_dist, sf::Vector2f const & pos) {
+	if (pos == center) {
+		return true;
+	}
+	ASSERT(direction != sf::Vector2f{});
 	auto delta = pos - center;
 	auto dist  = thor::squaredLength(delta);
 	auto angle = thor::signedAngle(direction, delta);
-	ASSERT(angle <= fov / 2.f);
+	if (std::abs(angle) > fov / 2.f) {
+		return false;
+	}
+	return dist <= max_dist * max_dist;
+}
+
+float evalPos(sf::Vector2f const & center, sf::Vector2f const & direction, float fov,
+	float max_dist, sf::Vector2f const & pos) {
+	if (pos == center) {
+		return 0.f;
+	}
+	ASSERT(direction != sf::Vector2f{});
+	auto delta = pos - center;
+	auto dist  = thor::squaredLength(delta);
+	auto angle = thor::signedAngle(direction, delta);
+	if (std::abs(angle) > fov / 2.f || fov == 0.f || dist > max_dist * max_dist) {
+		// object is out of fov
+		return -1.f;
+	}
 	
-	auto normalized_dist  = dist  / max_dist;
 	auto normalized_angle = angle / (fov / 2.f); // center equals angle of 0°
 	
-	return normalized_dist + normalized_angle * normalized_angle;
+	return dist + 5.f * normalized_angle * normalized_angle;
 }
 
 // --------------------------------------------------------------------------------

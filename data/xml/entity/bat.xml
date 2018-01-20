@@ -1,4 +1,4 @@
-<general is_projectile="false" flying="true" collide="true" max_sight="20.0" max_speed="100.0" sprite_name="bat" display_name="Bat" />
+<general is_projectile="false" flying="true" collide="true" max_sight="20.0" fov="120.0" max_speed="100.0" sprite_name="bat" display_name="Bat" />
 <sounds>
 	<Death>
 		<sound name="bat-death-0" />

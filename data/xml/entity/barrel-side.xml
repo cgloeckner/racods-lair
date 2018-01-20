@@ -1,2 +1,2 @@
-<general is_projectile="false" collide="true" max_sight="0.0" max_speed="0.0" sprite_name="barrel-side" display_name="Barrel" />
+<general is_projectile="false" collide="true" max_sight="0.0" max_speed="0.0" fov="0.0" sprite_name="barrel-side" display_name="Barrel" />
 <sounds />

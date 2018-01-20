@@ -38,8 +38,7 @@ void moveBarrier(Context& context, InteractData& data, core::ObjectID actor) {
 	// determine movement direction
 	auto dir = actor_move.move;
 	if (dir == sf::Vector2i{}) {
-		auto const& actor_focus = context.focus.query(actor);
-		dir = actor_focus.look;
+		dir = actor_move.look;
 	}
 
 	// trigger movement

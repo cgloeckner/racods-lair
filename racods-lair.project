@@ -71,6 +71,7 @@
     <File Name="src/main.cpp"/>
     <File Name="src/CMakeLists.txt"/>
     <VirtualDirectory Name="utils">
+      <File Name="src/utils/spatial_scene.cpp"/>
       <File Name="src/utils/math2d.cpp"/>
       <File Name="src/utils/verifier.cpp"/>
       <File Name="src/utils/unionfind.cpp"/>
@@ -210,6 +211,9 @@
     </VirtualDirectory>
   </VirtualDirectory>
   <VirtualDirectory Name="data">
+    <VirtualDirectory Name="lua">
+      <File Name="data/lua/demo_ai.lua"/>
+    </VirtualDirectory>
     <VirtualDirectory Name="xml">
       <File Name="data/xml/locale.xml"/>
       <File Name="data/xml/globals.xml"/>
@@ -1700,15 +1704,17 @@
     </VirtualDirectory>
   </VirtualDirectory>
   <VirtualDirectory Name="test_suite">
+    <File Name="test_suite/script.lua"/>
     <File Name="test_suite/CMakeLists.txt"/>
     <File Name="test_suite/sfml_system.cpp"/>
     <File Name="test_suite/main.cpp"/>
     <VirtualDirectory Name="utils">
+      <File Name="test_suite/utils/tiling.cpp"/>
+      <File Name="test_suite/utils/atlas.cpp"/>
       <File Name="test_suite/utils/math2d.cpp"/>
       <File Name="test_suite/utils/xml_utils.cpp"/>
       <File Name="test_suite/utils/verifier.cpp"/>
       <File Name="test_suite/utils/unionfind.cpp"/>
-      <File Name="test_suite/utils/tiling.hpp"/>
       <File Name="test_suite/utils/spatial_scene.cpp"/>
       <File Name="test_suite/utils/scope_guard.cpp"/>
       <File Name="test_suite/utils/resource_cache.cpp"/>

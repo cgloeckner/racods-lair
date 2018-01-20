@@ -1,2 +1,2 @@
-<general is_projectile="false" collide="true" max_sight="0.0" max_speed="0.0" sprite_name="wood-table-b" display_name="" />
+<general is_projectile="false" collide="true" max_sight="0.0" max_speed="0.0" fov="0.0" sprite_name="wood-table-b" display_name="" />
 <sounds />
