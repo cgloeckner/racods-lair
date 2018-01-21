@@ -52,7 +52,9 @@ struct FocusFixture {
 		}
 		// remove components
 		for (auto id : ids) {
-			focus_manager.release(id);
+			if (focus_manager.has(id)) {
+				focus_manager.release(id);
+			}
 			movement_manager.release(id);
 		}
 		ids.clear();
@@ -68,10 +70,10 @@ struct FocusFixture {
 		sf::Vector2u const& pos, sf::Vector2i const& look, float sight) {
 		auto id = id_manager.acquire();
 		ids.push_back(id);
-		auto& foc = focus_manager.acquire(id);
-		foc.sight = sight;
-		foc.fov = 120.f;
 		if (sight > 0.f) {
+			auto& foc = focus_manager.acquire(id);
+			foc.sight = sight;
+			foc.fov = 120.f;
 			foc.display_name = "foo";
 		}
 		auto& mve = movement_manager.acquire(id);
@@ -130,6 +132,32 @@ BOOST_AUTO_TEST_CASE(getFocus_delivers_id_but_not_itself) {
 	
 	auto focus = core::focus_impl::getFocus(id, dungeon, fixture.focus_manager, fixture.movement_manager);
 	BOOST_CHECK_EQUAL(focus, second);
+}
+
+BOOST_AUTO_TEST_CASE(getFocus_ignores_unfocusables) {
+	auto& fixture = Singleton<FocusFixture>::get();
+	fixture.reset();
+
+	auto const& dungeon = fixture.dungeon_system[1];
+	auto id = fixture.add_object({1u, 1u}, {1, 0}, 5.f);
+	auto second = fixture.add_object({2u, 1u}, {0, 1}, 0.f); // sight = 0 --> unfocusable
+	
+	auto focus = core::focus_impl::getFocus(id, dungeon, fixture.focus_manager, fixture.movement_manager);
+	BOOST_CHECK_EQUAL(focus, 0u);
+}
+
+BOOST_AUTO_TEST_CASE(getFocus_returns_inactive) {
+	auto& fixture = Singleton<FocusFixture>::get();
+	fixture.reset();
+
+	auto const& dungeon = fixture.dungeon_system[1];
+	auto id = fixture.add_object({1u, 1u}, {1, 0}, 5.f);
+	auto second = fixture.add_object({3u, 1u}, {0, 1}, 5.f);
+	// make second inactive
+	fixture.focus_manager.query(second).is_active = false;
+	
+	auto focus = core::focus_impl::getFocus(id, dungeon, fixture.focus_manager, fixture.movement_manager);
+	BOOST_CHECK_EQUAL(focus, 0u);
 }
 
 BOOST_AUTO_TEST_CASE(getFocus_delivers_closest_id) {

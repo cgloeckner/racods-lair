@@ -31,13 +31,14 @@ struct Context {
 // FoV Query Traverser
 struct FovQuery {
 	MovementManager const & move_manager;
+	FocusManager const & focus_manager;
 	MovementData const & actor_move;
 	FocusData const & actor_focus;
 	utils::Collider collider;
 	ObjectID focus;
 	float best_value;
 	
-	FovQuery(FocusData const & actor_focus, MovementData const & actor_move, MovementManager const & move_manager);
+	FovQuery(FocusData const & actor_focus, MovementData const & actor_move, MovementManager const & move_manager, FocusManager const & focus_manager);
 	
 	sf::IntRect getRange() const;
 	void operator()(sf::Vector2f const & pos, std::vector<ObjectID> const & cell);
