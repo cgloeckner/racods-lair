@@ -12,6 +12,8 @@ namespace core {
 
 using ObjectID = std::uint16_t;
 
+// ---------------------------------------------------------------------------
+
 // maximum frametime per update
 extern float const MAX_FRAMETIME_MS;
 

@@ -4,6 +4,7 @@
 #include <SFML/Audio/SoundBuffer.hpp>
 
 #include <utils/animation_utils.hpp>
+#include <utils/arcshape.hpp>
 #include <utils/camera.hpp>
 #include <utils/component_system.hpp>
 #include <utils/enum_map.hpp>
@@ -81,6 +82,7 @@ struct RenderData : ComponentData {
 	sf::Transform legs_matrix, torso_matrix;
 	std::vector<utils::Edge> edges;
 	sf::Color blood_color;
+	utils::ArcShape fov;
 
 	RenderData();
 };

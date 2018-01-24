@@ -37,19 +37,21 @@ struct Context {
 	RenderManager& render_manager;
 	AnimationManager const& animation_manager;
 	MovementManager const& movement_manager;
+	FocusManager const& focus_manager;
 	DungeonSystem& dungeon_system;
 	CameraSystem& camera_system;
 	utils::LightingSystem& lighting_system;
 
 	mutable std::vector<CullingBuffer> buffers;
 	sf::Color grid_color;
-	bool cast_shadows;
+	bool show_fov, cast_shadows;
 	mutable sf::Shader sprite_shader;
 
 	Context(LogContext& log, RenderManager& render_manager,
 		AnimationManager const& animation_manager,
-		MovementManager const& movement_manager, DungeonSystem& dungeon_system,
-		CameraSystem& camera_system, utils::LightingSystem& lighting_system);
+		MovementManager const& movement_manager, FocusManager const& focus_manager,
+		DungeonSystem& dungeon_system, CameraSystem& camera_system,
+		utils::LightingSystem& lighting_system);
 };
 
 }  // ::render_impl
@@ -92,11 +94,12 @@ class RenderSystem : public sf::Drawable
 
   public:
 	RenderSystem(LogContext& log, std::size_t max_objects, AnimationManager const& animation_manager,
-		MovementManager const& movement_manager, DungeonSystem& dungeon_system,
+		MovementManager const& movement_manager, FocusManager const& focus_manager, DungeonSystem& dungeon_system,
 		CameraSystem& camera_system, utils::LightingSystem& lighting_system);
 
 	void setCastShadows(bool flag);
 	void setGridColor(sf::Color color);
+	void setShowFov(bool show);
 
 	void handle(SpriteEvent const& event);
 
@@ -263,6 +266,13 @@ void drawHighlightings(CullingBuffer const & buffer, sf::RenderTarget& target);
  *	@param target RenderTarget to draw to
  */
 void drawSprites(Context const& context, Renderables const& objects,
+	sf::RenderTarget& target);
+
+/// Draw all sprites' debugging fov to the render target
+/// @param context Rendering context to work with
+/// @param objects Array of render components to draw for
+/// @param target RenderTarget to draw to
+void drawFovs(Context const& context, Renderables const& objects,
 	sf::RenderTarget& target);
 
 /// Draw the entire scene to the render target

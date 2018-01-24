@@ -1,4 +1,5 @@
 #include <utils/algorithm.hpp>
+#include <utils/color.hpp>
 #include <core/teleport.hpp>
 #include <core/render.hpp>
 #include <rpg/balance.hpp>
@@ -235,6 +236,9 @@ core::ObjectID Factory::createObject(
 	
 	// create object graphics
 	auto& r = session.render.query(id);
+	auto color = utils::ptrToColor(&r);
+	color.a = 64u;
+	r.fov.setFillColor(color);
 	r.edges = entity.sprite->edges;
 	auto const& frameset = *entity.sprite->frameset;
 	r.torso[core::SpriteTorsoLayer::Base].setTexture(frameset);

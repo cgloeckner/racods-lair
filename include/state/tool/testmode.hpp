@@ -60,7 +60,7 @@ class TestMode
   private:
 	state::GameState& parent;
 	bool freeze, show_monitor, show_inspector, show_spawner,
-		show_teleporter, show_log, show_event;
+		show_teleporter, show_log, show_event, render_debug;
 	
 	// system monitor
 	MemoryMonitor memory;
@@ -100,6 +100,7 @@ class TestMode
 	void updateSystemLog();
 	void updateEventLog();
 	void reloadScripts();
+	void toggleRenderDebug();
 	
 	void onLeftClick();
 	void onRightClick();

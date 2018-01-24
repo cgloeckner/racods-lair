@@ -132,6 +132,7 @@ TestMode::TestMode(state::GameState& parent)
 	, show_teleporter{false}
 	, show_log{false}
 	, show_event{false}
+	, render_debug{false}
 	, memory{parent.getContext().game->engine}
 	, scene{0u}
 	, tile_pos(-1, -1)
@@ -500,6 +501,20 @@ void TestMode::reloadScripts() {
 		<< " Scripts for " << m << " AI Components\n";
 }
 
+void TestMode::toggleRenderDebug() {
+	auto& context = parent.getContext();
+	auto& engine = context.game->engine;
+	render_debug = !render_debug;
+	
+	if (render_debug) {
+		engine.ui.render.setGridColor(sf::Color::Yellow);
+		engine.ui.render.setShowFov(true);
+	} else {
+		engine.ui.render.setGridColor(sf::Color::Transparent);
+		engine.ui.render.setShowFov(false);
+	}
+}
+
 void TestMode::onLeftClick() {
 	// update select pos
 	sf::Vector2f mouse_pos{sf::Mouse::getPosition(parent.getApplication().getWindow())};
@@ -652,10 +667,15 @@ bool TestMode::handle(sf::Event const& event) {
 					
 				case sf::Keyboard::F6:
 					show_event = !show_event;
-					
+					break;
 					
 				case sf::Keyboard::F7:
 					reloadScripts();
+					break;
+					
+				case sf::Keyboard::F8:
+					toggleRenderDebug();
+					break;
 					
 				default:
 					handled = false;
@@ -733,6 +753,9 @@ void TestMode::update(sf::Time const& elapsed) {
 			}
 			if (ImGui::MenuItem("Reload all scripts", "F7")) {
 				reloadScripts();
+			}
+			if (ImGui::MenuItem("Toggle Debug Rendering", "F8")) {
+				toggleRenderDebug();
 			}
 			ImGui::Separator();
 			if (ImGui::MenuItem("Hide all", nullptr, false, show_monitor

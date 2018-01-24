@@ -9,13 +9,14 @@ namespace core {
 
 RenderSystem::RenderSystem(LogContext& log, std::size_t max_objects,
 	AnimationManager const& animation_manager,
-	MovementManager const& movement_manager, DungeonSystem& dungeon_system,
-	CameraSystem& camera_system, utils::LightingSystem& lighting_system)
+	MovementManager const& movement_manager, FocusManager const& focus_manager,
+	DungeonSystem& dungeon_system, CameraSystem& camera_system,
+	utils::LightingSystem& lighting_system)
 	: sf::Drawable{}					   // Event API
 	, utils::EventListener<SpriteEvent>{}  // Component API
 	, RenderManager{max_objects}
-	, context{log, *this, animation_manager, movement_manager, dungeon_system,
-		  camera_system, lighting_system} {}
+	, context{log, *this, animation_manager, movement_manager, focus_manager,
+		dungeon_system, camera_system, lighting_system} {}
 
 void RenderSystem::draw(
 	sf::RenderTarget& target, sf::RenderStates states) const {
@@ -28,6 +29,10 @@ void RenderSystem::setCastShadows(bool flag) {
 
 void RenderSystem::setGridColor(sf::Color color) {
 	context.grid_color = color;
+}
+
+void RenderSystem::setShowFov(bool show) {
+	context.show_fov = show;
 }
 
 void RenderSystem::handle(SpriteEvent const& event) {
@@ -75,17 +80,20 @@ CullingBuffer::CullingBuffer()
 
 Context::Context(LogContext& log, RenderManager& render_manager,
 	AnimationManager const& animation_manager,
-	MovementManager const& movement_manager, DungeonSystem& dungeon_system,
+	MovementManager const& movement_manager, FocusManager const& focus_manager,
+	DungeonSystem& dungeon_system,
 	CameraSystem& camera_system, utils::LightingSystem& lighting_system)
 	: log{log}
 	, render_manager{render_manager}
 	, animation_manager{animation_manager}
 	, movement_manager{movement_manager}
+	, focus_manager{focus_manager}
 	, dungeon_system{dungeon_system}
 	, camera_system{camera_system}
 	, lighting_system{lighting_system}
 	, buffers{}
 	, grid_color{sf::Color::Transparent}
+	, show_fov{false}
 	, cast_shadows{true}
 	, sprite_shader{} {
 	// setup sprite shader
@@ -213,6 +221,26 @@ void updateObject(Context& context, RenderData& data) {
 		// update highlight sprite
 		if (data.highlight != nullptr) {
 			data.highlight->setPosition(screen_pos);
+		}
+		// update fov shape
+		// note: fov direction is skipped, because the sprite's transformation
+		// matrix (including its rotation) is used
+		//data.fov.setDirection(sf::Vector2f{move_data.look});
+	}
+	// update fov shape if necessary
+	if (context.focus_manager.has(data.id)) {
+		auto const & focus_data = context.focus_manager.query(data.id);
+		if (focus_data.has_changed) {
+			focus_data.has_changed = false;
+			// update fov shape
+			auto radius = focus_data.sight * dungeon.getTileSize().x;
+			if (!focus_data.is_active) {
+				radius = 0.f;
+			}
+			data.fov.setOrigin({radius, radius});
+			data.fov.setRadius(radius);
+			data.fov.setAngle(focus_data.fov);
+			data.fov.setPointCount(static_cast<std::size_t>(focus_data.sight * 20));
 		}
 	}
 	// update animation if necessary
@@ -412,6 +440,13 @@ void drawSprites(Context const& context, Renderables const& objects,
 	}
 }
 
+void drawFovs(Context const& context, Renderables const& objects,
+	sf::RenderTarget& target) {
+	for (auto const & ptr: objects) {
+		target.draw(ptr->fov, ptr->torso_matrix);
+	}
+}
+
 void drawScene(Context const& context, CullingBuffer& buffer,
 	sf::RenderTarget& target, CameraData const& cam, Dungeon& dungeon) {
 	// draw floor tiles
@@ -442,6 +477,13 @@ void drawScene(Context const& context, CullingBuffer& buffer,
 	if (context.grid_color.a != sf::Color::Transparent.a) {
 		target.setView(cam.scene);
 		target.draw(buffer.grid);
+	}
+	// draw debug fov
+	if (context.show_fov) {
+		target.setView(cam.scene);
+		for (auto& pair: buffer. objects) {
+			drawFovs(context, pair.second, target);
+		}
 	}
 }
 

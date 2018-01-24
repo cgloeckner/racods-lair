@@ -15,6 +15,7 @@ struct RenderFixture {
 	core::RenderManager render_manager;
 	core::AnimationManager animation_manager;
 	core::MovementManager movement_manager;
+	core::FocusManager focus_manager;
 	core::DungeonSystem dungeon_system;
 	core::CameraSystem camera_system;
 	utils::LightingSystem lighting_system;
@@ -33,11 +34,12 @@ struct RenderFixture {
 		, render_manager{}
 		, animation_manager{}
 		, movement_manager{}
+		, focus_manager{}
 		, dungeon_system{}
 		, camera_system{{320, 180}}
 		, lighting_system{{320, 180}, dummy_texture}
 		, context{log, render_manager, animation_manager, movement_manager,
-			  dungeon_system, camera_system, lighting_system} {
+			focus_manager, dungeon_system, camera_system, lighting_system} {
 		// add a scenes
 		auto scene = dungeon_system.create(
 			dummy_texture, map_size, sf::Vector2f{64.f, 64.f});
@@ -89,6 +91,9 @@ struct RenderFixture {
 			if (movement_manager.has(id)) {
 				movement_manager.release(id);
 			}
+			if (focus_manager.has(id)) {
+				focus_manager.release(id);
+			}
 			if (animation_manager.has(id)) {
 				animation_manager.release(id);
 			}
@@ -98,13 +103,14 @@ struct RenderFixture {
 		// cleanup systems
 		id_manager.reset();
 		movement_manager.cleanup();
+		focus_manager.cleanup();
 		animation_manager.cleanup();
 		render_manager.cleanup();
 		camera_system.clear();
 	}
 
 	core::ObjectID add_object(
-		sf::Vector2u const& pos, sf::Vector2i const& look) {
+		sf::Vector2u const& pos, sf::Vector2i const& look, float sight=0.f) {
 		auto id = id_manager.acquire();
 		ids.push_back(id);
 		render_manager.acquire(id);
@@ -112,6 +118,11 @@ struct RenderFixture {
 		move_data.pos = sf::Vector2f{pos};
 		move_data.scene = 1u;
 		move_data.look = look;
+		if (sight > 0.f) {
+			auto& focus_data = focus_manager.acquire(id);
+			focus_data.sight = sight;
+			focus_data.fov = 120.f;
+		}
 		auto& ani_data = animation_manager.acquire(id);
 		for (auto& pair : ani_data.tpl.legs) {
 			pair.second = &demo_template.legs;
@@ -341,6 +352,70 @@ BOOST_AUTO_TEST_CASE(move_dirtyflag_will_change_highlight_pos) {
 	// expect different position
 	BOOST_CHECK(actor_render.highlight->getPosition() != sf::Vector2f{});
 }
+
+BOOST_AUTO_TEST_CASE(move_dirtyflag_will_does_not_change_fov_direction) {
+	auto& fix = Singleton<RenderFixture>::get();
+	fix.reset();
+
+	auto id = fix.add_object({3u, 2u}, {0, 1}, 1.f);
+	auto& actor_render = fix.render_manager.query(id);
+	auto& actor_move = fix.movement_manager.query(id);
+	actor_move.has_changed = true;
+	actor_move.look = {0, -1};
+	// assert different value (because it's not updated yet)
+	BOOST_REQUIRE_VECTOR_CLOSE(actor_render.fov.getDirection(), sf::Vector2f(0.f, 1.f), 0.0001f);
+	// update
+	core::render_impl::updateObject(fix.context, actor_render);
+	// assert same direction
+	// note: drawing the fov uses the sprite's transformation matrix
+	// (including the proper rotation)
+	BOOST_REQUIRE_VECTOR_CLOSE(actor_render.fov.getDirection(), sf::Vector2f(0.f, 1.f), 0.0001f);
+}
+
+BOOST_AUTO_TEST_CASE(focus_dirtyflag_will_change_fov_settings) {
+	auto& fix = Singleton<RenderFixture>::get();
+	fix.reset();
+
+	auto id = fix.add_object({3u, 2u}, {0, 1}, 1.f);
+	auto& actor_render = fix.render_manager.query(id);
+	auto& actor_focus = fix.focus_manager.query(id);
+	actor_focus.has_changed = true;
+	actor_focus.sight = 7.5f;
+	actor_focus.fov = 90.f;
+	actor_focus.is_active = true;
+	// assert different values (because it's not updated yet)
+	BOOST_REQUIRE_CLOSE(actor_render.fov.getRadius(), 0.f, 0.001f);
+	BOOST_REQUIRE_CLOSE(actor_render.fov.getAngle(), 360.f, 0.001f);
+	// update
+	core::render_impl::updateObject(fix.context, actor_render);
+	// assert expected settings
+	auto tile_size = fix.dungeon_system[1].getTileSize().x;
+	BOOST_CHECK_CLOSE(actor_render.fov.getRadius(), actor_focus.sight * tile_size, 0.001f);
+	BOOST_CHECK_CLOSE(actor_render.fov.getAngle(), actor_focus.fov, 0.001f);
+}
+
+
+BOOST_AUTO_TEST_CASE(focus_dirtyflag_will_set_radius_to_zero_if_inactive) {
+	auto& fix = Singleton<RenderFixture>::get();
+	fix.reset();
+
+	auto id = fix.add_object({3u, 2u}, {0, 1}, 1.f);
+	auto& actor_render = fix.render_manager.query(id);
+	actor_render.fov.setRadius(10.f);
+	actor_render.fov.setOrigin({10.f, 10.f});
+	auto& actor_focus = fix.focus_manager.query(id);
+	actor_focus.has_changed = true;
+	actor_focus.sight = 7.5f;
+	actor_focus.fov = 90.f;
+	actor_focus.is_active = false;
+	// update
+	core::render_impl::updateObject(fix.context, actor_render);
+	// assert expected settings
+	BOOST_CHECK_CLOSE(actor_render.fov.getRadius(), 0.f, 0.001f);
+	BOOST_CHECK_VECTOR_CLOSE(actor_render.fov.getOrigin(), sf::Vector2f(0.f, 0.f), 0.001f);
+}
+
+// -----------------------------------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_CASE(
 	animation_dirtyflag_will_cause_rect_and_origin_to_be_changed) {

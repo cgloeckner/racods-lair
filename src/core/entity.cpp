@@ -64,7 +64,8 @@ RenderData::RenderData()
 	, legs_matrix{sf::Transform::Identity}
 	, torso_matrix{sf::Transform::Identity}
 	, edges{}
-	, blood_color{sf::Color::Transparent} {}
+	, blood_color{sf::Color::Transparent}
+	, fov{} {}
 
 SoundData::SoundData() : ComponentData{}, sfx{} {}
 

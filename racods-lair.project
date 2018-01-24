@@ -71,6 +71,8 @@
     <File Name="src/main.cpp"/>
     <File Name="src/CMakeLists.txt"/>
     <VirtualDirectory Name="utils">
+      <File Name="src/utils/color.cpp"/>
+      <File Name="src/utils/arcshape.cpp"/>
       <File Name="src/utils/spatial_scene.cpp"/>
       <File Name="src/utils/math2d.cpp"/>
       <File Name="src/utils/verifier.cpp"/>
@@ -127,7 +129,6 @@
       <File Name="src/state/app_launcher.cpp"/>
       <VirtualDirectory Name="tool">
         <File Name="src/state/tool/toolmenu.cpp"/>
-        <File Name="src/state/tool/testmode.cpp"/>
         <File Name="src/state/tool/spriteviewer.cpp"/>
         <File Name="src/state/tool/spritepacker.cpp"/>
         <File Name="src/state/tool/savegameviewer.cpp"/>
@@ -194,9 +195,9 @@
       <File Name="src/engine/ai.cpp"/>
     </VirtualDirectory>
     <VirtualDirectory Name="core">
+      <File Name="src/core/render.cpp"/>
       <File Name="src/core/teleport.cpp"/>
       <File Name="src/core/sound.cpp"/>
-      <File Name="src/core/render.cpp"/>
       <File Name="src/core/physics.cpp"/>
       <File Name="src/core/music.cpp"/>
       <File Name="src/core/movement.cpp"/>
@@ -359,6 +360,8 @@
   <VirtualDirectory Name="include">
     <File Name="include/tools.hpp"/>
     <VirtualDirectory Name="utils">
+      <File Name="include/utils/color.hpp"/>
+      <File Name="include/utils/arcshape.hpp"/>
       <File Name="include/utils/math2d.inl"/>
       <File Name="include/utils/math2d.hpp"/>
       <File Name="include/utils/xml_utils.inl"/>
@@ -437,6 +440,7 @@
       <File Name="include/testsuite/common.hpp"/>
     </VirtualDirectory>
     <VirtualDirectory Name="state">
+      <File Name="src/state/tool/testmode.cpp"/>
       <File Name="include/state/title.hpp"/>
       <File Name="include/state/story.hpp"/>
       <File Name="include/state/settings.hpp"/>
@@ -1709,6 +1713,7 @@
     <File Name="test_suite/sfml_system.cpp"/>
     <File Name="test_suite/main.cpp"/>
     <VirtualDirectory Name="utils">
+      <File Name="test_suite/utils/atlas.hpp"/>
       <File Name="test_suite/utils/tiling.cpp"/>
       <File Name="test_suite/utils/atlas.cpp"/>
       <File Name="test_suite/utils/math2d.cpp"/>
