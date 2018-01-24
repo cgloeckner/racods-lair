@@ -61,8 +61,7 @@ RenderData::RenderData()
 	, torso{}
 	, light{nullptr}
 	, layer{default_value<ObjectLayer>()}
-	, legs_matrix{sf::Transform::Identity}
-	, torso_matrix{sf::Transform::Identity}
+	, matrix{sf::Transform::Identity}
 	, edges{}
 	, blood_color{sf::Color::Transparent}
 	, fov{} {}

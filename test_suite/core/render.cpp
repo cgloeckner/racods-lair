@@ -303,7 +303,7 @@ BOOST_AUTO_TEST_CASE(object_with_only_move_and_render_can_be_updated) {
 }
 
 BOOST_AUTO_TEST_CASE(
-	update_object_without_dirtyflags_doesnt_change_any_matrix) {
+	update_object_without_dirtyflags_doesnt_change_matrix) {
 	auto& fix = Singleton<RenderFixture>::get();
 	fix.reset();
 
@@ -314,13 +314,10 @@ BOOST_AUTO_TEST_CASE(
 	// update
 	core::render_impl::updateObject(fix.context, actor_render);
 	// assert expected matrix
-	BOOST_CHECK_4x4_MATRIX_CLOSE(
-		actor_render.legs_matrix, sf::Transform::Identity, 0.0001f);
-	BOOST_CHECK_4x4_MATRIX_CLOSE(
-		actor_render.torso_matrix, sf::Transform::Identity, 0.0001f);
+	BOOST_CHECK_4x4_MATRIX_CLOSE(actor_render.matrix, sf::Transform::Identity, 0.0001f);
 }
 
-BOOST_AUTO_TEST_CASE(move_dirtyflag_will_change_legs_matrices) {
+BOOST_AUTO_TEST_CASE(move_dirtyflag_will_change_matrix) {
 	auto& fix = Singleton<RenderFixture>::get();
 	fix.reset();
 
@@ -335,7 +332,7 @@ BOOST_AUTO_TEST_CASE(move_dirtyflag_will_change_legs_matrices) {
 	auto expected = sf::Transform::Identity;
 	expected.translate(dungeon.toScreen(actor_move.pos));
 	expected.rotate(core::render_impl::getRotation({0, 1}));
-	BOOST_CHECK_4x4_MATRIX_CLOSE(actor_render.legs_matrix, expected, 0.0001f);
+	BOOST_CHECK_4x4_MATRIX_CLOSE(actor_render.matrix, expected, 0.0001f);
 }
 
 BOOST_AUTO_TEST_CASE(move_dirtyflag_will_change_highlight_pos) {

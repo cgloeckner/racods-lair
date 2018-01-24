@@ -79,7 +79,7 @@ struct RenderData : ComponentData {
 	utils::LayeredSprite<SpriteTorsoLayer> torso;
 	std::unique_ptr<utils::Light> light;
 	ObjectLayer layer;
-	sf::Transform legs_matrix, torso_matrix;
+	sf::Transform matrix; // sprite transformation
 	std::vector<utils::Edge> edges;
 	sf::Color blood_color;
 	utils::ArcShape fov;

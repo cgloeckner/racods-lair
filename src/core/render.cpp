@@ -207,13 +207,11 @@ void updateObject(Context& context, RenderData& data) {
 	if (move_data.has_changed) {
 		float angle = getRotation(move_data.look);
 		auto screen_pos = dungeon.toScreen(move_data.pos);
-		// modify transformation matrices
-		auto matrix = sf::Transform::Identity;
-		matrix.translate(screen_pos);
-		matrix.rotate(angle);
-		data.legs_matrix = matrix;
-		data.torso_matrix = matrix;
 		move_data.has_changed = false;
+		// modify transformation matrix
+		data.matrix = sf::Transform::Identity;
+		data.matrix.translate(screen_pos);
+		data.matrix.rotate(angle);
 		// update object light
 		if (data.light != nullptr) {
 			data.light->pos = screen_pos;
@@ -225,7 +223,6 @@ void updateObject(Context& context, RenderData& data) {
 		// update fov shape
 		// note: fov direction is skipped, because the sprite's transformation
 		// matrix (including its rotation) is used
-		//data.fov.setDirection(sf::Vector2f{move_data.look});
 	}
 	// update fov shape if necessary
 	if (context.focus_manager.has(data.id)) {
@@ -435,15 +432,15 @@ void drawHighlightings(CullingBuffer const & buffer, sf::RenderTarget& target) {
 void drawSprites(Context const& context, Renderables const& objects,
 	sf::RenderTarget& target) {
 	for (auto const& ptr : objects) {
-		ptr->legs.render(target, ptr->legs_matrix, context.sprite_shader);
-		ptr->torso.render(target, ptr->torso_matrix, context.sprite_shader);
+		ptr->legs.render(target, ptr->matrix, context.sprite_shader);
+		ptr->torso.render(target, ptr->matrix, context.sprite_shader);
 	}
 }
 
 void drawFovs(Context const& context, Renderables const& objects,
 	sf::RenderTarget& target) {
 	for (auto const & ptr: objects) {
-		target.draw(ptr->fov, ptr->torso_matrix);
+		target.draw(ptr->fov, ptr->matrix);
 	}
 }
 
