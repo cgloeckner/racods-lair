@@ -1713,7 +1713,6 @@
     <File Name="test_suite/sfml_system.cpp"/>
     <File Name="test_suite/main.cpp"/>
     <VirtualDirectory Name="utils">
-      <File Name="test_suite/utils/atlas.hpp"/>
       <File Name="test_suite/utils/arcshape.cpp"/>
       <File Name="test_suite/utils/tiling.cpp"/>
       <File Name="test_suite/utils/atlas.cpp"/>
