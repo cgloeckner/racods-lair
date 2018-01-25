@@ -16,16 +16,17 @@ Context::Context(core::LogContext& log, core::InputSender& input_sender,
 // ---------------------------------------------------------------------------
 
 void onInput(Context& context, ActionData& data, core::InputEvent const& event) {
+	// ignore move or looking input if actor is dead
 	if (data.dead) {
 		if (event.move != sf::Vector2i() || event.look != sf::Vector2i()) {
 			return;
 		}
 	}
 
-	if (data.moving && event.move != sf::Vector2i{}) {
+	//if (data.moving && event.move != sf::Vector2i{}) {
 		// mark movement stop
-		data.moving = false;
-	}
+		//data.moving = false;
+	//}
 
 	context.input_sender.send(event);
 }
@@ -38,7 +39,7 @@ void onAnimation(
 }
 
 void onMove(Context& context, ActionData& data, core::MoveEvent const& event) {
-	if (event.type == core::MoveEvent::Left) {
+	/*if (event.type == core::MoveEvent::Left) {
 		data.moving = true;
 		// start leg animation
 		core::AnimationEvent ani;
@@ -54,12 +55,12 @@ void onMove(Context& context, ActionData& data, core::MoveEvent const& event) {
 		ani.type = core::AnimationEvent::Move;
 		ani.move = false;
 		context.animation_sender.send(ani);
-	}
+	}*/
 }
 
 void onCollision(
 	Context& context, ActionData& data, core::CollisionEvent const& event) {
-	data.moving = false;
+	//data.moving = false;
 	// note: collision never occures in the middle of a movement. so the
 	// movement is either started or stopped. the corresponding move event
 	// will handle the legs' animation
@@ -96,10 +97,12 @@ void onDeath(Context& context, ActionData& data, DeathEvent const& event) {
 	core::AnimationEvent ani_event;
 	ani_event.force = true; // ignore whether flying or not
 	ani_event.actor = data.id;
+	/*
 	// trigger stop legs' animation
 	ani_event.type = core::AnimationEvent::Move;
 	ani_event.move = false;
 	context.animation_sender.send(ani_event);
+	*/
 	// trigger dying animation
 	ani_event.type = core::AnimationEvent::Action;
 	ani_event.action = core::AnimationAction::Die;

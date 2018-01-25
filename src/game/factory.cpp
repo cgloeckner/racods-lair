@@ -148,8 +148,8 @@ utils::SceneID Factory::createDungeon(rpg::TilesetTemplate const& tileset,
 	builder(tileset, dungeon, settings);
 	
 	// create pathfinding navigator
-	auto& navigator = session.navigation.create(id, session.collision,
-		dungeon, builder);
+	auto& navigator = session.navigation.create(id, session.movement,
+		session.collision, dungeon, builder);
 	session.path.addScene(id, navigator);
 	
 	// create provided entities
@@ -250,7 +250,6 @@ core::ObjectID Factory::createObject(
 	// create object animations
 	auto& a = session.animation.query(id);
 	a.flying = entity.flying;
-	a.is_moving = a.flying;
 	if (!entity.sprite->legs.frames.empty()) {
 		a.tpl.legs[core::SpriteLegLayer::Base] = &entity.sprite->legs;
 	}
@@ -341,7 +340,7 @@ core::ObjectID Factory::createBullet(rpg::CombatMetaData const& meta,
 
 	// override collision radius
 	auto& c = session.collision.query(id);
-	c.radius = bullet->radius;
+	c.shape.radius  = bullet->radius;
 
 	// create object projectile
 	auto& p = session.projectile.acquire(id);
@@ -718,7 +717,10 @@ void Factory::handle(rpg::SpawnEvent const& event) {
 	// create missing components
 	if (entity.collide) {
 		ASSERT(!session.collision.has(id));
-		session.collision.acquire(id);
+		auto& c = session.collision.acquire(id);
+		/// @TODO use template
+		c.shape.is_aabb = false;
+		c.shape.radius = 0.5f;
 	}
 	
 	// re-setup components

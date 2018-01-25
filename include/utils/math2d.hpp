@@ -54,6 +54,7 @@ struct Collider {
 };
 
 /// Test whether Point and Circle collide
+/// @pre !c2.is_aabb
 /// @param p1 Position of the Point
 /// @param p2 Center of the Circle
 /// @param c2 Collider info of the Circle
@@ -61,6 +62,7 @@ struct Collider {
 bool testPointCirc(sf::Vector2f const & p1, sf::Vector2f const & p2, Collider const & c2);
 
 /// Test whether Point and AABB collide
+/// @pre c2.is_aabb
 /// @param p1 Position of the Point
 /// @param p2 Topleft Position of the AABB
 /// @param c2 Collider info of the AABB
@@ -68,6 +70,7 @@ bool testPointCirc(sf::Vector2f const & p1, sf::Vector2f const & p2, Collider co
 bool testPointAABB(sf::Vector2f const & p1, sf::Vector2f const & p2, Collider const & c2);
 
 /// Test whether two Circles collide
+/// @pre !c1.is_aabb and !c2.is_aabb
 /// @param p1 Center of the first Circle
 /// @param c1 Collider info of the first Circle
 /// @param p2 Center of the second Circle
@@ -76,6 +79,7 @@ bool testPointAABB(sf::Vector2f const & p1, sf::Vector2f const & p2, Collider co
 bool testCircCirc(sf::Vector2f const & p1, Collider const & c1, sf::Vector2f const & p2, Collider const & c2);
 
 /// Test whether two AABBs collide
+/// @pre c1.is_aabb and c2.is_aabb
 /// @param p1 Topleft Position of the first AABB
 /// @param c1 Collider info of the first AABB
 /// @param p2 Topleft Position of the second AABB
@@ -84,6 +88,7 @@ bool testCircCirc(sf::Vector2f const & p1, Collider const & c1, sf::Vector2f con
 bool testAABBAABB(sf::Vector2f const & p1, Collider const & c1, sf::Vector2f const & p2, Collider const & c2);
 
 /// Test whether a Circle and an AABB collide
+/// @pre !c1.is_aabb and c2.is_aabb
 /// @param p1 Center of the Circle
 /// @param c1 Collider info of the Circle
 /// @param p2 Topleft Position of the AABB

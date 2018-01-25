@@ -103,6 +103,7 @@ struct ProjectileFixture {
 		cell.entities.push_back(id);
 		auto& coll = collision_manager.acquire(id);
 		coll.is_projectile = true;
+		coll.shape.radius = bullet.radius;
 		auto& proj = projectile_manager.acquire(id);
 		proj.bullet = &bullet;
 		proj.meta_data = meta_data;
@@ -118,7 +119,8 @@ struct ProjectileFixture {
 		move.target = sf::Vector2u{pos};
 		auto& cell = dungeon_system[move.scene].getCell(move.target);
 		cell.entities.push_back(id);
-		collision_manager.acquire(id);
+		auto& c = collision_manager.acquire(id);
+		c.shape.radius = 0.5f;
 		return id;
 	}
 };
@@ -181,69 +183,6 @@ BOOST_AUTO_TEST_CASE(projectile_can_hit_if_target_is_located_near_by) {
 	BOOST_CHECK(
 		rpg::projectile_impl::canHit(fix.context, proj, {2.f, 2.f}, target));
 }
-
-// ---------------------------------------------------------------------------
-
-/*
-BOOST_AUTO_TEST_CASE(projectile_targets_can_be_hit) {
-	auto& fix = Singleton<ProjectileFixture>::get();
-	fix.reset();
-
-	auto bullet = fix.add_bullet({2.f, 2.f});
-	auto nocoll = fix.add_object({2.f, 4.f});
-	fix.collision_manager.release(nocoll);
-	fix.collision_manager.cleanup();
-	auto target = fix.add_object({2.2f, 2.f});
-	auto second = fix.add_object({2.2f, 2.1f});
-	auto otherproj = fix.add_object({3.f, 3.f});
-	fix.projectile_manager.acquire(otherproj);
-	auto toofar = fix.add_object({5.f, 5.f});
-	auto& proj = fix.projectile_manager.query(bullet);
-	auto targets = rpg::projectile_impl::getTargets(fix.context, proj,
-fix.dungeon_system[1u], {2.f, 2.f});
-	BOOST_REQUIRE_EQUAL(targets.size(), 2u);
-	BOOST_CHECK(utils::contains(targets, target));
-	BOOST_CHECK(utils::contains(targets, second));
-	BOOST_CHECK(!utils::contains(targets, bullet));
-	BOOST_CHECK(!utils::contains(targets, nocoll));
-	BOOST_CHECK(!utils::contains(targets, otherproj));
-	BOOST_CHECK(!utils::contains(targets, toofar));
-}
-
-BOOST_AUTO_TEST_CASE(projectile_has_no_targets_if_radius_is_zero) {
-	auto& fix = Singleton<ProjectileFixture>::get();
-	fix.reset();
-
-	rpg::BulletTemplate other;
-	other.radius = 0.f;
-
-	auto bullet = fix.add_bullet({2.f, 2.f});
-	fix.add_object({2.2f, 2.1f});
-	auto& proj = fix.projectile_manager.query(bullet);
-	proj.bullet = &other;
-	auto targets = rpg::projectile_impl::getTargets(fix.context, proj,
-fix.dungeon_system[1u], {2.f, 2.f});
-	BOOST_CHECK(targets.empty());
-}
-
-BOOST_AUTO_TEST_CASE(projectile_has_only_very_few_targets_if_radius_is_small) {
-	auto& fix = Singleton<ProjectileFixture>::get();
-	fix.reset();
-
-	rpg::BulletTemplate other;
-	other.radius = 0.1f;
-
-	auto bullet = fix.add_bullet({2.f, 2.f});
-	auto target = fix.add_object({2.f, 2.1f});
-	fix.add_object({3.f, 2.f});
-	auto& proj = fix.projectile_manager.query(bullet);
-	proj.bullet = &other;
-	auto targets = rpg::projectile_impl::getTargets(fix.context, proj,
-fix.dungeon_system[1u], {2.f, 2.f});
-	BOOST_REQUIRE_EQUAL(targets.size(), 1u);
-	BOOST_CHECK_EQUAL(targets[0], target);
-}
-*/
 
 // ---------------------------------------------------------------------------
 

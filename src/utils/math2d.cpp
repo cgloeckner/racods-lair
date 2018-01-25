@@ -62,27 +62,34 @@ void Collider::updateRadiusAABB() {
 }
 
 bool testPointCirc(sf::Vector2f const & p1, sf::Vector2f const & p2, Collider const & c2) {
+	ASSERT(!c2.is_aabb);
 	auto d = distance(p1, p2);
 	return d <= c2.radius * c2.radius; // 'cause d is squared
 }
 
 bool testPointAABB(sf::Vector2f const & p1, sf::Vector2f const & p2, Collider const & c2) {
+	ASSERT(c2.is_aabb);
 	return (p2.x <= p1.x) and (p2.y <= p1.y) and
 		(p1.x <= p2.x + c2.size.x) and (p1.y <= p2.y + c2.size.y);
 }
 
 bool testCircCirc(sf::Vector2f const & p1, Collider const & c1, sf::Vector2f const & p2, Collider const & c2) {
+	// note: AABBs can be used as circle in broadphase collision
 	auto d = distance(p1, p2);
 	float r = c1.radius + c2.radius;
 	return d <= r * r; // 'cause d is squared
 }
 
 bool testAABBAABB(sf::Vector2f const & p1, Collider const & c1, sf::Vector2f const & p2, Collider const & c2) {
+	ASSERT(c1.is_aabb);
+	ASSERT(c2.is_aabb);
 	return (p1.x <= p2.x + c2.size.x) && (p1.y <= p2.y + c2.size.y) and
 		(p2.x <= p1.x + c1.size.x) && (p2.y <= p1.y + c1.size.y);
 }
 
 bool testCircAABB(sf::Vector2f const & p1, Collider const & c1, sf::Vector2f const & p2, Collider const & c2) {
+	ASSERT(!c1.is_aabb);
+	ASSERT(c2.is_aabb);
 	// broadphase test using AABBs bounding circle
 	if (!testCircCirc(p1, c1, p2, c2)) {
 		// Circle and AABB are way too far away from each other

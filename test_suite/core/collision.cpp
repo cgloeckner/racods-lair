@@ -7,6 +7,23 @@
 #include <utils/algorithm.hpp>
 #include <core/collision.hpp>
 
+struct DemoTrigger: core::BaseTrigger {
+	bool flag;
+	
+	DemoTrigger()
+		: core::BaseTrigger{}
+		, flag{false} {
+	}
+	
+	void execute(core::ObjectID actor) override {
+		flag = true;
+	}
+	
+	bool isExpired() const override {
+		return flag;
+	}
+};
+
 struct CollisionFixture {
 	sf::Texture dummy_tileset;
 	core::IdManager id_manager;
@@ -51,12 +68,13 @@ struct CollisionFixture {
 			for (auto x = 0u; x < 5u; ++x) {
 				auto& cell = dungeon.getCell({x, y});
 				cell.entities.clear();
+				cell.terrain = core::Terrain::Floor;
 				cell.trigger = nullptr;
 			}
 		}
 		// remove components
 		for (auto id : ids) {
-			collision_manager.release(id);
+			collision_manager.tryRelease(id);
 			movement_manager.release(id);
 		}
 		ids.clear();
@@ -70,15 +88,18 @@ struct CollisionFixture {
 		teleport_sender.clear();
 	}
 
-	core::ObjectID add_object(sf::Vector2u const& pos, bool is_projectile) {
+	core::ObjectID add_object(sf::Vector2u const& pos, utils::Collider* shape=nullptr) {
 		auto id = id_manager.acquire();
 		ids.push_back(id);
-		auto& col = collision_manager.acquire(id);
-		col.is_projectile = is_projectile;
-		col.radius = core::collision_impl::MAX_PROJECTILE_RADIUS;
+		if (shape != nullptr) {
+			auto& col = collision_manager.acquire(id);
+			col.is_projectile = false;
+			col.shape = *shape; // copy shape
+		}
 		auto& mve = movement_manager.acquire(id);
 		mve.scene = 1u;
 		mve.pos = sf::Vector2f{pos};
+		mve.last_pos = mve.pos;
 		auto& dungeon = dungeon_system[1u];
 		dungeon.getCell(pos).entities.push_back(id);
 		return id;
@@ -107,434 +128,624 @@ BOOST_AUTO_TEST_CASE(tile_collision_does_not_occure_for_floor_tiles) {
 	BOOST_CHECK(!core::checkTileCollision(cell));
 }
 
-BOOST_AUTO_TEST_CASE(regular_objects_collision_fails_if_bullet_passed_in) {
+// ----------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE(object_collision_stops_if_actor_cannot_collide) {
 	auto& fix = Singleton<CollisionFixture>::get();
 	fix.reset();
 
-	auto bullet = fix.add_object({1u, 1u}, true);
-	auto& c_b = fix.collision_manager.query(bullet);
-	auto& dungeon = fix.dungeon_system[1];
-	auto& cell = dungeon.getCell({1u, 1u});
-	BOOST_CHECK_ASSERT(
-		core::checkObjectCollision(fix.collision_manager, cell, c_b));
+	utils::Collider shape;
+
+	auto actor = fix.add_object({1u, 1u});
+	auto target = fix.add_object({1u, 1u}, &shape);
+	
+	auto const & actor_move  = fix.movement_manager.query(actor);
+	auto const & target_move = fix.movement_manager.query(target);
+	
+	auto found = core::checkObjectCollision(fix.collision_manager, actor, actor_move.pos, target, target_move.pos);
+	BOOST_CHECK(!found);
 }
 
-BOOST_AUTO_TEST_CASE(
-	regular_object_does_not_collide_if_nobody_to_collide_with) {
+BOOST_AUTO_TEST_CASE(object_collision_stops_if_target_cannot_collide) {
 	auto& fix = Singleton<CollisionFixture>::get();
 	fix.reset();
 
-	auto object = fix.add_object({1u, 1u}, false);
-	auto& c_o = fix.collision_manager.query(object);
-	auto& dungeon = fix.dungeon_system[1];
-	auto& cell = dungeon.getCell({1u, 1u});
-	BOOST_CHECK(
-		core::checkObjectCollision(fix.collision_manager, cell, c_o).empty());
+	utils::Collider shape;
+
+	auto actor = fix.add_object({1u, 1u}, &shape);
+	auto target = fix.add_object({1u, 1u});
+	
+	auto const & actor_move  = fix.movement_manager.query(actor);
+	auto const & target_move = fix.movement_manager.query(target);
+	
+	auto found = core::checkObjectCollision(fix.collision_manager, actor, actor_move.pos, target, target_move.pos);
+	BOOST_CHECK(!found);
 }
 
-BOOST_AUTO_TEST_CASE(
-	regular_object_collides_if_cell_is_shared_with_another_regular_object) {
+BOOST_AUTO_TEST_CASE(object_collision_detects_circ_circ_collision) {
 	auto& fix = Singleton<CollisionFixture>::get();
 	fix.reset();
 
-	auto object = fix.add_object({1u, 1u}, false);
-	auto other = fix.add_object({1u, 1u}, false);
-	auto& c_o = fix.collision_manager.query(object);
-	auto& dungeon = fix.dungeon_system[1];
-	auto& cell = dungeon.getCell({1u, 1u});
-	auto colliders = core::checkObjectCollision(fix.collision_manager, cell, c_o);
-	BOOST_CHECK(utils::contains(colliders, other));
+	utils::Collider shape;
+	shape.radius  = 0.5f;
+	shape.is_aabb = false;
+
+	auto actor = fix.add_object({1u, 1u}, &shape);
+	auto target = fix.add_object({1u, 1u}, &shape);
+	
+	auto const & actor_move  = fix.movement_manager.query(actor);
+	auto const & target_move = fix.movement_manager.query(target);
+	
+	auto found = core::checkObjectCollision(fix.collision_manager, actor, actor_move.pos, target, target_move.pos);
+	BOOST_CHECK(found);
 }
 
-BOOST_AUTO_TEST_CASE(
-	regular_object_does_not_collide_with_object_that_should_be_ignored) {
+BOOST_AUTO_TEST_CASE(object_collision_detects_circ_aabb_collision) {
 	auto& fix = Singleton<CollisionFixture>::get();
 	fix.reset();
 
-	auto object = fix.add_object({1u, 1u}, false);
-	auto other = fix.add_object({1u, 1u}, false);
-	auto& c_o = fix.collision_manager.query(object);
-	c_o.ignore.push_back(other);
-	auto& dungeon = fix.dungeon_system[1];
-	auto& cell = dungeon.getCell({1u, 1u});
-	BOOST_CHECK(
-		core::checkObjectCollision(fix.collision_manager, cell, c_o).empty());
+	utils::Collider shape1, shape2;
+	shape1.radius  = 0.5f;
+	shape1.is_aabb = false;
+	shape2.size    = {0.5f, 0.5f};
+	shape2.is_aabb = true;
+	shape2.updateRadiusAABB(); // <-- update broadphase radius using AABB size
+
+	auto actor = fix.add_object({1u, 1u}, &shape1);
+	auto target = fix.add_object({1u, 1u}, &shape2);
+	
+	auto const & actor_move  = fix.movement_manager.query(actor);
+	auto const & target_move = fix.movement_manager.query(target);
+	
+	auto found = core::checkObjectCollision(fix.collision_manager, actor, actor_move.pos, target, target_move.pos);
+	BOOST_CHECK(found);
 }
 
-BOOST_AUTO_TEST_CASE(
-	regular_object_does_not_collide_if_cell_is_only_shared_with_a_bullet) {
+BOOST_AUTO_TEST_CASE(object_collision_detects_aabb_circ_collision) {
 	auto& fix = Singleton<CollisionFixture>::get();
 	fix.reset();
 
-	auto object = fix.add_object({1u, 1u}, false);
-	fix.add_object({1u, 1u}, true);
-	auto& c_o = fix.collision_manager.query(object);
-	auto& dungeon = fix.dungeon_system[1];
-	auto& cell = dungeon.getCell({1u, 1u});
-	BOOST_CHECK(
-		core::checkObjectCollision(fix.collision_manager, cell, c_o).empty());
+	utils::Collider shape1, shape2;
+	shape1.radius  = 0.5f;
+	shape1.is_aabb = false;
+	shape2.size    = {0.5f, 0.5f};
+	shape2.is_aabb = true;
+	shape2.updateRadiusAABB(); // <-- update broadphase radius using AABB size
+
+	auto actor = fix.add_object({1u, 1u}, &shape2);
+	auto target = fix.add_object({1u, 1u}, &shape1);
+	
+	auto const & actor_move  = fix.movement_manager.query(actor);
+	auto const & target_move = fix.movement_manager.query(target);
+	
+	auto found = core::checkObjectCollision(fix.collision_manager, actor, actor_move.pos, target, target_move.pos);
+	BOOST_CHECK(found);
 }
 
-BOOST_AUTO_TEST_CASE(bullet_collision_fails_if_regular_object_was_passed_in) {
+BOOST_AUTO_TEST_CASE(object_collision_detects_aabb_aabb_collision) {
 	auto& fix = Singleton<CollisionFixture>::get();
 	fix.reset();
 
-	auto object = fix.add_object({1u, 1u}, false);
-	auto& c_o = fix.collision_manager.query(object);
-	BOOST_CHECK_ASSERT(core::checkBulletCollision(
-		fix.collision_manager, fix.movement_manager, fix.dungeon_system, c_o));
+	utils::Collider shape;
+	shape.size    = {0.5f, 0.5f};
+	shape.is_aabb = true;
+	shape.updateRadiusAABB(); // <-- update broadphase radius using AABB size
+
+	auto actor = fix.add_object({1u, 1u}, &shape);
+	auto target = fix.add_object({1u, 1u}, &shape);
+	
+	auto const & actor_move  = fix.movement_manager.query(actor);
+	auto const & target_move = fix.movement_manager.query(target);
+	
+	auto found = core::checkObjectCollision(fix.collision_manager, actor, actor_move.pos, target, target_move.pos);
+	BOOST_CHECK(found);
 }
 
-BOOST_AUTO_TEST_CASE(
-	bullet_does_not_collide_if_regular_object_is_too_far_away) {
+BOOST_AUTO_TEST_CASE(object_collision_detects_no_collision_if_too_far) {
 	auto& fix = Singleton<CollisionFixture>::get();
 	fix.reset();
 
-	auto bullet = fix.add_object({1u, 1u}, true);
-	auto object = fix.add_object({2u, 1u}, false);
-	auto& m_o = fix.movement_manager.query(object);
-	m_o.pos.x += 0.1f;
-	auto& c_b = fix.collision_manager.query(bullet);
-	auto targets = core::checkBulletCollision(
-		fix.collision_manager, fix.movement_manager, fix.dungeon_system, c_b);
-	BOOST_CHECK(targets.empty());
+	utils::Collider shape;
+	shape.radius  = 0.9f;
+	shape.is_aabb = false;
+
+	auto actor = fix.add_object({1u, 1u}, &shape);
+	auto target = fix.add_object({3u, 1u}, &shape);
+	
+	auto const & actor_move  = fix.movement_manager.query(actor);
+	auto const & target_move = fix.movement_manager.query(target);
+	
+	auto found = core::checkObjectCollision(fix.collision_manager, actor, actor_move.pos, target, target_move.pos);
+	BOOST_CHECK(!found);
 }
 
-BOOST_AUTO_TEST_CASE(bullet_collides_if_regular_object_at_same_cell) {
+BOOST_AUTO_TEST_CASE(object_collision_detects_no_collision_if_on_ignore) {
 	auto& fix = Singleton<CollisionFixture>::get();
 	fix.reset();
 
-	auto bullet = fix.add_object({2u, 2u}, true);
-	auto object = fix.add_object({2u, 2u}, false);
-	auto& b_o = fix.movement_manager.query(bullet);
-	b_o.pos.x -= 0.49f;
-	auto& m_o = fix.movement_manager.query(object);
-	m_o.pos.x += 0.49f;
-	auto& c_b = fix.collision_manager.query(bullet);
-	auto targets = core::checkBulletCollision(
-		fix.collision_manager, fix.movement_manager, fix.dungeon_system, c_b);
-	BOOST_REQUIRE_EQUAL(targets.size(), 1u);
-	BOOST_CHECK_EQUAL(targets[0], object);
+	utils::Collider shape;
+	shape.radius  = 1.f;
+	shape.is_aabb = false;
+
+	auto actor = fix.add_object({1u, 1u}, &shape);
+	auto target = fix.add_object({3u, 1u}, &shape);
+	
+	auto& actor_coll = fix.collision_manager.query(actor);
+	actor_coll.ignore.push_back(target);
+	
+	auto const & actor_move  = fix.movement_manager.query(actor);
+	auto const & target_move = fix.movement_manager.query(target);
+	
+	auto found = core::checkObjectCollision(fix.collision_manager, actor, actor_move.pos, target, target_move.pos);
+	BOOST_CHECK(!found);
 }
 
-BOOST_AUTO_TEST_CASE(bullet_collides_if_regular_object_at_neigbor_cell) {
+// ----------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE(regular_object_collision_detects_one_object_collision) {
 	auto& fix = Singleton<CollisionFixture>::get();
 	fix.reset();
 
-	auto bullet = fix.add_object({1u, 1u}, true);
-	auto object = fix.add_object({2u, 1u}, false);
-	auto& m_o = fix.movement_manager.query(object);
-	m_o.pos.x -= 0.1f;
-	auto& c_b = fix.collision_manager.query(bullet);
-	auto targets = core::checkBulletCollision(
-		fix.collision_manager, fix.movement_manager, fix.dungeon_system, c_b);
-	BOOST_REQUIRE_EQUAL(targets.size(), 1u);
-	BOOST_CHECK_EQUAL(targets[0], object);
+	utils::Collider shape;
+	shape.radius  = 1.f;
+	shape.is_aabb = false;
+
+	auto actor = fix.add_object({1u, 1u}, &shape);
+	auto target = fix.add_object({2u, 1u}, &shape);
+	auto other = fix.add_object({1u, 2u}, &shape);
+	
+	auto const & actor_move = fix.movement_manager.query(actor);
+	
+	core::CollisionResult result;
+	core::collision_impl::checkAnyCollision(fix.context, actor_move, result);
+	BOOST_REQUIRE(result.meansCollision());
+	BOOST_CHECK(result.interrupt);
+	BOOST_REQUIRE_EQUAL(result.objects.size(), 1u);
+	BOOST_CHECK(utils::contains(result.objects, target) || utils::contains(result.objects, other));
 }
 
-BOOST_AUTO_TEST_CASE(bullet_cannot_collide_with_same_object_twice) {
+BOOST_AUTO_TEST_CASE(regular_object_cannot_collide_with_projectile) {
 	auto& fix = Singleton<CollisionFixture>::get();
 	fix.reset();
 
-	auto bullet = fix.add_object({1u, 1u}, true);
-	auto object = fix.add_object({2u, 1u}, false);
-	auto& m_o = fix.movement_manager.query(object);
-	m_o.pos.x -= 0.1f;
-	auto& c_b = fix.collision_manager.query(bullet);
-	c_b.ignore.push_back(object);
-	auto targets = core::checkBulletCollision(
-		fix.collision_manager, fix.movement_manager, fix.dungeon_system, c_b);
-	BOOST_CHECK(targets.empty());
+	utils::Collider shape;
+	shape.radius  = 1.f;
+	shape.is_aabb = false;
+
+	auto actor = fix.add_object({1u, 1u}, &shape);
+	auto target = fix.add_object({2u, 1u}, &shape);
+	
+	fix.collision_manager.query(target).is_projectile = true;
+	
+	auto const & actor_move = fix.movement_manager.query(actor);
+	
+	core::CollisionResult result;
+	core::collision_impl::checkAnyCollision(fix.context, actor_move, result);
+	BOOST_REQUIRE(!result.meansCollision());
 }
 
-BOOST_AUTO_TEST_CASE(bullet_collides_with_all_possible_regular_object) {
+BOOST_AUTO_TEST_CASE(projectile_can_collide_with_regular_object) {
 	auto& fix = Singleton<CollisionFixture>::get();
 	fix.reset();
 
-	auto bullet = fix.add_object({1u, 1u}, true);
-	auto object = fix.add_object({1u, 1u}, false);
-	auto& m_o = fix.movement_manager.query(object);
-	m_o.pos.x += 0.35f;
-	auto other = fix.add_object({1u, 1u}, false);
-	auto& m_o2 = fix.movement_manager.query(other);
-	m_o2.pos.x += 0.2f;
-	auto last = fix.add_object({1u, 1u}, false);
-	auto& m_l = fix.movement_manager.query(last);
-	m_l.pos.x += 0.3f;
-	auto& c_b = fix.collision_manager.query(bullet);
-	auto targets = core::checkBulletCollision(
-		fix.collision_manager, fix.movement_manager, fix.dungeon_system, c_b);
-	BOOST_REQUIRE_EQUAL(targets.size(), 3u);
-	BOOST_CHECK(utils::contains(targets, object));
-	BOOST_CHECK(utils::contains(targets, other));
-	BOOST_CHECK(utils::contains(targets, last));
+	utils::Collider shape;
+	shape.radius  = 1.f;
+	shape.is_aabb = false;
+
+	auto actor = fix.add_object({1u, 1u}, &shape);
+	auto target = fix.add_object({2u, 1u}, &shape);
+	
+	fix.collision_manager.query(target).is_projectile = true;
+	
+	auto const & target_move = fix.movement_manager.query(target);
+	
+	core::CollisionResult result;
+	core::collision_impl::checkAnyCollision(fix.context, target_move, result);
+	BOOST_REQUIRE(result.meansCollision());
 }
 
-BOOST_AUTO_TEST_CASE(bullet_does_not_collide_with_other_bullet) {
+BOOST_AUTO_TEST_CASE(projectiles_can_collide_with_each_other) {
 	auto& fix = Singleton<CollisionFixture>::get();
 	fix.reset();
 
-	auto bullet = fix.add_object({1u, 1u}, true);
-	fix.add_object({1u, 1u}, true);
-	auto& c_b = fix.collision_manager.query(bullet);
-	auto targets = core::checkBulletCollision(
-		fix.collision_manager, fix.movement_manager, fix.dungeon_system, c_b);
-	BOOST_CHECK(targets.empty());
+	utils::Collider shape;
+	shape.radius  = 1.f;
+	shape.is_aabb = false;
+
+	auto actor = fix.add_object({1u, 1u}, &shape);
+	auto target = fix.add_object({2u, 1u}, &shape);
+	
+	fix.collision_manager.query(actor).is_projectile = true;
+	fix.collision_manager.query(target).is_projectile = true;
+	
+	auto const & actor_move = fix.movement_manager.query(actor);
+	
+	core::CollisionResult result;
+	core::collision_impl::checkAnyCollision(fix.context, actor_move, result);
+	BOOST_REQUIRE(result.meansCollision());
 }
 
-// ---------------------------------------------------------------------------
-
-BOOST_AUTO_TEST_CASE(regular_objects_tile_collision_is_checked_on_tile_left) {
+BOOST_AUTO_TEST_CASE(regular_object_collision_detects_tile_collision_but_no_object_collisions) {
 	auto& fix = Singleton<CollisionFixture>::get();
 	fix.reset();
 
-	auto actor = fix.add_object({1u, 1u}, false);
-	// move into void
-	core::MoveEvent event;
-	event.actor = actor;
-	event.source = {1u, 1u};
-	event.target = {1u, 0u};
-	event.type = core::MoveEvent::Left;
-	auto& m_a = fix.movement_manager.query(actor);
-	m_a.target = event.target;
-	// propagate movement
-	auto const& f_a = fix.collision_manager.query(actor);
-	core::collision_impl::onTileLeft(fix.context, f_a, event);
-	// expect tile collision
-	auto const& colls = fix.collision_sender.data();
-	BOOST_REQUIRE_EQUAL(colls.size(), 1u);
-	BOOST_CHECK_EQUAL(colls[0].actor, actor);
-	BOOST_CHECK_EQUAL(colls[0].collider, 0u);
-	BOOST_CHECK(colls[0].reset);
-	BOOST_CHECK_VECTOR_EQUAL(colls[0].pos, event.target);
-	BOOST_CHECK_VECTOR_EQUAL(colls[0].reset_to, event.source);
+	utils::Collider shape;
+	shape.radius  = 1.f;
+	shape.is_aabb = false;
+
+	auto actor = fix.add_object({1u, 1u}, &shape);
+	auto target = fix.add_object({2u, 1u}, &shape);
+	auto other = fix.add_object({1u, 2u}, &shape);
+	
+	auto const & actor_move = fix.movement_manager.query(actor);
+	auto& cell = fix.dungeon_system[1u].getCell(sf::Vector2u{actor_move.pos});
+	cell.terrain = core::Terrain::Wall;
+	
+	core::CollisionResult result;
+	core::collision_impl::checkAnyCollision(fix.context, actor_move, result);
+	BOOST_REQUIRE(result.meansCollision());
+	BOOST_CHECK(result.interrupt);
+	BOOST_REQUIRE_EQUAL(result.objects.size(), 0u);
 }
 
-BOOST_AUTO_TEST_CASE(regular_objects_object_collision_is_checked_on_tile_left) {
+BOOST_AUTO_TEST_CASE(collision_with_any_object_does_interrupt) {
 	auto& fix = Singleton<CollisionFixture>::get();
 	fix.reset();
 
-	auto actor = fix.add_object({1u, 1u}, false);
-	auto other = fix.add_object({2u, 1u}, false);
-	// move into void
-	core::MoveEvent event;
-	event.actor = actor;
-	event.source = {1u, 1u};
-	event.target = {2u, 1u};
-	event.type = core::MoveEvent::Left;
-	auto& m_a = fix.movement_manager.query(actor);
-	m_a.target = event.target;
-	// propagate movement
-	auto const& f_a = fix.collision_manager.query(actor);
-	core::collision_impl::onTileLeft(fix.context, f_a, event);
-	// expect object collision
-	auto const& colls = fix.collision_sender.data();
-	BOOST_REQUIRE_EQUAL(colls.size(), 1u);
-	BOOST_CHECK_EQUAL(colls[0].actor, actor);
-	BOOST_CHECK_EQUAL(colls[0].collider, other);
-	BOOST_CHECK(colls[0].reset);
-	BOOST_CHECK_VECTOR_EQUAL(colls[0].pos, event.target);
-	BOOST_CHECK_VECTOR_EQUAL(colls[0].reset_to, event.source);
-	// expect no forwarded movement
-	BOOST_CHECK(fix.move_sender.data().empty());
+	utils::Collider shape;
+	shape.radius  = 1.f;
+	shape.is_aabb = false;
+
+	auto actor = fix.add_object({1u, 1u}, &shape);
+	auto target = fix.add_object({2u, 1u}, &shape);
+	auto other = fix.add_object({1u, 2u}, &shape);
+	
+	auto const & actor_move = fix.movement_manager.query(actor);
+	auto& target_coll = fix.collision_manager.query(target);
+	target_coll.is_projectile = true;
+	auto& cell = fix.dungeon_system[1u].getCell(sf::Vector2u{actor_move.pos});
+	cell.terrain = core::Terrain::Wall;
+	
+	core::CollisionResult result;
+	core::collision_impl::checkAnyCollision(fix.context, actor_move, result);
+	BOOST_REQUIRE(result.meansCollision());
+	BOOST_CHECK(result.interrupt);
+	BOOST_REQUIRE_EQUAL(result.objects.size(), 0u);
 }
 
-BOOST_AUTO_TEST_CASE(bullets_tile_collision_is_not_checked_on_tile_left) {
+BOOST_AUTO_TEST_CASE(projectile_object_collision_detects_one_object_collision) {
 	auto& fix = Singleton<CollisionFixture>::get();
 	fix.reset();
 
-	auto actor = fix.add_object({1u, 1u}, true);
-	// move into void
-	core::MoveEvent event;
-	event.actor = actor;
-	event.source = {1u, 1u};
-	event.target = {1u, 0u};
-	event.type = core::MoveEvent::Left;
-	auto& m_a = fix.movement_manager.query(actor);
-	m_a.target = event.target;
-	// propagate movement
-	auto const& f_a = fix.collision_manager.query(actor);
-	core::collision_impl::onTileLeft(fix.context, f_a, event);
-	// expect no tile collision
-	auto const& colls = fix.collision_sender.data();
-	BOOST_CHECK(colls.empty());
+	utils::Collider shape;
+	shape.radius  = 1.f;
+	shape.is_aabb = false;
+
+	auto actor = fix.add_object({1u, 1u}, &shape);
+	auto target = fix.add_object({2u, 1u}, &shape);
+	auto other = fix.add_object({1u, 2u}, &shape);
+	
+	auto const & actor_move  = fix.movement_manager.query(actor);
+	auto& actor_coll = fix.collision_manager.query(actor);
+	actor_coll.is_projectile = true;
+	
+	core::CollisionResult result;
+	core::collision_impl::checkAnyCollision(fix.context, actor_move, result);
+	BOOST_REQUIRE(result.meansCollision());
+	BOOST_REQUIRE_EQUAL(result.objects.size(), 2u);
+	BOOST_CHECK(utils::contains(result.objects, target));
+	BOOST_CHECK(utils::contains(result.objects, other));
 }
 
-BOOST_AUTO_TEST_CASE(bullets_object_collision_is_not_checked_on_tile_left) {
+BOOST_AUTO_TEST_CASE(projectile_object_collision_detects_tile_collision_but_and_all_object_collisions) {
 	auto& fix = Singleton<CollisionFixture>::get();
 	fix.reset();
 
-	auto actor = fix.add_object({1u, 1u}, true);
-	fix.add_object({2u, 1u}, false);
-	// move into void
-	core::MoveEvent event;
-	event.actor = actor;
-	event.source = {1u, 1u};
-	event.target = {2u, 1u};
-	event.type = core::MoveEvent::Left;
-	auto& m_a = fix.movement_manager.query(actor);
-	m_a.target = event.target;
-	// propagate movement
-	auto const& f_a = fix.collision_manager.query(actor);
-	core::collision_impl::onTileLeft(fix.context, f_a, event);
-	// expect no collision
-	auto const& colls = fix.collision_sender.data();
-	BOOST_REQUIRE(colls.empty());
+	utils::Collider shape;
+	shape.radius  = 1.f;
+	shape.is_aabb = false;
+
+	auto actor = fix.add_object({1u, 1u}, &shape);
+	auto target = fix.add_object({2u, 1u}, &shape);
+	auto other = fix.add_object({1u, 2u}, &shape);
+	
+	auto const & actor_move = fix.movement_manager.query(actor);
+	auto& actor_coll = fix.collision_manager.query(actor);
+	actor_coll.is_projectile = true;
+	auto& cell = fix.dungeon_system[1u].getCell(sf::Vector2u{actor_move.pos});
+	cell.terrain = core::Terrain::Wall;
+	
+	core::CollisionResult result;
+	core::collision_impl::checkAnyCollision(fix.context, actor_move, result);
+	BOOST_REQUIRE(result.meansCollision());
+	BOOST_REQUIRE_EQUAL(result.objects.size(), 2u);
+	BOOST_CHECK(utils::contains(result.objects, target));
+	BOOST_CHECK(utils::contains(result.objects, other));
 }
 
-BOOST_AUTO_TEST_CASE(bullets_tile_collision_is_checked_on_tile_reached) {
+// ----------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE(update_collision_map_works_for_remaining_in_cell) {
 	auto& fix = Singleton<CollisionFixture>::get();
 	fix.reset();
 
-	auto actor = fix.add_object({1u, 1u}, true);
-	// move into void
-	core::MoveEvent event;
-	event.actor = actor;
-	event.source = {1u, 1u};
-	event.target = {1u, 0u};
-	event.type = core::MoveEvent::Reached;
-	auto& m_a = fix.movement_manager.query(actor);
-	m_a.target = event.target;
-	m_a.pos = sf::Vector2f{event.target};
-	// propagate movement
-	auto const& f_a = fix.collision_manager.query(actor);
-	core::collision_impl::onTileReached(fix.context, f_a, event);
-	// expect tile collision
-	auto const& colls = fix.collision_sender.data();
-	BOOST_REQUIRE_EQUAL(colls.size(), 1u);
-	BOOST_CHECK_EQUAL(colls[0].actor, actor);
-	BOOST_CHECK_EQUAL(colls[0].collider, 0u);
-	BOOST_CHECK(colls[0].reset);
-	BOOST_CHECK_VECTOR_EQUAL(colls[0].pos, event.target);
-	BOOST_CHECK_VECTOR_EQUAL(colls[0].reset_to, event.target);
+	utils::Collider shape;
+	shape.radius  = 1.f;
+	shape.is_aabb = false;
+
+	auto actor = fix.add_object({1u, 1u}, &shape);
+	auto& actor_move = fix.movement_manager.query(actor);
+	actor_move.last_pos = actor_move.pos;
+	// slighly change it
+	actor_move.pos.x += 0.2f;
+	actor_move.pos.y += 0.3f;
+	auto& src_cell = fix.dungeon_system[1u].getCell(sf::Vector2u{actor_move.last_pos});
+	auto& dst_cell = fix.dungeon_system[1u].getCell(sf::Vector2u{actor_move.pos});
+	
+	core::collision_impl::updateCollisionMap(fix.context, actor_move);
+	BOOST_REQUIRE_EQUAL(&src_cell, &dst_cell);
+	BOOST_CHECK(utils::contains(src_cell.entities, actor));
 }
 
-BOOST_AUTO_TEST_CASE(bullets_object_collision_is_checked_on_bullet_check) {
+BOOST_AUTO_TEST_CASE(update_collision_map_works_for_moving_between_cells) {
 	auto& fix = Singleton<CollisionFixture>::get();
 	fix.reset();
 
-	auto actor = fix.add_object({1u, 1u}, true);
-	auto other = fix.add_object({2u, 1u}, false);
-	// move bullet close to other object
-	auto& m_a = fix.movement_manager.query(actor);
-	m_a.pos.x += 0.75f;
-	// trigger bullet's collision check
-	auto& f_a = fix.collision_manager.query(actor);
-	core::collision_impl::onBulletCheck(fix.context, f_a);
-	// expect object collision
-	auto const& colls = fix.collision_sender.data();
-	BOOST_REQUIRE_EQUAL(colls.size(), 1u);
-	BOOST_CHECK_EQUAL(colls[0].actor, actor);
-	BOOST_CHECK_EQUAL(colls[0].collider, other);
-	BOOST_CHECK(!colls[0].reset);
+	utils::Collider shape;
+	shape.radius  = 1.f;
+	shape.is_aabb = false;
+
+	auto actor = fix.add_object({1u, 1u}, &shape);
+	auto& actor_move = fix.movement_manager.query(actor);
+	actor_move.last_pos = actor_move.pos;
+	// slighly change it
+	actor_move.pos.x -= 0.2f;
+	actor_move.pos.y += 0.3f;
+	auto& src_cell = fix.dungeon_system[1u].getCell(sf::Vector2u{actor_move.last_pos});
+	auto& dst_cell = fix.dungeon_system[1u].getCell(sf::Vector2u{actor_move.pos});
+	
+	BOOST_REQUIRE(utils::contains(src_cell.entities, actor));
+	BOOST_REQUIRE(!utils::contains(dst_cell.entities, actor));
+	
+	core::collision_impl::updateCollisionMap(fix.context, actor_move);
+	BOOST_CHECK(!utils::contains(src_cell.entities, actor));
+	BOOST_CHECK(utils::contains(dst_cell.entities, actor));
 }
 
-// ---------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE(leaving_tile_is_not_forwarded_if_a_collision_happened) {
+BOOST_AUTO_TEST_CASE(regular_tile_collision_is_propagated_on_movement) {
 	auto& fix = Singleton<CollisionFixture>::get();
 	fix.reset();
 
-	auto actor = fix.add_object({1u, 1u}, false);
-	// move into void
-	core::MoveEvent event;
-	event.actor = actor;
-	event.source = {1u, 1u};
-	event.target = {1u, 0u};
-	event.type = core::MoveEvent::Left;
-	auto& m_a = fix.movement_manager.query(actor);
-	m_a.target = event.target;
-	// propagate movement
-	auto const& f_a = fix.collision_manager.query(actor);
-	core::collision_impl::onTileLeft(fix.context, f_a, event);
-	// expect collision event
-	auto const& colls = fix.collision_sender.data();
-	BOOST_REQUIRE_EQUAL(colls.size(), 1u);
-	// expect movement not being forwarded
-	auto const& moves = fix.move_sender.data();
-	BOOST_CHECK(moves.empty());
+	utils::Collider shape;
+	shape.radius  = 1.f;
+	shape.is_aabb = false;
+
+	auto actor = fix.add_object({1u, 1u}, &shape);
+	auto target = fix.add_object({2u, 1u}, &shape);
+	
+	auto& actor_move = fix.movement_manager.query(actor);
+	actor_move.pos = {2.03f, 2.17f};
+	actor_move.is_moving = true;
+	auto& cell = fix.dungeon_system[1u].getCell({2u, 2u});
+	cell.terrain = core::Terrain::Wall;
+	auto& data = fix.collision_sender.data();
+	
+	core::collision_impl::checkAllCollisions(fix.context);
+	BOOST_REQUIRE_EQUAL(data.size(), 1u);
+	BOOST_CHECK_EQUAL(data[0].actor, actor);
+	BOOST_CHECK_EQUAL(data[0].collider, 0);
 }
 
-BOOST_AUTO_TEST_CASE(leaving_tile_is_forwarded_if_a_no_collision_happened) {
+BOOST_AUTO_TEST_CASE(regular_object_collision_is_propagated_on_movement) {
 	auto& fix = Singleton<CollisionFixture>::get();
 	fix.reset();
 
-	auto actor = fix.add_object({1u, 1u}, false);
-	// move into floor
-	core::MoveEvent event;
-	event.actor = actor;
-	event.source = {1u, 1u};
-	event.target = {1u, 2u};
-	event.type = core::MoveEvent::Left;
-	auto& m_a = fix.movement_manager.query(actor);
-	m_a.target = event.target;
-	// propagate movement
-	auto const& f_a = fix.collision_manager.query(actor);
-	core::collision_impl::onTileLeft(fix.context, f_a, event);
-	// expect no collision event
-	auto const& colls = fix.collision_sender.data();
-	BOOST_CHECK(colls.empty());
-	// expect movement being forwarded
-	auto const& moves = fix.move_sender.data();
-	BOOST_REQUIRE_EQUAL(moves.size(), 1u);
-	BOOST_CHECK_EQUAL(moves[0].actor, event.actor);
-	BOOST_CHECK_VECTOR_EQUAL(moves[0].source, event.source);
-	BOOST_CHECK_VECTOR_EQUAL(moves[0].target, event.target);
-	BOOST_CHECK_EQUAL(moves[0].type, event.type);
+	utils::Collider shape;
+	shape.radius  = 1.f;
+	shape.is_aabb = false;
+
+	auto actor = fix.add_object({1u, 1u}, &shape);
+	auto target = fix.add_object({2u, 1u}, &shape);
+	auto other = fix.add_object({1u, 2u}, &shape);
+	
+	auto& actor_move = fix.movement_manager.query(actor);
+	actor_move.pos = {2.03f, 2.17f};
+	actor_move.is_moving = true;
+	auto& data = fix.collision_sender.data();
+	
+	core::collision_impl::checkAllCollisions(fix.context);
+	BOOST_REQUIRE_EQUAL(data.size(), 1u);
+	BOOST_CHECK_EQUAL(data[0].actor, actor);
+	BOOST_CHECK((data[0].collider == target) || (data[0].collider == other));
 }
 
-BOOST_AUTO_TEST_CASE(reaching_tile_is_not_forwarded_if_a_collision_happened) {
+BOOST_AUTO_TEST_CASE(no_regular_collision_propagated_without_movement) {
 	auto& fix = Singleton<CollisionFixture>::get();
 	fix.reset();
 
-	auto actor = fix.add_object({1u, 1u}, true);
-	// move into void
-	core::MoveEvent event;
-	event.actor = actor;
-	event.source = {1u, 1u};
-	event.target = {1u, 0u};
-	event.type = core::MoveEvent::Reached;
-	auto& m_a = fix.movement_manager.query(actor);
-	m_a.target = event.target;
-	m_a.pos = sf::Vector2f{event.target};
-	// propagate movement
-	auto const& f_a = fix.collision_manager.query(actor);
-	core::collision_impl::onTileReached(fix.context, f_a, event);
-	// expect collision event
-	auto const& colls = fix.collision_sender.data();
-	BOOST_REQUIRE_EQUAL(colls.size(), 1u);
-	// expect movement not being forwarded
-	auto const& moves = fix.move_sender.data();
-	BOOST_CHECK(moves.empty());
+	utils::Collider shape;
+	shape.radius  = 1.f;
+	shape.is_aabb = false;
+
+	auto actor = fix.add_object({1u, 1u}, &shape);
+	auto target = fix.add_object({2u, 1u}, &shape);
+	
+	auto& actor_move = fix.movement_manager.query(actor);
+	actor_move.pos = {2.03f, 2.17f};
+	actor_move.is_moving = false;
+	auto& cell = fix.dungeon_system[1u].getCell({1u, 1u});
+	cell.terrain = core::Terrain::Wall;
+	auto& data = fix.collision_sender.data();
+	
+	core::collision_impl::checkAllCollisions(fix.context);
+	BOOST_CHECK_EQUAL(data.size(), 0u);
 }
 
-BOOST_AUTO_TEST_CASE(reaching_tile_is_forwarded_if_a_no_collision_happened) {
+BOOST_AUTO_TEST_CASE(projectile_tile_collision_is_propagated_on_movement) {
 	auto& fix = Singleton<CollisionFixture>::get();
 	fix.reset();
 
-	auto actor = fix.add_object({1u, 1u}, false);
-	// move into floor
-	core::MoveEvent event;
-	event.actor = actor;
-	event.source = {1u, 1u};
-	event.target = {1u, 2u};
-	event.type = core::MoveEvent::Reached;
-	auto& m_a = fix.movement_manager.query(actor);
-	m_a.target = event.target;
-	m_a.pos = sf::Vector2f{event.target};
-	// propagate movement
-	auto const& f_a = fix.collision_manager.query(actor);
-	core::collision_impl::onTileReached(fix.context, f_a, event);
-	// expect no collision event
-	auto const& colls = fix.collision_sender.data();
-	BOOST_CHECK(colls.empty());
-	// expect movement being forwarded
-	auto const& moves = fix.move_sender.data();
-	BOOST_REQUIRE_EQUAL(moves.size(), 1u);
-	BOOST_CHECK_EQUAL(moves[0].actor, event.actor);
-	BOOST_CHECK_VECTOR_EQUAL(moves[0].source, event.source);
-	BOOST_CHECK_VECTOR_EQUAL(moves[0].target, event.target);
-	BOOST_CHECK_EQUAL(moves[0].type, event.type);
+	utils::Collider shape;
+	shape.radius  = 1.f;
+	shape.is_aabb = false;
+
+	auto actor = fix.add_object({1u, 1u}, &shape);
+	
+	auto& actor_move = fix.movement_manager.query(actor);
+	actor_move.pos = {2.03f, 2.17f};
+	actor_move.is_moving = true;
+	auto& actor_coll = fix.collision_manager.query(actor);
+	actor_coll.is_projectile = true;
+	auto& cell = fix.dungeon_system[1u].getCell(sf::Vector2u{actor_move.pos});
+	cell.terrain = core::Terrain::Wall;
+	auto& data = fix.collision_sender.data();
+	
+	core::collision_impl::checkAllCollisions(fix.context);
+	BOOST_REQUIRE_EQUAL(data.size(), 1u);
+	BOOST_CHECK_EQUAL(data[0].actor, actor);
+	BOOST_CHECK_EQUAL(data[0].collider, 0);
+}
+
+BOOST_AUTO_TEST_CASE(projectile_object_collisions_are_propagated_on_movement) {
+	auto& fix = Singleton<CollisionFixture>::get();
+	fix.reset();
+
+	utils::Collider shape;
+	shape.radius  = 1.f;
+	shape.is_aabb = false;
+
+	auto actor = fix.add_object({1u, 1u}, &shape);
+	auto target = fix.add_object({2u, 1u}, &shape);
+	auto other = fix.add_object({1u, 2u}, &shape);
+	
+	auto& actor_move = fix.movement_manager.query(actor);
+	actor_move.pos = {2.03f, 2.17f};
+	actor_move.is_moving = true;
+	auto& actor_coll = fix.collision_manager.query(actor);
+	actor_coll.is_projectile = true;
+	auto& data = fix.collision_sender.data();
+	
+	core::collision_impl::checkAllCollisions(fix.context);
+	BOOST_REQUIRE_EQUAL(data.size(), 2u);
+	BOOST_CHECK_EQUAL(data[0].actor, actor);
+	BOOST_CHECK_EQUAL(data[0].collider, target);
+	BOOST_CHECK_EQUAL(data[1].actor, actor);
+	BOOST_CHECK_EQUAL(data[1].collider, other);
+}
+
+BOOST_AUTO_TEST_CASE(projectile_object_collisions_updates_collisionmap) {
+	auto& fix = Singleton<CollisionFixture>::get();
+	fix.reset();
+
+	utils::Collider shape;
+	shape.radius  = 1.f;
+	shape.is_aabb = false;
+
+	auto actor = fix.add_object({1u, 1u}, &shape);
+	auto target = fix.add_object({2u, 1u}, &shape);
+	auto other = fix.add_object({1u, 2u}, &shape);
+	
+	auto& actor_move = fix.movement_manager.query(actor);
+	actor_move.pos = {2.03f, 2.17f};
+	actor_move.is_moving = true;
+	auto& actor_coll = fix.collision_manager.query(actor);
+	actor_coll.is_projectile = true;
+	auto& data = fix.collision_sender.data();
+	
+	core::collision_impl::checkAllCollisions(fix.context);
+	BOOST_REQUIRE_EQUAL(data.size(), 2u); // object collision occured!
+	
+	auto const & cell = fix.dungeon_system[1u].getCell(sf::Vector2u{actor_move.pos});
+	auto updated = utils::contains(cell.entities, actor);
+	BOOST_CHECK(updated);
+}
+
+BOOST_AUTO_TEST_CASE(no_projectile_collisions_are_propagated_without_movement) {
+	auto& fix = Singleton<CollisionFixture>::get();
+	fix.reset();
+
+	utils::Collider shape;
+	shape.radius  = 1.f;
+	shape.is_aabb = false;
+
+	auto actor = fix.add_object({1u, 1u}, &shape);
+	auto target = fix.add_object({2u, 1u}, &shape);
+	auto other = fix.add_object({1u, 2u}, &shape);
+	
+	auto& actor_move = fix.movement_manager.query(actor);
+	actor_move.pos = {2.03f, 2.17f};
+	actor_move.is_moving = false;
+	auto& actor_coll = fix.collision_manager.query(actor);
+	actor_coll.is_projectile = true;
+	auto& data = fix.collision_sender.data();
+	
+	core::collision_impl::checkAllCollisions(fix.context);
+	BOOST_CHECK_EQUAL(data.size(), 0u);
+}
+
+BOOST_AUTO_TEST_CASE(projectiles_only_collide_once_with_each_object) {
+	auto& fix = Singleton<CollisionFixture>::get();
+	fix.reset();
+
+	utils::Collider shape;
+	shape.radius  = 1.f;
+	shape.is_aabb = false;
+
+	auto actor = fix.add_object({1u, 1u}, &shape);
+	auto target = fix.add_object({2u, 1u}, &shape);
+	auto other = fix.add_object({1u, 2u}, &shape);
+	
+	auto& actor_move = fix.movement_manager.query(actor);
+	actor_move.is_moving = true;
+	auto& actor_coll = fix.collision_manager.query(actor);
+	actor_coll.is_projectile = true;
+	auto& data = fix.collision_sender.data();
+	
+	core::collision_impl::checkAllCollisions(fix.context);
+	BOOST_CHECK_EQUAL(data.size(), 2u);
+	BOOST_REQUIRE_EQUAL(actor_coll.ignore.size(), 2u);
+	BOOST_CHECK(utils::contains(actor_coll.ignore, target));
+	BOOST_CHECK(utils::contains(actor_coll.ignore, other));
+	
+	fix.collision_sender.clear();
+	core::collision_impl::checkAllCollisions(fix.context);
+	BOOST_CHECK_EQUAL(data.size(), 0u);
+}
+
+// --------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE(reaching_tile_executes_and_expires_trigger) {
+	auto& fix = Singleton<CollisionFixture>::get();
+	fix.reset();
+
+	utils::Collider shape;
+
+	auto& trigger = fix.dungeon_system[1u].getCell({1u, 2u}).trigger;
+	trigger = std::make_unique<DemoTrigger>();
+
+	auto actor = fix.add_object({1u, 1u}, &shape);
+	auto& actor_move = fix.movement_manager.query(actor);
+	actor_move.is_moving = true;
+	actor_move.pos = {1.f, 2.f};
+	
+	core::collision_impl::checkAllCollisions(fix.context);
+
+	// expect deleted trigger
+	BOOST_CHECK(trigger == nullptr);
+}
+
+BOOST_AUTO_TEST_CASE(collision_system_can_handle_entity_without_collisiondata) {
+	auto& fix = Singleton<CollisionFixture>::get();
+	fix.reset();
+
+	auto actor = fix.add_object({1u, 1u}, nullptr);
+	auto& actor_move = fix.movement_manager.query(actor);
+	actor_move.is_moving = true;
+	actor_move.pos = {1.f, 2.f};
+	
+	BOOST_CHECK_NO_ASSERT(core::collision_impl::checkAllCollisions(fix.context));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

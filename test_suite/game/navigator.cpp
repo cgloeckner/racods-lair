@@ -52,9 +52,10 @@ BOOST_AUTO_TEST_CASE(can_navigate_at_broadphase) {
 	grid.addNode({1u, 2u});
 	grid.addPath({0u, 1u}, {1u, 1u});
 	grid.addPath({1u, 1u}, {1u, 2u});
+	core::MovementManager movement;
 	core::CollisionManager collision;
 	core::Dungeon dungeon{1u, dummy, {30u, 30u}, {8.f, 8.f}};
-	game::NavigationScene scene{collision, dungeon};
+	game::NavigationScene scene{movement, collision, dungeon};
 	game::Navigator navigator{std::move(grid), std::move(scene)};
 
 	auto& astar = navigator.broadphase;
@@ -68,9 +69,10 @@ BOOST_AUTO_TEST_CASE(can_navigate_at_broadphase) {
 BOOST_AUTO_TEST_CASE(can_navigate_at_narrowphase) {
 	sf::Texture dummy;
 	game::DungeonGraph grid{{}};
+	core::MovementManager movement;
 	core::CollisionManager collision;
 	core::Dungeon dungeon{1u, dummy, {30u, 30u}, {8.f, 8.f}};
-	game::NavigationScene scene{collision, dungeon};
+	game::NavigationScene scene{movement, collision, dungeon};
 	game::Navigator navigator{std::move(grid), std::move(scene)};
 
 	collision.acquire(17u);
@@ -102,14 +104,14 @@ BOOST_AUTO_TEST_CASE(can_navigate_at_narrowphase) {
 BOOST_AUTO_TEST_CASE(teleport_triggers_are_avoided_at_narrowphase) {
 	sf::Texture dummy;
 	game::DungeonGraph grid{{}};
+	core::MovementManager movement;
 	core::CollisionManager collision;
 	core::Dungeon dungeon{1u, dummy, {30u, 30u}, {8.f, 8.f}};
-	game::NavigationScene scene{collision, dungeon};
+	game::NavigationScene scene{movement, collision, dungeon};
 	game::Navigator navigator{std::move(grid), std::move(scene)};
 	
 	core::MoveSender move_sender;
 	core::TeleportSender teleport_sender;
-	core::MovementManager movement;
 	core::DungeonSystem dungeonsystem;
 	
 	collision.acquire(17u);
@@ -147,9 +149,10 @@ BOOST_AUTO_TEST_CASE(teleport_triggers_are_avoided_at_narrowphase) {
 BOOST_AUTO_TEST_CASE(diagonal_movements_have_higher_priority_for_going_south_east) {
 	sf::Texture dummy;
 	game::DungeonGraph grid{{}};
+	core::MovementManager movement;
 	core::CollisionManager collision;
 	core::Dungeon dungeon{1u, dummy, {30u, 30u}, {8.f, 8.f}};
-	game::NavigationScene scene{collision, dungeon};
+	game::NavigationScene scene{movement, collision, dungeon};
 	game::Navigator navigator{std::move(grid), std::move(scene)};
 	
 	collision.acquire(1u);
@@ -176,9 +179,10 @@ BOOST_AUTO_TEST_CASE(diagonal_movements_have_higher_priority_for_going_south_eas
 BOOST_AUTO_TEST_CASE(diagonal_movements_have_higher_priority_for_going_south_west) {
 	sf::Texture dummy;
 	game::DungeonGraph grid{{}};
+	core::MovementManager movement;
 	core::CollisionManager collision;
 	core::Dungeon dungeon{1u, dummy, {30u, 30u}, {8.f, 8.f}};
-	game::NavigationScene scene{collision, dungeon};
+	game::NavigationScene scene{movement, collision, dungeon};
 	game::Navigator navigator{std::move(grid), std::move(scene)};
 	
 	collision.acquire(1u);
@@ -205,9 +209,10 @@ BOOST_AUTO_TEST_CASE(diagonal_movements_have_higher_priority_for_going_south_wes
 BOOST_AUTO_TEST_CASE(diagonal_movements_have_higher_priority_for_going_north_east) {
 	sf::Texture dummy;
 	game::DungeonGraph grid{{}};
+	core::MovementManager movement;
 	core::CollisionManager collision;
 	core::Dungeon dungeon{1u, dummy, {30u, 30u}, {8.f, 8.f}};
-	game::NavigationScene scene{collision, dungeon};
+	game::NavigationScene scene{movement, collision, dungeon};
 	game::Navigator navigator{std::move(grid), std::move(scene)};
 	
 	collision.acquire(1u);
@@ -231,9 +236,10 @@ BOOST_AUTO_TEST_CASE(diagonal_movements_have_higher_priority_for_going_north_eas
 BOOST_AUTO_TEST_CASE(diagonal_movements_have_higher_priority_north_west) {
 	sf::Texture dummy;
 	game::DungeonGraph grid{{}};
+	core::MovementManager movement;
 	core::CollisionManager collision;
 	core::Dungeon dungeon{1u, dummy, {30u, 30u}, {8.f, 8.f}};
-	game::NavigationScene scene{collision, dungeon};
+	game::NavigationScene scene{movement, collision, dungeon};
 	game::Navigator navigator{std::move(grid), std::move(scene)};
 	
 	collision.acquire(1u);

@@ -2,6 +2,7 @@
 #include <core/dungeon.hpp>
 #include <core/entity.hpp>
 #include <core/event.hpp>
+#include <core/collision.hpp>
 
 namespace core {
 
@@ -37,12 +38,15 @@ void vanish(Dungeon& dungeon, MovementData& data);
 // ---------------------------------------------------------------------------
 
 struct SpawnHelper {
-	CollisionManager const& manager;
+	CollisionManager const& collision;
+	MovementManager const & movement;
 	Dungeon const& dungeon;
-	CollisionData const& data;
+	ObjectID actor;
+	
+	CollisionResult result;
 
-	SpawnHelper(CollisionManager const& manager, Dungeon const& dungeon,
-		CollisionData const& data);
+	SpawnHelper(CollisionManager const& collision, MovementManager const & movement,
+		Dungeon const& dungeon, ObjectID actor);
 	bool operator()(sf::Vector2u const& pos);
 };
 

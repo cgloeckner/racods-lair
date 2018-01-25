@@ -5,12 +5,12 @@
 
 namespace core {
 
-AnimationSystem::AnimationSystem(LogContext& log, std::size_t max_objects)
+AnimationSystem::AnimationSystem(LogContext& log, std::size_t max_objects, MovementManager const & movement_manager)
 	// Event API
 	: utils::EventListener<AnimationEvent>{}
 	, utils::EventSender<AnimationEvent>{}  // Component API
 	, AnimationManager{max_objects}
-	, context{log, *this, *this} {}
+	, context{log, *this, movement_manager, *this} {}
 
 void AnimationSystem::handle(AnimationEvent const& event) {
 	if (!has(event.actor)) {
@@ -22,10 +22,6 @@ void AnimationSystem::handle(AnimationEvent const& event) {
 	switch (event.type) {
 		case AnimationEvent::Action:
 			animation_impl::trigger(context, data, event.action);
-			break;
-
-		case AnimationEvent::Move:
-			animation_impl::trigger(context, data, event.move);
 			break;
 
 		case AnimationEvent::Brightness:
@@ -81,9 +77,10 @@ void AnimationSystem::update(sf::Time const& elapsed) {
 namespace animation_impl {
 
 Context::Context(LogContext& log, AnimationSender& animation_sender,
-	AnimationManager& animation_manager)
+	MovementManager const & movement_manager, AnimationManager& animation_manager)
 	: log{log}
 	, animation_sender{animation_sender}
+	, movement_manager{movement_manager}
 	, animation_manager{animation_manager} {}
 
 // ---------------------------------------------------------------------------
@@ -108,17 +105,6 @@ void trigger(Context& context, AnimationData& data, AnimationAction action) {
 	event.type = AnimationEvent::Action;
 	event.action = action;
 	context.animation_sender.send(event);
-}
-
-void trigger(Context& context, AnimationData& data, bool move, bool force) {
-	if (!force && !move && data.flying) {
-		// flying objects never stop moving
-		return;
-	}
-	// reset move state
-	data.is_moving = move;
-	// data.legs = utils::ActionState{};
-	data.has_changed = true;
 }
 
 void trigger(Context& context, utils::IntervalState& state,
@@ -154,6 +140,7 @@ void trigger(Context& context, AnimationData& data, SpriteTorsoLayer layer,
 
 void update(Context& context, AnimationData& data, sf::Time const& elapsed) {
 	ASSERT(data.tpl.torso[SpriteTorsoLayer::Base] != nullptr);
+	auto const & move_data = context.movement_manager.query(data.id);
 
 	bool legs_updated{false}, torso_updated{false}, brightness_updated{false},
 		alpha_updated{false}, min_saturation_updated{false},
@@ -161,7 +148,7 @@ void update(Context& context, AnimationData& data, sf::Time const& elapsed) {
 		light_radius_updated{false};
 
 	// update legs
-	if (data.is_moving && data.tpl.legs[SpriteLegLayer::Base] != nullptr) {
+	if (move_data.is_moving && data.tpl.legs[SpriteLegLayer::Base] != nullptr) {
 		// assuming leg layers to be synchronous
 		auto& layer = *data.tpl.legs[SpriteLegLayer::Base];
 		utils::updateActionState(data.legs, layer, elapsed, legs_updated);
@@ -190,7 +177,6 @@ void update(Context& context, AnimationData& data, sf::Time const& elapsed) {
 void onActionFinished(Context& context, AnimationData& data) {
 	if (data.current == AnimationAction::Die) {
 		// stop everything and stay at last dying frame
-		data.is_moving = false;
 		data.torso.index =
 			(*data.tpl.torso[SpriteTorsoLayer::Base])[AnimationAction::Die]
 				.frames.size() -

@@ -6,17 +6,21 @@
 
 namespace core {
 
-namespace collision_impl {
-
-/// maximum radius for regular object collision
-extern float const REGULAR_COLLISION_RADIUS;
-/// maximum radius for projectile object collision
-extern float const MAX_PROJECTILE_RADIUS;
-/// maximum radius for collision detection
-float const MAX_COLLISION_RANGE =
-	REGULAR_COLLISION_RADIUS + MAX_PROJECTILE_RADIUS;
+struct CollisionResult {
+	bool interrupt, tile;
+	std::vector<ObjectID> objects;
+	
+	CollisionResult();
+	
+	bool meansCollision() const;
+};
 
 // ---------------------------------------------------------------------------
+
+namespace collision_impl {
+
+/// maximum collision radius
+extern float const MAX_COLLISION_RADIUS;
 
 /// helper structure to keep implementation signatures clean and tidy
 struct Context {
@@ -26,13 +30,55 @@ struct Context {
 	TeleportSender& teleport_sender;
 	CollisionManager& collision_manager;
 	DungeonSystem& dungeon_system;
-	MovementManager const& movement_manager;
-
+	MovementManager& movement_manager;
+	
+	CollisionResult collision_result;
+	
 	Context(LogContext& log, CollisionSender& collision_sender,
 		MoveSender& move_sender, TeleportSender& teleport_sender,
 		CollisionManager& collision_manager, DungeonSystem& dungeon_system,
-		MovementManager const& movement_manager);
+		MovementManager& movement_manager);
 };
+
+// ---------------------------------------------------------------------------
+// Internal Collision API
+
+/// Checks whether any collision occures
+/// If the function returns a collision result containing more information.
+/// In case of a regular object collision test, no object collisions are
+/// tested after a tile collision occured. If no tile collision was found,
+/// the first object collision is reported. Others are ignored.
+/// In case of a projectile collision test, all relevant objects are
+/// always tested (including a true tile collision and/or already found
+/// object collisions). The full list of colliders is returned through
+/// the vector.
+/// Each projectile collides only once with each other object.
+/// @pre the actor is attached to a valid scene
+/// @param context Collision context
+/// @param actor MoveData of the moving actor
+/// @param result Collision information
+void checkAnyCollision(Context const & context, MovementData const & actor, CollisionResult& result);
+
+/// Update the corresponding collision flags inside the scene object
+/// The actor is moved within the scene's grid to the corresponding cell.
+/// @pre The actor is attached to a valid scene
+/// @param context Context of the collision scene
+/// @param data MoveData of the moving actor
+/// @return true if something was actually updated
+bool updateCollisionMap(Context& context, MovementData const & actor);
+
+/// Perform a full collision check on all relevant objects
+/// Each moving object is tested for collision. Not moving objects are skipped.
+/// Once a collision was detected, a CollisionEvent is triggered. If an object
+/// does not collide, the collision map is updated corresponding the object's
+/// position.
+/// Each object collision is reported using a CollisionEvent. If an object
+/// caused a tile but not an object collision, a CollisionEvent is triggered
+/// for that tile collision. If both, only the object collisions are propagated.
+/// Regular object collisions cause a position reset. This is not triggered for
+/// projectiles.
+/// @param context Collision context
+void checkAllCollisions(Context& context);
 
 }  // ::collision_impl
 
@@ -40,75 +86,52 @@ struct Context {
 // External Collision API
 
 /// Checks for a tile collision
-/**
- *	This function can be used to check for a tile collision. It can also be
- *	used from external systems such like AI.
- *	No actual data about the actor object is necessary, because each object
- *	will collide with non-accessible terrain.
- *
- *	@param cell To check for collision
- *	@return true if a collision was detected
- */
+/// A tile collision occures if the actor's position enteres a wall tile.
+/// So only the target tile is passed here, which was previously queried
+/// using the suspected position. Hence no actor is needed here.
+/// @note This can be easily called from external code
+/// @param cell To check for tile collision
+/// @return true if a collision was detected
 bool checkTileCollision(DungeonCell const& cell);
 
-/// Checks for a object collision
-/**
- *	This function can be used to check for a object collision. It can also be
- *	used from external systems such like AI.
- *
- *	@pre !data.is_projectile
- *	@param manager Which holds the collision components
- *	@param cell To check for collision
- *	@param data CollisionData of the actor object
- *	@return Array of ObjectID of colliders
- */
-std::vector<ObjectID> checkObjectCollision(CollisionManager const& manager,
-	DungeonCell const& cell, CollisionData const& data);
+/// Check whether a collision occured
+/// The actor is assumed to be moving into the target. For calling this,
+/// the movement data is usually queried just before. Because it's also
+/// needed inside, its just passed. Additional collision data is queried
+/// on demand. If at least one actor has no collision data, no collision
+/// occures. Colliders on the ignore list are ignored.
+/// @note This can be easily called from external code
+/// @param collision_manager CollisionManager to query CollisionData with
+/// @param actor MoveData of the moving actor
+/// @param target MoveData of the suspected collider
+/// @param[out] interrupt Specifies whether collision will interrupt movement
+/// @return true in case of collision
+bool checkObjectCollision(CollisionManager const & collision_manager, ObjectID actor_id,
+		sf::Vector2f actor_pos, ObjectID target_id, sf::Vector2f target_pos);
 
-/// Checks for a bullet collision
-/**
- *	Bullets can collide with regular objects once their distance is undershot.
- *	For this scenario all neighbor cell's objects are fetched and the distance
- *	are checked for the current bullet. This is a broadphase collision.
- *
- *	@pre data.is_projectile
- *	@param collision Manager that holds the collision components
- *	@param movement Manager that holds the movement components
- *	@param dungeon System that holds all dungeons
- *	@param data CollisionData of the bullet object
- *	@return ObjectIDs of all possible colliders in range
- */
-std::vector<ObjectID> checkBulletCollision(CollisionManager const& collision,
-	MovementManager const& movement, DungeonSystem const& dungeon,
-	CollisionData const& data);
+/// Overload to determine if any collision can be found
+/// @note This can be easily called from external code
+/// @param movement_manager Manager to query suspect collider's exact position
+/// @param collision_manager Manager to query object's collision information
+/// @param scene Dungeon to search at
+/// @param actor MoveData of moving actor
+/// @param result Collision information
+void checkAnyCollision(MovementManager const & movement_manager,
+		CollisionManager const & collision_manager, Dungeon const & scene,
+		MovementData const & actor, CollisionResult& result);
 
 // ---------------------------------------------------------------------------
 // Collision System
 
-/// CollisionSystem handling collision detection and propagation
-/**
- *	Each object can be extended by a collision component. This component
- *	specifies whether it's a projectile (aka bullet) object or a regular
- *	entity. Bullets' collision is checked on each frame using its distance to
- *	all objects in the neighborhood. The collision of regular entities is only
- *	checked when they leave a tile. In both cases a `CollisionEvent` is
- *	genereated if a collision was detected. This event can be used to let other
- *	systems react on the collision. In order to be able to track movements and
- *	detect collisions, a reference to the underlying dungeon system is
- *	attached to this system. So the collision-relevant data (which object is
- *	located on which tile) is automatically adjusted by this system each time
- *	an object (regardless bullet or regular entity) leaves a tile.
- *	All tile events can be forwarded to e.g. a focusing system
- *	A typical behavior on collisions could be:
- *	- Regular entities will be forced to stop their movement and stay at
- *		their source position.
- *	- Bullet entities will collide at their target position when reaching
- *		the tile (e.g. as explosion with a wall or player).
- *	In addition, a trigger can be executed if an object (despite regular or
- *	bullet) reaches a tile. If there's a trigger, it will be executed. The
- *	trigger might cause additional events, e.g. to teleport the object to a
- *	different location.
- */
+/// CollisionSystem handling collision detection, solving and propagation
+/// Each object with a collision component is either an AABB or a circle.
+/// Once an object collides with a tile or another object, its movement is
+/// interrupted. Some objects are projectiles, that pierce other objects.
+/// Hence they can collide multiple times.
+/// Regular objects do not collide with projectiles, but projectiles do
+/// collide with everything.
+/// After successfully updating the collision map, possible triggers are
+/// invoked.
 class CollisionSystem
 	// Event API
 	: public utils::EventListener<MoveEvent>,
@@ -123,99 +146,11 @@ class CollisionSystem
 
   public:
 	CollisionSystem(LogContext& log, std::size_t max_objects, DungeonSystem& dungeon,
-		MovementManager const& movement);
+		MovementManager& movement);
 
 	void handle(MoveEvent const& event);
 
 	void update(sf::Time const& elapsed);
 };
-
-// ---------------------------------------------------------------------------
-// Internal Collision API
-
-namespace collision_impl {
-
-/// Update the corresponding collision flags inside the scene object
-/**
- *	This function will modify the corresponding collision flags inside the
- *	scene object's collision structure. The object is moved out of its current
- *	grid cell into its new one.
- *
- *	@pre The actor has a movement component
- *	@pre The actor is attached to a scene
- *	@param context Context of the collision scene
- *	@param data CollisionData of the actor object
- *	@param event MoveEvent with additional information
- */
-void updateCollisionMap(
-	Context const& context, CollisionData const& data, MoveEvent const& event);
-
-/// Reacts on leaving a tile
-/**
- *	This function contains logic to react on leaving a tile. In case of a
- *	regular objects it will trigger a collision check to guarantee a collision
- *	free movement to the target position given by the event.
- *	If no collision occured, the collision flag within the scene obejct is
- *	modified.
- *	If no collision occured, the move event is forwarded to the context's
- *	move sender.
- *
- *	@param context Context of the collision scene
- *	@param data CollisionData of the actor object
- *	@param event MoveEvent with additional information
- */
-void onTileLeft(
-	Context& context, CollisionData const& data, MoveEvent const& event);
-
-/// Reacts on reaching a tile
-/**
- *	This function contains logic to react on reaching a tile. In case of a
- *	bullet object it will trigger a collision check to guarantee a collision
- *	free movement reaching the target position given by the event. In this
- *	case only terrain collisions are relevant.
- *	If no collision occured, the move event is forwarded to the context's
- *	move sender.
- *
- *	@param context Context of the collision scene
- *	@param data CollisionData of the actor object
- *	@param event MoveEvent with additional information
- */
-void onTileReached(
-	Context& context, CollisionData const& data, MoveEvent const& event);
-
-/// Performs a bullet's object collision check
-/**
- *	This function is usually called by the collision system once per frame and
- *	object. If a regular object is passed, the function returns without
- *	performing any checks. If a bullet object is passed, the bullet's object
- *	collision is checked and propagated if occured.
- *
- *	@param context Context of the collision scene
- *	@param data CollisionData of the actor object
- */
-void onBulletCheck(Context& context, CollisionData& data);
-
-/// Checks whether the given object collides at the given position
-/**
- *	This function will check for object collision within the given context.
- *	In case of a collision, either the `tile_collision` or `object_collision`
- *	result parameters will be filled.
- *	Both out parameters will be initialized with false (no tile collision)
- *	and 0 (no object collision) at the beginning. In case of a tile collision
- *	the corresponding parameter will be true; in case of an object collision
- *	the corresponding parameter will contain the collider's object id (>0).
- *
- *	@pre The actor has a movement component
- *	@pre The actor is attached to a scene
- *	@param context Context of the collision scene
- *	@param data CollisionData of the actor object
- *	@param pos Cellposition of the actor to check for
- *	@param tile_collision Determines whether a tile collision was detected
- *	@param object_collision Determiens whether an object collision was detected
- */
-void checkCollision(Context const& context, CollisionData const& data,
-	sf::Vector2u const& pos, bool& tile_collision, ObjectID& object_collider);
-
-}  // ::collision_impl
 
 }  // ::core

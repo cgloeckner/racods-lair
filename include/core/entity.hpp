@@ -11,6 +11,7 @@
 #include <utils/keybinding.hpp>
 #include <utils/layered_sprite.hpp>
 #include <utils/lighting_system.hpp>
+#include <utils/math2d.hpp>
 #include <utils/spatial_scene.hpp>
 
 #include <core/common.hpp>
@@ -22,8 +23,8 @@ namespace core {
 
 struct CollisionData : ComponentData {
 	bool is_projectile;
-	float radius;				   // projectile only
-	std::vector<ObjectID> ignore;  // ignored during collision
+	utils::Collider shape;			// collision shape
+	std::vector<ObjectID> ignore;	// ignored during collision
 
 	CollisionData();
 };
@@ -40,9 +41,10 @@ struct FocusData : ComponentData {
 };
 
 struct MovementData : ComponentData {
-	sf::Vector2f pos;
+	sf::Vector2f pos, last_pos;
 	utils::SceneID scene;
 	float max_speed;
+	bool is_moving;
 	sf::Vector2u target;				 // for interpolation
 	sf::Vector2i move, look, next_move;  // look is redundant
 	int num_speed_boni;					 // negative for mali
@@ -65,7 +67,7 @@ struct AnimationData : ComponentData {
 	utils::IntervalState brightness, alpha, min_saturation, max_saturation,
 		light_intensity, light_radius;
 	utils::ActionState legs, torso;  // current action states
-	bool is_moving, flying;
+	bool flying;
 	AnimationAction current;  // current animation action
 
 	mutable bool has_changed;  // dirty flag

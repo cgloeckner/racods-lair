@@ -20,7 +20,7 @@ struct InputData : core::ComponentData {
 };
 
 struct ActionData : core::ComponentData {
-	bool idle, moving, dead;
+	bool idle, dead;
 
 	ActionData();
 };

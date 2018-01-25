@@ -13,7 +13,6 @@ InputData::InputData()
 ActionData::ActionData()
 	: core::ComponentData{}
 	, idle{true}
-	, moving{false}
 	, dead{false} {
 }
 

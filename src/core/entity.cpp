@@ -8,7 +8,10 @@ ComponentData::ComponentData() : id{0u} {}
 // ---------------------------------------------------------------------------
 
 CollisionData::CollisionData()
-	: ComponentData{}, is_projectile{false}, radius{0.f} {}
+	: ComponentData{}
+	, is_projectile{false}
+	, shape{}
+	, ignore{} {}
 
 FocusData::FocusData()
 	: ComponentData{}
@@ -21,8 +24,10 @@ FocusData::FocusData()
 MovementData::MovementData()
 	: ComponentData{}
 	, pos{}
+	, last_pos{}
 	, scene{0u}
 	, max_speed{0.f}
+	, is_moving{false}
 	, target{}
 	, move{}
 	, look{0, 1}
@@ -41,7 +46,6 @@ AnimationData::AnimationData()
 	, light_radius{1.f}
 	, legs{}
 	, torso{}
-	, is_moving{false}
 	, flying{false}
 	, current{default_value<AnimationAction>()}
 	, has_changed{true} {

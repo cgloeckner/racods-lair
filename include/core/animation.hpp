@@ -12,10 +12,11 @@ namespace animation_impl {
 struct Context {
 	LogContext& log;
 	AnimationSender& animation_sender;
+	MovementManager const & movement_manager;
 	AnimationManager& animation_manager;
 
 	Context(LogContext& log, AnimationSender& animation_sender,
-		AnimationManager& animation_manager);
+		MovementManager const & movement_manager, AnimationManager& animation_manager);
 };
 
 }  // ::animation_impl
@@ -64,7 +65,7 @@ class AnimationSystem
 	animation_impl::Context context;
 
   public:
-	AnimationSystem(LogContext& log, std::size_t max_objects);
+	AnimationSystem(LogContext& log, std::size_t max_objects, MovementManager const & movement_manager);
 
 	void handle(AnimationEvent const& event);
 
@@ -86,15 +87,6 @@ namespace animation_impl {
  *	@param action Animation action to trigger
  */
 void trigger(Context& context, AnimationData& data, AnimationAction action);
-
-/// This triggers a new movement animation
-/// This function is used to trigger a movement animation (including
-/// stopping a movement). A stop on death is a forced stop.
-/// @param context Animation context to work with
-/// @param data Component data to trigger for
-/// @param move Describes whether the object is now moving or not
-/// @param force Whether action is forced or not
-void trigger(Context& context, AnimationData& data, bool move, bool force=false);
 
 /// This triggers a new interval animation
 /**

@@ -43,6 +43,7 @@ void updateRange(Context& context, MovementManager::iterator begin,
 void start(Context& context, MovementData& data, InputEvent const& event) {
 	// apply direction for next move
 	data.next_move = event.move;
+	data.is_moving = data.move != sf::Vector2i{} || data.next_move != sf::Vector2i{};
 
 	if (event.look.x != 0 || event.look.y != 0) {
 		data.look = event.look;
@@ -82,6 +83,7 @@ void moveToTarget(Context& context, MovementData& data) {
 
 	// prepare movement
 	data.move = data.next_move;
+	//data.is_moving = data.move != sf::Vector2i{};
 	data.target = target;
 
 	// propagate leaving tile
@@ -98,11 +100,14 @@ void stop(Context& context, MovementData& data, CollisionEvent const& event) {
 		// nothing to do
 		return;
 	}
-
+	
 	if (data.scene == 0u) {
 		// object vanished yet
 		return;
 	}
+	
+	/// collision map handling is part of collision system!!!
+	/*
 	auto const& dungeon = context.dungeon_system[data.scene];
 	if (event.pos != event.reset_to) {
 		// assert object is not located at the previous target position anymore
@@ -110,13 +115,16 @@ void stop(Context& context, MovementData& data, CollisionEvent const& event) {
 	}
 	// assert object is already located at the reset-position
 	ASSERT(utils::contains(dungeon.getCell(event.reset_to).entities, data.id));
-
+	*/
+	
 	// reset position
-	data.pos = sf::Vector2f{event.reset_to};
-	data.target = event.reset_to;
+	//data.pos = sf::Vector2f{event.reset_to};
+	//data.target = event.reset_to;
+	data.target = sf::Vector2u{data.pos};
 	data.has_changed = true;
 	// break movement
 	data.move = sf::Vector2i{};
+	//data.is_moving = false;
 	data.next_move = sf::Vector2i{};
 	// propagate reaching tile -- if collision didn't occure on tile reach
 	if (event.pos != event.reset_to) {
@@ -208,6 +216,7 @@ void interpolate(Context& context, MovementData& data, sf::Time const& elapsed) 
 		step = target;
 		reached = true;
 	}
+	data.last_pos = data.pos;
 	data.pos = step;
 	data.has_changed = true;
 
@@ -220,20 +229,11 @@ void interpolate(Context& context, MovementData& data, sf::Time const& elapsed) 
 		event.type = MoveEvent::Reached;
 		context.move_sender.send(event);
 
-		// query and execute trigger
-		auto& cell = context.dungeon_system[data.scene].getCell(data.target);
-		if (cell.trigger != nullptr) {
-			// note: this might stop the object
-			cell.trigger->execute(data.id);
-			if (cell.trigger->isExpired()) {
-				// delete expired trigger
-				cell.trigger = nullptr;
-			}
-		}
-
 		// stop movement
 		data.move = sf::Vector2i{};
 	}
+	
+	//data.is_moving = data.move != sf::Vector2i{};
 }
 
 }  // ::movement_impl

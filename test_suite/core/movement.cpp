@@ -7,23 +7,6 @@
 #include <core/algorithm.hpp>
 #include <core/movement.hpp>
 
-struct DemoTrigger: core::BaseTrigger {
-	bool flag;
-	
-	DemoTrigger()
-		: core::BaseTrigger{}
-		, flag{false} {
-	}
-	
-	void execute(core::ObjectID actor) override {
-		flag = true;
-	}
-	
-	bool isExpired() const override {
-		return flag;
-	}
-};
-
 struct MovementFixture {
 	sf::Texture dummy_tileset;
 	core::IdManager id_manager;
@@ -656,32 +639,6 @@ BOOST_AUTO_TEST_CASE(bullet_movement_stopps_as_collision_occures) {
 
 	// assert stop at position <3,1>
 	BOOST_CHECK_VECTOR_CLOSE(data.pos, sf::Vector2f(3.f, 1.f), 0.0001f);
-}
-
-// --------------------------------------------------------------------
-
-BOOST_AUTO_TEST_CASE(reaching_tile_executes_and_expires_trigger) {
-	auto& fix = Singleton<MovementFixture>::get();
-	fix.reset();
-
-	auto& trigger = fix.dungeon_system[1u].getCell({1u, 2u}).trigger;
-	trigger = std::make_unique<DemoTrigger>();
-
-	auto actor = fix.add_object({1u, 1u}, 20.f);
-	// move into floor
-	core::MoveEvent event;
-	event.actor = actor;
-	event.source = {1u, 1u};
-	event.target = {1u, 2u};
-	event.type = core::MoveEvent::Reached;
-	auto& m_a = fix.movement_manager.query(actor);
-	m_a.target = event.target;
-	m_a.pos = sf::Vector2f{event.target};
-	// interpolate movement
-	core::movement_impl::interpolate(fix.context, m_a, sf::seconds(2.f));
-
-	// expect deleted trigger
-	BOOST_CHECK(trigger == nullptr);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

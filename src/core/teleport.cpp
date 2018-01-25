@@ -13,6 +13,7 @@ void spawn(Dungeon& dungeon, MovementData& data, sf::Vector2u const& pos) {
 
 	// update object
 	data.pos = sf::Vector2f{pos};
+	
 	data.target = pos;
 	data.scene = dungeon.id;
 	data.has_changed = true;
@@ -22,7 +23,7 @@ void vanish(Dungeon& dungeon, MovementData& data) {
 	ASSERT(dungeon.id == data.scene);
 
 	// remove from previous cell
-	auto& cell = dungeon.getCell(data.target);
+	auto& cell = dungeon.getCell(sf::Vector2u{data.pos});
 	auto ok = utils::pop(cell.entities, data.id);
 	ASSERT(ok);
 
@@ -33,25 +34,29 @@ void vanish(Dungeon& dungeon, MovementData& data) {
 
 // ---------------------------------------------------------------------------
 
-SpawnHelper::SpawnHelper(CollisionManager const& manager,
-	Dungeon const& dungeon, CollisionData const& data)
-	: manager{manager}, dungeon{dungeon}, data{data} {}
+SpawnHelper::SpawnHelper(CollisionManager const& collision, MovementManager const & movement,
+		Dungeon const& dungeon, ObjectID actor)
+	: collision{collision}
+	, movement{movement}
+	, dungeon{dungeon}
+	, actor{actor}
+	, result{} {
+}
 
 bool SpawnHelper::operator()(sf::Vector2u const& pos) {
 	if (!dungeon.has(pos)) {
-		// ignore invalid position
+		// invalid pos
 		return false;
 	}
-	auto& cell = dungeon.getCell(pos);
-	if (checkTileCollision(cell)) {
-		// ignore unaccessable position
-		return false;
-	}
-	if (!checkObjectCollision(manager, cell, data).empty()) {
-		// ignore blocked position
-		return false;
-	}
-	return true;
+	
+	// fake movement to target
+	MovementData data{movement.query(actor)};
+	data.scene = dungeon.id;
+	data.pos = sf::Vector2f{pos};
+	
+	// check collision
+	checkAnyCollision(movement, collision, dungeon, data, result);
+	return !result.meansCollision();
 }
 
 TriggerHelper::TriggerHelper(Dungeon const& dungeon) : dungeon{dungeon} {}
@@ -90,7 +95,7 @@ void TeleportTrigger::execute(core::ObjectID actor) {
 	auto& dst = dungeon[target];
 	auto p = pos;
 
-	SpawnHelper helper{collision, dst, coll_data};
+	SpawnHelper helper{collision, movement, dst, actor};
 	if (!getFreePosition(helper, p, 5u)) {
 		// no suitable position found
 		return;
@@ -102,10 +107,6 @@ void TeleportTrigger::execute(core::ObjectID actor) {
 	auto& src = dungeon[move_data.scene];
 	vanish(src, move_data);
 	spawn(dst, move_data, p);
-
-	// stop movement
-	move_data.move = {};
-	move_data.next_move = {};
 
 	// propagate move to update focus
 	MoveEvent left;

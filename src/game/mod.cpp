@@ -107,7 +107,7 @@ bool verify<rpg::EffectTemplate>(utils::Logger& log,
 template <>
 bool verify<rpg::BulletTemplate>(utils::Logger& log,
 	std::string const& key, rpg::BulletTemplate const& resource) {
-	auto max_radius = core::collision_impl::MAX_PROJECTILE_RADIUS;
+	auto max_radius = core::collision_impl::MAX_COLLISION_RADIUS;
 
 	utils::Verifier verify{log};
 	verify(!resource.entity_name.empty(), "            entity name required");

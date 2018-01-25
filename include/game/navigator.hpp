@@ -5,6 +5,7 @@
 
 #include <utils/algorithm.hpp>
 #include <utils/pathfinder.hpp>
+#include <core/collision.hpp>
 #include <core/dungeon.hpp>
 #include <core/entity.hpp>
 #include <game/builder.hpp>
@@ -152,19 +153,20 @@ struct DungeonGraph {
  */
 struct NavigationScene {
   private:
+	core::MovementManager const & movement;
 	core::CollisionManager const& collision;
 	core::Dungeon const& dungeon;
+	
+	mutable core::CollisionResult coll_result;
 
   public:
 	/// Create navigation scene for a specific dungeon
-	/**
-	 *	The creation is based on a collision manager and a specific
-	 *	dungeon that are used.
-	 *
-	 *	@param collision Const reference to collision manager
-	 *	@param dungeon Const reference to dungeon
-	 */
-	NavigationScene(
+	/// The creation is based on a collision manager and a specific
+	/// dungeon that are used.
+	/// @param movement Const reference to movement manager
+	/// @param collision Const reference to collision manager
+	/// @param dungeon Const reference to dungeon
+	NavigationScene(core::MovementManager const & movement,
 		core::CollisionManager const& collision, core::Dungeon const& dungeon);
 
 	/// Calculate Euclidian-like distance using a discrete grid
@@ -243,7 +245,7 @@ class NavigationSystem {
   public:
 	NavigationSystem();
 
-	Navigator& create(utils::SceneID id,
+	Navigator& create(utils::SceneID id, core::MovementManager const & movement,
 		core::CollisionManager const& collision, core::Dungeon const& dungeon,
 		DungeonBuilder const& builder);
 

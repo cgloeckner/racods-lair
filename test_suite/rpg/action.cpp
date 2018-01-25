@@ -26,7 +26,6 @@ struct ActionFixture {
 
 	void reset() {
 		actor.idle = true;
-		actor.moving = false;
 		actor.dead = false;
 		// reset event senders
 		input_sender.clear();
@@ -36,48 +35,6 @@ struct ActionFixture {
 };
 
 BOOST_AUTO_TEST_SUITE(action_test)
-
-BOOST_AUTO_TEST_CASE(
-	leaving_tile_triggers_move_animation_for_yet_standing_object) {
-	auto& fix = Singleton<ActionFixture>::get();
-	fix.reset();
-
-	fix.actor.moving = false;
-	core::MoveEvent event;
-	event.actor = 1u;
-	event.type = core::MoveEvent::Left;
-	rpg::action_impl::onMove(fix.context, fix.actor, event);
-	// expect avatar moving
-	BOOST_CHECK(fix.actor.moving);
-	// expect animation event
-	auto const& events = fix.animation_sender.data();
-	BOOST_REQUIRE_EQUAL(events.size(), 1u);
-	BOOST_CHECK_EQUAL(events[0].actor, 1u);
-	BOOST_CHECK(events[0].type == core::AnimationEvent::Move);
-	BOOST_CHECK(events[0].move);
-}
-
-BOOST_AUTO_TEST_CASE(
-	reaching_tile_triggers_stop_animation_for_yet_stopped_object) {
-	auto& fix = Singleton<ActionFixture>::get();
-	fix.reset();
-
-	fix.actor.moving = false;
-	core::MoveEvent event;
-	event.actor = 1u;
-	event.type = core::MoveEvent::Reached;
-	rpg::action_impl::onMove(fix.context, fix.actor, event);
-	// expect avatar not moving
-	BOOST_CHECK(!fix.actor.moving);
-	// expect animation event
-	auto const& events = fix.animation_sender.data();
-	BOOST_REQUIRE_EQUAL(events.size(), 1u);
-	BOOST_CHECK_EQUAL(events[0].actor, 1u);
-	BOOST_CHECK(events[0].type == core::AnimationEvent::Move);
-	BOOST_CHECK(!events[0].move);
-}
-
-// ---------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_CASE(look_is_forwarded_if_when_idling) {
 	auto& fix = Singleton<ActionFixture>::get();
@@ -131,21 +88,6 @@ BOOST_AUTO_TEST_CASE(can_spam_quickslot_switch_actions) {
 
 // ---------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE(actor_legs_animation_is_stopped_on_death) {
-	auto& fix = Singleton<ActionFixture>::get();
-	fix.reset();
-
-	rpg::DeathEvent event;
-	rpg::action_impl::onDeath(fix.context, fix.actor, event);
-
-	BOOST_CHECK(fix.actor.dead);
-	auto const& events = fix.animation_sender.data();
-	BOOST_REQUIRE_EQUAL(events.size(), 2u);
-	BOOST_CHECK_EQUAL(events[0].actor, 1u);
-	BOOST_CHECK(events[0].type == core::AnimationEvent::Move);
-	BOOST_CHECK(!events[0].move);
-}
-
 BOOST_AUTO_TEST_CASE(actor_plays_dying_animation_on_death) {
 	auto& fix = Singleton<ActionFixture>::get();
 	fix.reset();
@@ -155,10 +97,10 @@ BOOST_AUTO_TEST_CASE(actor_plays_dying_animation_on_death) {
 
 	BOOST_CHECK(fix.actor.dead);
 	auto const& events = fix.animation_sender.data();
-	BOOST_REQUIRE_EQUAL(events.size(), 2u);
-	BOOST_CHECK_EQUAL(events[1].actor, 1u);
-	BOOST_CHECK(events[1].type == core::AnimationEvent::Action);
-	BOOST_CHECK(events[1].action == core::AnimationAction::Die);
+	BOOST_REQUIRE_EQUAL(events.size(), 1u);
+	BOOST_CHECK_EQUAL(events[0].actor, 1u);
+	BOOST_CHECK(events[0].type == core::AnimationEvent::Action);
+	BOOST_CHECK(events[0].action == core::AnimationAction::Die);
 }
 
 BOOST_AUTO_TEST_CASE(actor_can_respawn) {

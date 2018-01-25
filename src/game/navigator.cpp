@@ -105,9 +105,13 @@ std::vector<sf::Vector2u> DungeonGraph::getNeighbors(
 
 // ---------------------------------------------------------------------------
 
-NavigationScene::NavigationScene(
+NavigationScene::NavigationScene(core::MovementManager const & movement,
 	core::CollisionManager const& collision, core::Dungeon const& dungeon)
-	: collision{collision}, dungeon{dungeon} {}
+	: movement{movement}
+	, collision{collision}
+	, dungeon{dungeon}
+	, coll_result{} {
+}
 
 float NavigationScene::getDistance(
 	sf::Vector2u const& u, sf::Vector2u const& v) const {
@@ -139,17 +143,16 @@ std::vector<sf::Vector2u> NavigationScene::getNeighbors(
 				continue;
 			}
 			auto const& cell = dungeon.getCell(next);
-			if (core::checkTileCollision(cell)) {
-				// ignore: tile collision
-				continue;
-			}
 			if (cell.trigger != nullptr && dynamic_cast<core::TeleportTrigger*>(cell.trigger.get()) != nullptr) {
 				// ignore: teleport triggers
 				continue;
 			}
-			auto colliders = core::checkObjectCollision(collision, cell, coll_data);
+			// fake movement to check for collision
+			core::MovementData cpy{movement.query(actor)};
+			cpy.pos = sf::Vector2f{next};
+			core::checkAnyCollision(movement, collision, dungeon, cpy, coll_result);
 			bool hit{false};
-			for (auto id: colliders) {
+			for (auto id: coll_result.objects) {
 				if (!utils::contains(ignore, id)) {
 					// ignore: object collision
 					hit = true;
@@ -187,20 +190,15 @@ bool NavigationScene::canAccess(core::ObjectID actor,
 		return false;
 	}
 	auto const& cell = dungeon.getCell(pos);
-	if (core::checkTileCollision(cell)) {
-		// ignore: tile collision
-		return false;
-	}
 	if (!collision.has(actor)) {
 		// actor seems to be dead
 		return false;
 	}
-	auto const& coll_data = collision.query(actor);
-	if (!core::checkObjectCollision(collision, cell, coll_data).empty()) {
-		// ignore: object collision
-		return false;
-	}
-	return true;
+	// fake movement to check for collision
+	core::MovementData cpy{movement.query(actor)};
+	cpy.pos = sf::Vector2f{pos};
+	core::checkAnyCollision(movement, collision, dungeon, cpy, coll_result);
+	return !coll_result.meansCollision();
 }
 
 // ---------------------------------------------------------------------------
@@ -218,7 +216,7 @@ NavigationSystem::NavigationSystem()
 	: navis{} {
 }
 
-Navigator& NavigationSystem::create(utils::SceneID id,
+Navigator& NavigationSystem::create(utils::SceneID id, core::MovementManager const & movement,
 	core::CollisionManager const& collision, core::Dungeon const& dungeon,
 	DungeonBuilder const& builder) {
 	ASSERT(id > 0u);
@@ -235,7 +233,7 @@ Navigator& NavigationSystem::create(utils::SceneID id,
 		graph.addPath(path.origin, path.target);
 	}
 	// create scene
-	NavigationScene scene{collision, dungeon};
+	NavigationScene scene{movement, collision, dungeon};
 	// create navigation
 	navis.push_back(nullptr);
 	auto& tmp = navis.back();

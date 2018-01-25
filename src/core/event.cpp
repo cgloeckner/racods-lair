@@ -2,6 +2,20 @@
 
 namespace core {
 
+InputEvent::InputEvent()
+	: actor{0u}
+	, move{}
+	, look{} {
+}
+
+CollisionEvent::CollisionEvent()
+	: actor{0u}
+	, collider{0u}
+	, pos{}
+	, reset_to{}
+	, reset{false} {
+}
+
 AnimationEvent::AnimationEvent()
 	: actor{0u}
 	, action{default_value<AnimationAction>()}

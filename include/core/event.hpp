@@ -16,6 +16,8 @@ namespace core {
 struct InputEvent {
 	ObjectID actor;
 	sf::Vector2i move, look;
+	
+	InputEvent();
 };
 
 struct MoveEvent {
@@ -33,6 +35,8 @@ struct CollisionEvent {
 	ObjectID actor, collider;
 	sf::Vector2u pos, reset_to;
 	bool reset;
+	
+	CollisionEvent();
 };
 
 struct AnimationEvent {
@@ -42,7 +46,6 @@ struct AnimationEvent {
 	ObjectID actor;
 	enum {
 		Action,
-		Move,
 		Brightness,
 		Alpha,
 		LightIntensity,
