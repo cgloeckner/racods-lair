@@ -84,6 +84,7 @@ void Factory::setupObject(core::ObjectID id, rpg::EntityTemplate const & entity)
 		f.sight = entity.max_sight;
 		f.fov = entity.fov;
 		f.is_active = true;
+		f.has_changed = true;
 	}
 	if (entity.collide) {
 		// add collision component
@@ -649,6 +650,7 @@ void Factory::handle(rpg::DeathEvent const& event) {
 	// disable focus component
 	auto& f = session.focus.query(id);
 	f.is_active = false;
+	f.has_changed = true;
 
 	// disable script component
 	if (session.script.has(id)) {

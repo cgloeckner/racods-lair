@@ -3,6 +3,7 @@
 #include <testsuite/sfml_system.hpp>
 #include <testsuite/singleton.hpp>
 
+#include <core/render.hpp>
 #include <rpg/balance.hpp>
 #include <rpg/item.hpp>
 #include <rpg/perk.hpp>
@@ -28,6 +29,8 @@ struct FactoryFixture : utils::EventListener<core::InputEvent,
 	core::AnimationManager animation;
 	core::RenderManager render;
 	core::SoundManager sound;
+	utils::LightingSystem lighting;
+	core::render_impl::Context render_context;
 
 	rpg::StatsManager stats;
 	rpg::EffectManager effect;
@@ -85,6 +88,9 @@ struct FactoryFixture : utils::EventListener<core::InputEvent,
 		, animation{}
 		, render{}
 		, sound{}
+		, lighting{{320, 180}, dummy}
+		, render_context{log, render, animation, movement,
+			focus, dungeon, camera, lighting}
 		, stats{}
 		, effect{}
 		, item{}
@@ -1822,11 +1828,35 @@ BOOST_AUTO_TEST_CASE(character_cannot_be_focused_after_death) {
 	spawn.direction = {1, 0};
 
 	auto id = fix.factory.createBot(fix.bot, spawn, 10u, fix.ai_script, true);
+	fix.focus.query(id).has_changed = false;
 	fix.objects.push_back(id);
 	fix.onCharacterDied(id);
 
 	auto const& data = fix.focus.query(id);
 	BOOST_REQUIRE(!data.is_active);
+	BOOST_CHECK(data.has_changed);
+}
+
+BOOST_AUTO_TEST_CASE(character_fov_is_disabled_after_death) {
+	auto& fix = Singleton<FactoryFixture>::get();
+	fix.reset();
+	fix.entity.collide = true;
+	fix.entity.max_sight = 5.f;
+	fix.entity.display_name = "obstacle";
+
+	rpg::SpawnMetaData spawn;
+	spawn.scene = 1u;
+	spawn.pos = {5u, 5u};
+	spawn.direction = {1, 0};
+
+	auto id = fix.factory.createBot(fix.bot, spawn, 10u, fix.ai_script, true);
+	fix.focus.query(id).has_changed = false;
+	fix.objects.push_back(id);
+	fix.onCharacterDied(id);
+
+	auto& data = fix.render.query(id);
+	core::render_impl::updateObject(fix.render_context, data);
+	BOOST_CHECK_CLOSE(data.fov.getRadius(), 0.f, 0.0001f);
 }
 
 BOOST_AUTO_TEST_CASE(character_is_stopped_on_death) {
@@ -2163,6 +2193,7 @@ BOOST_AUTO_TEST_CASE(character_can_be_focused_after_respawn) {
 	spawn.direction = {1, 0};
 
 	auto id = fix.factory.createBot(fix.bot, spawn, 10u, fix.ai_script, true);
+	fix.focus.query(id).has_changed = false;
 	fix.objects.push_back(id);
 	fix.onCharacterDied(id);
 	fix.cleanup();
@@ -2170,6 +2201,31 @@ BOOST_AUTO_TEST_CASE(character_can_be_focused_after_respawn) {
 
 	auto const& data = fix.focus.query(id);
 	BOOST_REQUIRE(data.is_active);
+	BOOST_CHECK(data.has_changed);
+}
+
+BOOST_AUTO_TEST_CASE(character_fov_is_enabled_after_respawn) {
+	auto& fix = Singleton<FactoryFixture>::get();
+	fix.reset();
+	fix.entity.collide = true;
+	fix.entity.max_sight = 5.f;
+	fix.entity.display_name = "obstacle";
+
+	rpg::SpawnMetaData spawn;
+	spawn.scene = 1u;
+	spawn.pos = {5u, 5u};
+	spawn.direction = {1, 0};
+
+	auto id = fix.factory.createBot(fix.bot, spawn, 10u, fix.ai_script, true);
+	fix.focus.query(id).has_changed = false;
+	fix.objects.push_back(id);
+	fix.onCharacterDied(id);
+	fix.cleanup();
+	fix.onCharacterSpawned(id, 0u);
+
+	auto& data = fix.render.query(id);
+	core::render_impl::updateObject(fix.render_context, data);
+	BOOST_CHECK_GT(data.fov.getRadius(), 0.f);
 }
 
 BOOST_AUTO_TEST_CASE(bot_is_hostile_if_respawned_by_hostile_bot) {

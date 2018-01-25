@@ -391,7 +391,6 @@ BOOST_AUTO_TEST_CASE(focus_dirtyflag_will_change_fov_settings) {
 	BOOST_CHECK_CLOSE(actor_render.fov.getAngle(), actor_focus.fov, 0.001f);
 }
 
-
 BOOST_AUTO_TEST_CASE(focus_dirtyflag_will_set_radius_to_zero_if_inactive) {
 	auto& fix = Singleton<RenderFixture>::get();
 	fix.reset();
