@@ -94,7 +94,7 @@ struct InteractData : core::ComponentData {
 	using Loot = std::vector<Item>;
 
 	InteractType type;
-	bool moving;
+	sf::Time cooldown; // for pushed barrier movement
 	std::vector<Loot> loot;  // per player
 
 	InteractData();

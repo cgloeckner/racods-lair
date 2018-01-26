@@ -7,6 +7,9 @@ namespace rpg {
 
 namespace interact_impl {
 
+/// barrier move cooldown
+extern sf::Time const BARRIER_MOVE_COOLDOWN;
+
 /// Interaction context
 struct Context {
 	core::LogContext& log;
@@ -38,16 +41,10 @@ struct Context {
  */
 void moveBarrier(Context& context, InteractData& data, core::ObjectID actor);
 
-/// Stop the barrier
-/**
- *	This will stop the barrier's movement. It is usually called one frame after
- *	a barrier's movement was triggered. A non-moving InputEvent is propagated.
- *	If the barrier was not moving, nothing happens.
- *
- *	@param context Interact context to use
- *	@param data InteractData of the barrier
- */
-void stopBarrier(Context& context, InteractData& data);
+/// Stop barrier after collision
+/// @param context Interact context to use
+/// @param data InteractData of the barrier
+void onCollision(Context const & context, InteractData& data);
 
 /// This will loot the corpse to the actor's inventory
 /**
@@ -74,23 +71,11 @@ void lootCorpse(Context& context, InteractData& data, core::ObjectID actor);
  */
 void onInteract(Context& context, InteractData& data, core::ObjectID actor);
 
-/// This will start a barrier's movement
-/**
- *	If the interactable is a barrier, it will be moved.
- *
- *	@param context Interact context to use
- *	@param data InteractData of the actor
- */
-void onTileLeft(Context& context, InteractData& data);
-
-/// This will stop a barrier's movement if moving
-/**
- *	If the interactable is a barrier, it will be stopped.
- *
- *	@param context Interact context to use
- *	@param data InteractData of the actor
- */
-void onUpdate(Context& context, InteractData& data);
+/// This update barrier's cooldown
+/// @param context Interact context to use
+/// @param data InteractData of the actor
+/// @param elapsed Elapsed time since last update
+void onUpdate(Context& context, InteractData& data, sf::Time const& elapsed);
 
 }  // ::interact_impl
 
@@ -105,7 +90,7 @@ void onUpdate(Context& context, InteractData& data);
  */
 class InteractSystem
 	// Event API
-	: public utils::EventListener<core::MoveEvent, InteractEvent>,
+	: public utils::EventListener<core::MoveEvent, core::CollisionEvent, InteractEvent>,
 	  public utils::EventSender<core::InputEvent, ItemEvent>
 	  // Component API
 	  ,
@@ -119,6 +104,7 @@ class InteractSystem
 		core::FocusManager const& focus, PlayerManager const& player);
 
 	void handle(core::MoveEvent const& event);
+	void handle(core::CollisionEvent const& event);
 	void handle(InteractEvent const& event);
 
 	void update(sf::Time const& elapsed);

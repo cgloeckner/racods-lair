@@ -145,6 +145,7 @@ void BehaviorSystem::handle(core::MoveEvent const& event) {
 void BehaviorSystem::handle(core::CollisionEvent const& event) {
 	// from physics
 	action.receive(event);
+	interact.receive(event);
 }
 
 void BehaviorSystem::handle(rpg::ActionEvent const& event) {

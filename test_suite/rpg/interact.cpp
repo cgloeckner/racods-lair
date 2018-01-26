@@ -96,18 +96,18 @@ struct InteractFixture {
 
 BOOST_AUTO_TEST_SUITE(interact_test)
 
-BOOST_AUTO_TEST_CASE(cannot_move_barrier_if_already_moving) {
+BOOST_AUTO_TEST_CASE(can_move_barrier_if_already_moving) {
 	auto& fix = Singleton<InteractFixture>::get();
 	fix.reset();
 
 	auto& player = fix.addPlayer({1.6f, 2.f}, 1u);
 	auto& barrier = fix.addBarrier({2.f, 2.f});
-	barrier.moving = true;
+	barrier.cooldown = rpg::interact_impl::BARRIER_MOVE_COOLDOWN;
 
 	rpg::interact_impl::moveBarrier(fix.context, barrier, player.id);
 
 	auto const& events = fix.context.input_sender.data();
-	BOOST_CHECK(events.empty());
+	BOOST_CHECK(!events.empty());
 }
 
 BOOST_AUTO_TEST_CASE(cannot_move_barrier_if_too_far_away) {
@@ -136,7 +136,7 @@ BOOST_AUTO_TEST_CASE(move_barrier_into_looking_direction) {
 	BOOST_REQUIRE_EQUAL(events.size(), 1u);
 	BOOST_CHECK_EQUAL(events[0].actor, barrier.id);
 	BOOST_CHECK_VECTOR_EQUAL(events[0].move, sf::Vector2i(1, 0));
-	BOOST_CHECK(!barrier.moving);
+	BOOST_CHECK_TIME_EQUAL(barrier.cooldown, rpg::interact_impl::BARRIER_MOVE_COOLDOWN);
 }
 
 BOOST_AUTO_TEST_CASE(move_barrier_into_movement_direction) {
@@ -154,38 +154,23 @@ BOOST_AUTO_TEST_CASE(move_barrier_into_movement_direction) {
 	BOOST_REQUIRE_EQUAL(events.size(), 1u);
 	BOOST_CHECK_EQUAL(events[0].actor, barrier.id);
 	BOOST_CHECK_VECTOR_EQUAL(events[0].move, sf::Vector2i(-1, 1));
-	BOOST_CHECK(!barrier.moving);
+	BOOST_CHECK_TIME_EQUAL(barrier.cooldown, rpg::interact_impl::BARRIER_MOVE_COOLDOWN);
 }
 
-// ---------------------------------------------------------------------------
-
-BOOST_AUTO_TEST_CASE(cannot_stop_non_moving_barrier) {
+BOOST_AUTO_TEST_CASE(move_is_stopped_on_collision) {
 	auto& fix = Singleton<InteractFixture>::get();
 	fix.reset();
 
+	auto& player = fix.addPlayer({1.6f, 2.f}, 1u);
+	auto& m = fix.movement.query(player.id);
+	m.move = {-1, 1};
 	auto& barrier = fix.addBarrier({2.f, 2.f});
-
-	rpg::interact_impl::stopBarrier(fix.context, barrier);
-
-	auto const& events = fix.context.input_sender.data();
-	BOOST_CHECK(events.empty());
-}
-
-BOOST_AUTO_TEST_CASE(can_stop_moving_barrier) {
-	auto& fix = Singleton<InteractFixture>::get();
-	fix.reset();
-
-	auto& barrier = fix.addBarrier({2.f, 2.f});
-	barrier.moving = true;
-
-	rpg::interact_impl::stopBarrier(fix.context, barrier);
-
-	auto const& events = fix.context.input_sender.data();
-	BOOST_REQUIRE_EQUAL(events.size(), 1u);
-	BOOST_CHECK_EQUAL(events[0].actor, barrier.id);
-	BOOST_CHECK_VECTOR_EQUAL(events[0].move, sf::Vector2i());
-
-	BOOST_CHECK(!barrier.moving);
+	rpg::interact_impl::moveBarrier(fix.context, barrier, player.id);
+	BOOST_REQUIRE_TIME_EQUAL(barrier.cooldown, rpg::interact_impl::BARRIER_MOVE_COOLDOWN);
+	
+	// trigger collision
+	rpg::interact_impl::onCollision(fix.context, barrier);
+	BOOST_CHECK_TIME_EQUAL(barrier.cooldown, sf::Time::Zero);
 }
 
 // ---------------------------------------------------------------------------
@@ -251,31 +236,44 @@ BOOST_AUTO_TEST_CASE(player_can_loot_corpse) {
 
 // ---------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE(barrier_starts_movement_when_tile_was_left) {
-	auto& fix = Singleton<InteractFixture>::get();
-	fix.reset();
-
-	auto& player = fix.addPlayer({1.6f, 2.f}, 1u);
-	auto& barrier = fix.addBarrier({2.f, 2.f});
-
-	rpg::interact_impl::moveBarrier(fix.context, barrier, player.id);
-	rpg::interact_impl::onTileLeft(fix.context, barrier);
-	BOOST_CHECK(barrier.moving);
-}
-
-BOOST_AUTO_TEST_CASE(barrier_stops_movement_on_update) {
+BOOST_AUTO_TEST_CASE(moving_barrier_might_stop_on_update) {
 	auto& fix = Singleton<InteractFixture>::get();
 	fix.reset();
 
 	auto& barrier = fix.addBarrier({2.f, 2.f});
-	barrier.moving = true;
-	rpg::interact_impl::onUpdate(fix.context, barrier);
-	BOOST_REQUIRE(!barrier.moving);
+	barrier.cooldown = rpg::interact_impl::BARRIER_MOVE_COOLDOWN;
+	rpg::interact_impl::onUpdate(fix.context, barrier, rpg::interact_impl::BARRIER_MOVE_COOLDOWN);
+	BOOST_REQUIRE_TIME_EQUAL(barrier.cooldown, sf::Time::Zero);
 
 	auto const& events = fix.context.input_sender.data();
 	BOOST_REQUIRE_EQUAL(events.size(), 1u);
 	BOOST_CHECK_EQUAL(events[0].actor, barrier.id);
 	BOOST_CHECK_VECTOR_EQUAL(events[0].move, sf::Vector2i(0, 0));
+}
+
+BOOST_AUTO_TEST_CASE(moving_barrier_can_continue_on_update) {
+	auto& fix = Singleton<InteractFixture>::get();
+	fix.reset();
+
+	auto& barrier = fix.addBarrier({2.f, 2.f});
+	barrier.cooldown = rpg::interact_impl::BARRIER_MOVE_COOLDOWN;
+	rpg::interact_impl::onUpdate(fix.context, barrier, sf::milliseconds(10));
+
+	auto const& events = fix.context.input_sender.data();
+	BOOST_REQUIRE(events.empty());
+}
+
+BOOST_AUTO_TEST_CASE(standing_barrier_cannot_stop_on_update) {
+	auto& fix = Singleton<InteractFixture>::get();
+	fix.reset();
+
+	auto& barrier = fix.addBarrier({2.f, 2.f});
+	barrier.cooldown = sf::Time::Zero;
+	rpg::interact_impl::onUpdate(fix.context, barrier, sf::seconds(1.f));
+	BOOST_REQUIRE_TIME_EQUAL(barrier.cooldown, sf::Time::Zero);
+
+	auto const& events = fix.context.input_sender.data();
+	BOOST_REQUIRE(events.empty());
 }
 
 BOOST_AUTO_TEST_SUITE_END()

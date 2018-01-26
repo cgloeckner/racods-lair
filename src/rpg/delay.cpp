@@ -34,6 +34,11 @@ Context::Context(core::LogContext& log, core::AnimationSender& animation_sender,
 
 // ---------------------------------------------------------------------------
 
+sf::Time getDelayDuration(core::AnimationManager const& animation, core::ObjectID actor, core::AnimationAction action) {
+	auto const& data = animation.query(actor);
+	return core::getDuration(data, action) * 0.75f;
+}
+
 core::ObjectID queryInteractable(Context& context, core::ObjectID actor) {
 	auto const& actor_move = context.movement.query(actor);
 	auto const& actor_focus = context.focus.query(actor);
@@ -184,38 +189,6 @@ void onAttack(Context& context, core::ObjectID actor) {
 }
 
 void onInteract(Context& context, core::ObjectID actor) {
-	/*
-	// fetch neighbor cell in looking direction
-	auto const & actor_move = context.movement.query(actor);
-	ASSERT(actor_move.scene > 0u);
-	auto const & dungeon = context.dungeon[actor_move.scene];
-	auto const & actor_focus = context.focus.query(actor);
-	auto pos = sf::Vector2u{sf::Vector2i{actor_move.pos} + actor_focus.look};
-	ASSERT(dungeon.has(pos));
-	auto const & cell = dungeon.getCell(pos);
-
-	// seek target
-	core::ObjectID target = 0u;
-	for (auto id: cell.entities) {
-		if (context.interact.has(id)) {
-			target = id;
-			break;
-		}
-	}
-
-	if (target == 0u) {
-		// trigger idle animation
-		core::AnimationEvent ani_event;
-		ani_event.actor = actor;
-		ani_event.type = core::AnimationEvent::Action;
-		ani_event.action = core::AnimationAction::Idle;
-		context.animation_sender.send(ani_event);
-
-		// nothing more to do
-		return;
-	}
-	*/
-
 	// trigger use animation
 	core::AnimationEvent ani_event;
 	ani_event.actor = actor;
@@ -224,8 +197,7 @@ void onInteract(Context& context, core::ObjectID actor) {
 	context.animation_sender.send(ani_event);
 
 	// calculate delay
-	auto const& ani_data = context.animation.query(actor);
-	auto delay = core::getDuration(ani_data, ani_event.action) * 0.75f;
+	auto delay = delay_impl::getDelayDuration(context.animation, actor, ani_event.action);
 
 	// schedule interact event
 	InteractEvent event;

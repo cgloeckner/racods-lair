@@ -60,7 +60,7 @@ ProjectileData::ProjectileData()
 InteractData::InteractData()
 	: core::ComponentData{}
 	, type{InteractType::Barrier}
-	, moving{false}
+	, cooldown{sf::Time::Zero}
 	, loot{} {}
 
 }  // ::game

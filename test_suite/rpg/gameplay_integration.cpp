@@ -150,6 +150,7 @@ struct GameplayFixture
 		collision.bind<core::CollisionEvent>(action);	// interrupt movement
 		collision.bind<core::CollisionEvent>(
 			projectile);  // trigger bullet collision
+		collision.bind<core::CollisionEvent>(interact);
 
 		// connect move events
 		movement.bind<core::MoveEvent>(collision);  // try movement
@@ -1577,23 +1578,46 @@ BOOST_AUTO_TEST_CASE(player_cannot_interact_if_dead) {
 	BOOST_CHECK(ani.current == core::AnimationAction::Die);
 }
 
-/// @TODO re-enable later to bugfix
-/*
-BOOST_AUTO_TEST_CASE(player_can_push_barrier_but_it_stops_automatically) {
+BOOST_AUTO_TEST_CASE(player_can_push_barrier) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 
-	fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto player = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
 	auto barrier = fix.createBarrier({2u, 2u});
 	// push barrier
 	fix.setInput(rpg::PlayerAction::Interact, true);
 	fix.update(sf::milliseconds(10));
 	fix.setInput(rpg::PlayerAction::Interact, false);
-	fix.update(sf::milliseconds(3000));
-	// expect barrier's new position
+	fix.update(rpg::delay_impl::getDelayDuration(fix.animation, player, core::AnimationAction::Use)); // action is delayed to respect animation
+	fix.update(sf::milliseconds(25));
+	
+	auto& i = fix.interact.query(barrier);
+	BOOST_CHECK(i.cooldown > sf::Time::Zero);
+}
+
+BOOST_AUTO_TEST_CASE(barrier_stops_movement_automatically) {
+	auto& fix = Singleton<GameplayFixture>::get();
+	fix.reset();
+
+	auto player = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto barrier = fix.createBarrier({2u, 2u});
+	// push barrier
+	fix.setInput(rpg::PlayerAction::Interact, true);
+	fix.update(sf::milliseconds(10));
+	fix.setInput(rpg::PlayerAction::Interact, false);
+	fix.update(rpg::delay_impl::getDelayDuration(fix.animation, player, core::AnimationAction::Use)); // action is delayed to respect animation
+	fix.update(rpg::interact_impl::BARRIER_MOVE_COOLDOWN);
+	fix.update(sf::milliseconds(25));
+	
+	// query barrier's new position
 	auto& body = fix.movement.query(barrier);
-	BOOST_CHECK_VECTOR_CLOSE(body.pos, sf::Vector2f(3.f, 2.f), 0.0001f);
-	BOOST_CHECK_VECTOR_EQUAL(body.target, sf::Vector2u(3u, 2u));
+	auto pos = body.pos;
+	auto& i = fix.interact.query(barrier);
+	BOOST_CHECK_TIME_EQUAL(i.cooldown, sf::Time::Zero)
+	
+	// continue simulation and expect same position
+	fix.update(sf::milliseconds(1000));
+	BOOST_CHECK_VECTOR_CLOSE(body.pos, pos, 0.0001f);
 }
 
 BOOST_AUTO_TEST_CASE(player_cannot_push_barrier_towards_wall) {
@@ -1607,12 +1631,13 @@ BOOST_AUTO_TEST_CASE(player_cannot_push_barrier_towards_wall) {
 	fix.update(sf::milliseconds(10));
 	fix.setInput(rpg::PlayerAction::Interact, false);
 	fix.update(sf::milliseconds(1000));
+	
 	// expect barrier's new position
 	auto& body = fix.movement.query(barrier);
 	BOOST_CHECK_VECTOR_CLOSE(body.pos, sf::Vector2f(1.f, 2.f), 0.0001f);
 	BOOST_CHECK_VECTOR_EQUAL(body.target, sf::Vector2u(1u, 2u));
 	auto& i = fix.interact.query(barrier);
-	BOOST_CHECK(!i.moving);
+	BOOST_CHECK_TIME_EQUAL(i.cooldown, sf::Time::Zero);
 }
 
 BOOST_AUTO_TEST_CASE(player_cannot_push_barrier_towards_object) {
@@ -1626,15 +1651,15 @@ BOOST_AUTO_TEST_CASE(player_cannot_push_barrier_towards_object) {
 	fix.setInput(rpg::PlayerAction::Interact, true);
 	fix.update(sf::milliseconds(10));
 	fix.setInput(rpg::PlayerAction::Interact, false);
-	fix.update(sf::milliseconds(3000));
+	fix.update(sf::milliseconds(2000));
+	
 	// expect barrier's new position
 	auto& body = fix.movement.query(barrier);
-	BOOST_CHECK_VECTOR_CLOSE(body.pos, sf::Vector2f(3.f, 2.f), 0.0001f);
+	BOOST_CHECK_VECTOR_CLOSE(body.pos, sf::Vector2f(3.45f, 2.f), 0.0001f);
 	BOOST_CHECK_VECTOR_EQUAL(body.target, sf::Vector2u(3u, 2u));
 	auto& i = fix.interact.query(barrier);
-	BOOST_CHECK(!i.moving);
+	BOOST_CHECK_TIME_EQUAL(i.cooldown, sf::Time::Zero);
 }
-*/
 
 // ---------------------------------------------------------------------------
 

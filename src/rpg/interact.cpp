@@ -6,6 +6,8 @@ namespace rpg {
 
 namespace interact_impl {
 
+extern sf::Time const BARRIER_MOVE_COOLDOWN{sf::milliseconds(500)};
+
 Context::Context(core::LogContext& log, core::InputSender& input_sender,
 	ItemSender& item_sender, core::MovementManager const& movement,
 	core::FocusManager const& focus, PlayerManager const& player)
@@ -19,12 +21,6 @@ Context::Context(core::LogContext& log, core::InputSender& input_sender,
 // ---------------------------------------------------------------------------
 
 void moveBarrier(Context& context, InteractData& data, core::ObjectID actor) {
-	if (data.moving) {
-		// already moving
-		context.log.debug << "[Rpg/Interact] " << "Cannot move barrier: Already moving\n";
-		return;
-	}
-
 	// check distance
 	auto const& actor_move = context.movement.query(actor);
 	auto const& target_move = context.movement.query(data.id);
@@ -47,22 +43,11 @@ void moveBarrier(Context& context, InteractData& data, core::ObjectID actor) {
 	event.move = dir;
 	context.input_sender.send(event);
 
-	// data.moving = true;
+	data.cooldown = BARRIER_MOVE_COOLDOWN;
 }
 
-void stopBarrier(Context& context, InteractData& data) {
-	if (!data.moving) {
-		// not moving, yet
-		return;
-	}
-
-	// trigger movement stop
-	core::InputEvent event;
-	event.actor = data.id;
-	event.move = {};
-	context.input_sender.send(event);
-
-	data.moving = false;
+void onCollision(Context const & context, InteractData& data) {
+	data.cooldown = sf::Time::Zero;
 }
 
 void lootCorpse(Context& context, InteractData& data, core::ObjectID actor) {
@@ -105,27 +90,18 @@ void onInteract(Context& context, InteractData& data, core::ObjectID actor) {
 	}
 }
 
-void onTileLeft(Context& context, InteractData& data) {
-	switch (data.type) {
-		case InteractType::Barrier:
-			data.moving = true;
-			break;
-
-		default:
-			break;
-	}
-}
-
-void onUpdate(Context& context, InteractData& data) {
-	switch (data.type) {
-		case InteractType::Barrier:
-			if (data.moving) {
-				stopBarrier(context, data);
-			}
-			break;
-
-		default:
-			break;
+void onUpdate(Context& context, InteractData& data, sf::Time const& elapsed) {
+	if (data.cooldown > sf::Time::Zero) {
+		data.cooldown -= elapsed;
+		if (data.cooldown <= sf::Time::Zero) {
+			data.cooldown = sf::Time::Zero;
+			
+			// trigger stop
+			core::InputEvent event;
+			event.actor = data.id;
+			event.move = sf::Vector2i{};
+			context.input_sender.send(event);
+		}
 	}
 }
 
@@ -136,27 +112,23 @@ void onUpdate(Context& context, InteractData& data) {
 InteractSystem::InteractSystem(core::LogContext& log, std::size_t max_objects,
 	core::MovementManager const& movement, core::FocusManager const& focus,
 	PlayerManager const& player)
-	: utils::EventListener<core::MoveEvent, InteractEvent>{}
+	: utils::EventListener<core::MoveEvent, core::CollisionEvent, InteractEvent>{}
 	, utils::EventSender<core::InputEvent, ItemEvent>{}
 	, InteractManager{max_objects}
 	, context{log, *this, *this, movement, focus, player} {}
 
 void InteractSystem::handle(core::MoveEvent const& event) {
+	//
+}
+
+void InteractSystem::handle(core::CollisionEvent const& event) {
 	if (!has(event.actor)) {
 		// object has no interact component
 		return;
 	}
 	auto& data = query(event.actor);
-
-	switch (event.type) {
-		case core::MoveEvent::Left:
-			interact_impl::onTileLeft(context, data);
-			break;
-
-		default:
-			// others not handled here
-			break;
-	}
+	
+	interact_impl::onCollision(context, data);
 }
 
 void InteractSystem::handle(InteractEvent const& event) {
@@ -171,10 +143,11 @@ void InteractSystem::handle(InteractEvent const& event) {
 
 void InteractSystem::update(sf::Time const& elapsed) {
 	dispatch<core::MoveEvent>(*this);
+	dispatch<core::CollisionEvent>(*this);
 	dispatch<InteractEvent>(*this);
 
 	for (auto& data : *this) {
-		onUpdate(context, data);
+		onUpdate(context, data, elapsed);
 	}
 
 	propagate<core::InputEvent>();

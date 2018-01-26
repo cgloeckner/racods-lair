@@ -40,6 +40,13 @@ struct Context {
 
 // ---------------------------------------------------------------------------
 
+/// Calculate delay duration based on animation
+/// @param animation AnimationManager to query in
+/// @param actor ObjectID of actor
+/// @param action InputAction to determine delay for
+/// @return delay time
+sf::Time getDelayDuration(core::AnimationManager const& animation, core::ObjectID actor, core::AnimationAction action);
+
 /// Query closest interaction target
 core::ObjectID queryInteractable(Context& context, core::ObjectID actor);
 
