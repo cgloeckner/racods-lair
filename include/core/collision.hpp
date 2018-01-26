@@ -30,14 +30,14 @@ struct Context {
 	TeleportSender& teleport_sender;
 	CollisionManager& collision_manager;
 	DungeonSystem& dungeon_system;
-	MovementManager& movement_manager;
+	MovementManager const & movement_manager;
 	
 	CollisionResult collision_result;
 	
 	Context(LogContext& log, CollisionSender& collision_sender,
 		MoveSender& move_sender, TeleportSender& teleport_sender,
 		CollisionManager& collision_manager, DungeonSystem& dungeon_system,
-		MovementManager& movement_manager);
+		MovementManager const & movement_manager);
 };
 
 // ---------------------------------------------------------------------------
@@ -146,7 +146,7 @@ class CollisionSystem
 
   public:
 	CollisionSystem(LogContext& log, std::size_t max_objects, DungeonSystem& dungeon,
-		MovementManager& movement);
+		MovementManager const & movement);
 
 	void handle(MoveEvent const& event);
 

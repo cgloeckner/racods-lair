@@ -71,7 +71,7 @@ void moveToTarget(Context& context, MovementData& data) {
 		CollisionEvent event;
 		event.pos = source;
 		event.reset_to = source;
-		event.reset = true;
+		event.interrupt = true;
 		stop(context, data, event);
 		return;
 	}
@@ -96,7 +96,7 @@ void moveToTarget(Context& context, MovementData& data) {
 }
 
 void stop(Context& context, MovementData& data, CollisionEvent const& event) {
-	if (!event.reset) {
+	if (!event.interrupt) {
 		// nothing to do
 		return;
 	}
@@ -120,12 +120,14 @@ void stop(Context& context, MovementData& data, CollisionEvent const& event) {
 	// reset position
 	//data.pos = sf::Vector2f{event.reset_to};
 	//data.target = event.reset_to;
+	
+	data.pos    = data.last_pos;
+	data.is_moving = false;
 	data.target = sf::Vector2u{data.pos};
+	data.move   = sf::Vector2i{}; /// @TODO Vector2f after overhaul
+	data.next_move = data.move;
 	data.has_changed = true;
-	// break movement
-	data.move = sf::Vector2i{};
-	//data.is_moving = false;
-	data.next_move = sf::Vector2i{};
+	
 	// propagate reaching tile -- if collision didn't occure on tile reach
 	if (event.pos != event.reset_to) {
 		MoveEvent move_event;

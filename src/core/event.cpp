@@ -13,7 +13,7 @@ CollisionEvent::CollisionEvent()
 	, collider{0u}
 	, pos{}
 	, reset_to{}
-	, reset{false} {
+	, interrupt{false} {
 }
 
 AnimationEvent::AnimationEvent()

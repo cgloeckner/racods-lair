@@ -380,7 +380,7 @@ BOOST_AUTO_TEST_CASE(
 	// and expect oncomming object has stopped too
 	auto const& o_m = fix.movement.query(oncom);
 	BOOST_CHECK_VECTOR_EQUAL(o_m.move, sf::Vector2i());
-	BOOST_CHECK_VECTOR_CLOSE(o_m.pos, sf::Vector2f(3.709f, 2.f), 0.001f);
+	BOOST_CHECK_VECTOR_CLOSE(o_m.pos, sf::Vector2f(3.719f, 2.f), 0.001f);
 }
 
 BOOST_AUTO_TEST_CASE(

@@ -543,6 +543,8 @@ BOOST_AUTO_TEST_CASE(
 
 	auto id = fix.add_object({3u, 2u}, 15.f);
 	auto& data = fix.movement_manager.query(id);
+	data.pos = {3.f, 1.f};
+	data.last_pos = {3.f, 2.f};
 
 	// trigger movement
 	auto event = fix.move_object(id, {0, -1});
@@ -551,13 +553,10 @@ BOOST_AUTO_TEST_CASE(
 	// cause collision
 	core::CollisionEvent ev;
 	ev.actor = id;
-	ev.pos = {3u, 1u};
-	ev.reset_to = {3u, 2u};  // stop object at the left tile
-	ev.reset = true;
+	ev.interrupt = true;
 	core::movement_impl::stop(fix.context, data, ev);
 
 	// assert stop at position <3,2>
-	BOOST_CHECK_VECTOR_CLOSE(data.pos, sf::Vector2f(3.f, 2.f), 0.0001f);
 	BOOST_CHECK_VECTOR_CLOSE(data.pos, sf::Vector2f(3.f, 2.f), 0.0001f);
 	auto& dungeon = fix.dungeon_system[1];
 	auto& cell = dungeon.getCell({3u, 2u});
@@ -580,7 +579,7 @@ BOOST_AUTO_TEST_CASE(object_movement_is_continued_if_collision_does_not_reset) {
 	// cause collision
 	core::CollisionEvent ev;
 	ev.actor = id;
-	ev.reset = false;
+	ev.interrupt = false;
 	core::movement_impl::stop(fix.context, data, ev);
 
 	// update using only small step because there is no collision system that
@@ -624,9 +623,7 @@ BOOST_AUTO_TEST_CASE(bullet_movement_stopps_as_collision_occures) {
 	// cause collision
 	core::CollisionEvent ev;
 	ev.actor = id;
-	ev.pos = {3u, 1u};
-	ev.reset_to = {3u, 1u};  // stop bullet at the reached tile
-	ev.reset = true;
+	ev.interrupt = true;
 	// reset grid pos (is actually done by collision system)
 	auto& dungeon = fix.dungeon_system[1];
 	auto& src = dungeon.getCell({3u, 2u});
@@ -634,11 +631,14 @@ BOOST_AUTO_TEST_CASE(bullet_movement_stopps_as_collision_occures) {
 	BOOST_CHECK(utils::pop(src.entities, id));
 	BOOST_CHECK(!utils::contains(dst.entities, id));
 	dst.entities.push_back(id);
+	data.pos = {3.f, 1.f};
+	data.last_pos = {3.f, 2.f};
+
 	// propagate event
 	core::movement_impl::stop(fix.context, data, ev);
 
-	// assert stop at position <3,1>
-	BOOST_CHECK_VECTOR_CLOSE(data.pos, sf::Vector2f(3.f, 1.f), 0.0001f);
+	// assert to be stopped at <3,2>
+	BOOST_CHECK_VECTOR_CLOSE(data.pos, sf::Vector2f(3.f, 2.f), 0.0001f);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

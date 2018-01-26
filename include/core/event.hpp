@@ -34,7 +34,7 @@ struct FocusEvent {
 struct CollisionEvent {
 	ObjectID actor, collider;
 	sf::Vector2u pos, reset_to;
-	bool reset;
+	bool interrupt;
 	
 	CollisionEvent();
 };

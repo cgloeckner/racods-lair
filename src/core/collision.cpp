@@ -27,7 +27,7 @@ float const MAX_COLLISION_RADIUS = 1.f;
 Context::Context(LogContext& log, CollisionSender& collision_sender,
 	MoveSender& move_sender, TeleportSender& teleport_sender,
 	CollisionManager& collision_manager, DungeonSystem& dungeon_system,
-	MovementManager& movement_manager)
+	MovementManager const & movement_manager)
 	: log{log}
 	, collision_sender{collision_sender}
 	, move_sender{move_sender}
@@ -74,7 +74,7 @@ void checkAllCollisions(Context& context) {
 	CollisionEvent event;
 	
 	// iterate through MoveData to instantly determine whether is_moving or not
-	for (auto& move_data: context.movement_manager) {
+	for (auto const & move_data: context.movement_manager) {
 		if (!move_data.is_moving) {
 			continue;
 		}
@@ -86,7 +86,7 @@ void checkAllCollisions(Context& context) {
 			
 			// propagate collision
 			event.actor = move_data.id;
-			event.pos = sf::Vector2u{move_data.pos}; /// @TODO tmp cast due to overhault
+			event.interrupt = result.interrupt;
 			if (result.objects.empty()) {
 				// propagate tile collision
 				event.collider = 0u;
@@ -101,18 +101,6 @@ void checkAllCollisions(Context& context) {
 					utils::append(actor_coll.ignore, result.objects);
 				}
 			}
-			
-			// reset position and stop object (if not a projectile and collision interrupts)
-			// or if a tile collision occured
-			if (result.tile || (!actor_coll.is_projectile && result.interrupt)) {
-				/// @TODO move_impl::stopObject after overhaul
-				move_data.pos    = move_data.last_pos;
-				move_data.is_moving = false;
-				move_data.target = sf::Vector2u{move_data.pos};
-				move_data.move   = sf::Vector2i{}; /// @TODO Vector2f after overhaul
-				move_data.next_move = move_data.move;
-				move_data.has_changed = true;
-			}
 		}
 		
 		auto changed = updateCollisionMap(context, move_data);
@@ -125,14 +113,6 @@ void checkAllCollisions(Context& context) {
 				if (cell.trigger->isExpired()) {
 					// delete expired trigger
 					cell.trigger = nullptr;
-					
-					/// @TODO move_impl::stopObject after overhaul
-					move_data.pos    = move_data.last_pos;
-					move_data.is_moving = false;
-					move_data.target = sf::Vector2u{move_data.pos};
-					move_data.move   = sf::Vector2i{}; /// @TODO Vector2f after overhaul
-					move_data.next_move = move_data.move;
-					move_data.has_changed = true;
 				}
 			}
 		}
@@ -248,7 +228,7 @@ void checkAnyCollision(MovementManager const & movement_manager, CollisionManage
 // ---------------------------------------------------------------------------
 
 CollisionSystem::CollisionSystem(LogContext& log, std::size_t max_objects, DungeonSystem& dungeon,
-	MovementManager& movement_manager)
+	MovementManager const & movement_manager)
 	// Event API
 	: utils::EventListener<MoveEvent>{}
 	, utils::EventSender<CollisionEvent, MoveEvent, TeleportEvent>{}  // Component API
