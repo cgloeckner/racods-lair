@@ -222,7 +222,7 @@ BOOST_AUTO_TEST_CASE(bullet_can_collide_with_regular_objects) {
 	auto entity = fix.add_object(fix.scene, {3u, 2u}, {0, 1}, 5.f, 5.f);
 	auto bullet = fix.add_bullet(fix.scene, {5u, 2u}, {-1, 0}, 1.f, 5.f);
 
-	fix.update(sf::seconds(6.f));
+	fix.update(sf::seconds(0.5f));
 	
 	// expect object collision between bullet and entity
 	auto const& colls = fix.collisions;
@@ -242,9 +242,9 @@ BOOST_AUTO_TEST_CASE(bullet_stops_movement_if_it_hits_an_unaccessable_tile) {
 	auto& fix = Singleton<PhysicsFixture>::get();
 	fix.reset();
 
-	auto bullet = fix.add_bullet(fix.scene, {3u, 2u}, {-1, 0}, 1.f, 5.f);
+	auto bullet = fix.add_bullet(fix.scene, {4u, 2u}, {-1, 0}, 1.f, 10.f);
 	
-	fix.update(sf::seconds(7.f));
+	fix.update(sf::seconds(10.f));
 
 	// expect tile collision
 	auto const& colls = fix.collisions;
@@ -252,10 +252,10 @@ BOOST_AUTO_TEST_CASE(bullet_stops_movement_if_it_hits_an_unaccessable_tile) {
 	BOOST_CHECK_EQUAL(colls[0].actor, bullet);
 	BOOST_CHECK_EQUAL(colls[0].collider, 0u);
 
-	// expect bullet has stopped at (0,2)
+	// expect bullet has stopped at (1.3, 2)
 	auto const& b_m = fix.movement.query(bullet);
 	BOOST_CHECK_VECTOR_EQUAL(b_m.move, sf::Vector2i());
-	BOOST_CHECK_VECTOR_CLOSE(b_m.pos, sf::Vector2f(1.f, 2.f), 0.0001f);
+	BOOST_CHECK_VECTOR_CLOSE(b_m.pos, sf::Vector2f(1.3f, 2.f), 0.0001f);
 }
 
 BOOST_AUTO_TEST_CASE(
@@ -278,7 +278,7 @@ BOOST_AUTO_TEST_CASE(
 	// expect mover has stopped near (3, 3)
 	auto const& m_m = fix.movement.query(mover);
 	BOOST_CHECK_VECTOR_EQUAL(m_m.move, sf::Vector2i());
-	BOOST_CHECK_VECTOR_CLOSE(m_m.pos, sf::Vector2f(3.f, 2.987f), 0.001f);
+	BOOST_CHECK_VECTOR_CLOSE(m_m.pos, sf::Vector2f(3.f, 2.875f), 0.001f);
 }
 
 BOOST_AUTO_TEST_CASE(
@@ -346,12 +346,12 @@ BOOST_AUTO_TEST_CASE(
 	// expect actor object has stopped near (4, 3)
 	auto const& m_m = fix.movement.query(mover);
 	BOOST_CHECK_VECTOR_EQUAL(m_m.move, sf::Vector2i());
-	BOOST_CHECK_VECTOR_CLOSE(m_m.pos, sf::Vector2f(4.f, 3.287f), 0.001f);
+	BOOST_CHECK_VECTOR_CLOSE(m_m.pos, sf::Vector2f(4.f, 3.175f), 0.001f);
 
 	// expect crossing object stopped, too
 	auto const& c_m = fix.movement.query(cross);
 	BOOST_CHECK_VECTOR_EQUAL(c_m.move, sf::Vector2i());
-	BOOST_CHECK_VECTOR_CLOSE(c_m.pos, sf::Vector2f(3.287f, 4.f), 0.001f);
+	BOOST_CHECK_VECTOR_CLOSE(c_m.pos, sf::Vector2f(3.175f, 4.f), 0.001f);
 	
 	// check distance
 	auto const & m_c = fix.collision.query(mover);
@@ -367,7 +367,6 @@ BOOST_AUTO_TEST_CASE(direct_tunnelingtest) {
 
 	auto mover = fix.add_object(fix.scene, {1u, 2u}, {-1, 0}, 1.f, core::MAX_SPEED);
 	auto oncom = fix.add_object(fix.scene, {5u, 2u}, {-1, 0}, 1.f, core::MAX_SPEED);
-	std::cout << core::MAX_SPEED << " tiles/second\n";
 	fix.move_object(mover, {1, 0}, {1, 0});
 	fix.move_object(oncom, {-1, 0}, {1, 0});
 	fix.update(sf::seconds(8.f));
@@ -375,20 +374,20 @@ BOOST_AUTO_TEST_CASE(direct_tunnelingtest) {
 	// expect collisions
 	auto const& colls = fix.collisions;
 	BOOST_REQUIRE_EQUAL(colls.size(), 2u);
-	BOOST_CHECK_EQUAL(colls[0].actor, mover);
-	BOOST_CHECK_EQUAL(colls[0].collider, oncom);
-	BOOST_CHECK_EQUAL(colls[1].actor, oncom);
-	BOOST_CHECK_EQUAL(colls[1].collider, mover);
+	BOOST_CHECK_EQUAL(colls[0].actor, oncom);
+	BOOST_CHECK_EQUAL(colls[0].collider, mover);
+	BOOST_CHECK_EQUAL(colls[1].actor, mover);
+	BOOST_CHECK_EQUAL(colls[1].collider, oncom);
 
 	// expect actor has stopped near (3, 2)
 	auto const& m_m = fix.movement.query(mover);
 	BOOST_CHECK_VECTOR_EQUAL(m_m.move, sf::Vector2i());
-	BOOST_CHECK_VECTOR_CLOSE(m_m.pos, sf::Vector2f(2.700, 2.f), 0.001f);
+	BOOST_CHECK_VECTOR_CLOSE(m_m.pos, sf::Vector2f(2.f, 2.f), 0.001f);
 	
 	// and expect oncomming object has stopped too
 	auto const& o_m = fix.movement.query(oncom);
 	BOOST_CHECK_VECTOR_EQUAL(o_m.move, sf::Vector2i());
-	BOOST_CHECK_VECTOR_CLOSE(o_m.pos, sf::Vector2f(3.503f, 2.f), 0.001f);
+	BOOST_CHECK_VECTOR_CLOSE(o_m.pos, sf::Vector2f(5.f, 2.f), 0.001f);
 	
 	// check distance
 	auto const & m_c = fix.collision.query(mover);
@@ -402,12 +401,12 @@ BOOST_AUTO_TEST_CASE(indirect_tunnelingtest) {
 	auto& fix = Singleton<PhysicsFixture>::get();
 	fix.reset();
 
-	auto mover = fix.add_object(fix.scene, {1u, 2u}, {-1, 0}, 1.f, core::MAX_SPEED);
-	auto oncom = fix.add_object(fix.scene, {5u, 2u}, {-1, 0}, 1.f, core::MAX_SPEED);
+	auto mover = fix.add_object(fix.scene, {1u, 2u}, { 1, 0}, 1.f, core::MAX_SPEED);
+	auto oncom = fix.add_object(fix.scene, {5u, 3u}, {-1, 0}, 1.f, core::MAX_SPEED);
 	auto& m_c = fix.collision.query(mover);
 	auto& o_c = fix.collision.query(oncom);
-	m_c.shape.radius = 2.f;
-	o_c.shape.radius = 2.f;
+	m_c.shape.radius = 0.75f;
+	o_c.shape.radius = 0.75f;
 	fix.move_object(mover, {1, 0}, {1, 0});
 	fix.move_object(oncom, {-1, 0}, {1, 0});
 	fix.update(sf::seconds(8.f));
@@ -415,20 +414,20 @@ BOOST_AUTO_TEST_CASE(indirect_tunnelingtest) {
 	// expect collisions
 	auto const& colls = fix.collisions;
 	BOOST_REQUIRE_EQUAL(colls.size(), 2u);
-	BOOST_CHECK_EQUAL(colls[0].actor, mover);
-	BOOST_CHECK_EQUAL(colls[0].collider, oncom);
-	BOOST_CHECK_EQUAL(colls[1].actor, oncom);
-	BOOST_CHECK_EQUAL(colls[1].collider, mover);
+	BOOST_CHECK_EQUAL(colls[0].actor, oncom);
+	BOOST_CHECK_EQUAL(colls[0].collider, mover);
+	BOOST_CHECK_EQUAL(colls[1].actor, mover);
+	BOOST_CHECK_EQUAL(colls[1].collider, oncom);
 
 	// expect actor has stopped near (3, 2)
 	auto const& m_m = fix.movement.query(mover);
 	BOOST_CHECK_VECTOR_EQUAL(m_m.move, sf::Vector2i());
-	BOOST_CHECK_VECTOR_CLOSE(m_m.pos, sf::Vector2f(2.700, 2.f), 0.001f);
+	BOOST_CHECK_VECTOR_CLOSE(m_m.pos, sf::Vector2f(2.f, 2.f), 0.001f);
 	
 	// and expect oncomming object has stopped too
 	auto const& o_m = fix.movement.query(oncom);
 	BOOST_CHECK_VECTOR_EQUAL(o_m.move, sf::Vector2i());
-	BOOST_CHECK_VECTOR_CLOSE(o_m.pos, sf::Vector2f(3.503f, 2.f), 0.001f);
+	BOOST_CHECK_VECTOR_CLOSE(o_m.pos, sf::Vector2f(5.f, 3.f), 0.001f);
 	
 	// check distance
 	auto dist = utils::distance(m_m.pos, o_m.pos); // is squared
@@ -458,12 +457,12 @@ BOOST_AUTO_TEST_CASE(
 	// expect actor has stopped near (3, 2)
 	auto const& m_m = fix.movement.query(mover);
 	BOOST_CHECK_VECTOR_EQUAL(m_m.move, sf::Vector2i());
-	BOOST_CHECK_VECTOR_CLOSE(m_m.pos, sf::Vector2f(3.138f, 2.f), 0.001f);
+	BOOST_CHECK_VECTOR_CLOSE(m_m.pos, sf::Vector2f(3.f, 2.f), 0.001f);
 	
 	// and expect oncomming object has stopped too
 	auto const& o_m = fix.movement.query(oncom);
 	BOOST_CHECK_VECTOR_EQUAL(o_m.move, sf::Vector2i());
-	BOOST_CHECK_VECTOR_CLOSE(o_m.pos, sf::Vector2f(4.147f, 2.f), 0.001f);
+	BOOST_CHECK_VECTOR_CLOSE(o_m.pos, sf::Vector2f(4.081f, 2.f), 0.001f);
 	
 	// check distance
 	auto const & m_c = fix.collision.query(mover);
@@ -481,7 +480,7 @@ BOOST_AUTO_TEST_CASE(object_is_not_stopped_if_bullet_collides_with_it) {
 	auto bullet = fix.add_bullet(fix.scene, {5u, 1u}, {-1, 0}, 5.f, 5.f);
 	fix.move_object(actor, {1, 0}, {1, 0});
 	// object moves to (4,1), bullet moves to (4,1) and collides
-	fix.update(sf::seconds(3.f));
+	fix.update(sf::seconds(0.5f));
 
 	// expect collisions
 	auto& coll = fix.collisions;
@@ -508,7 +507,7 @@ BOOST_AUTO_TEST_CASE(bullets_do_collide_with_each_other) {
 
 	auto actor = fix.add_bullet(fix.scene, {3u, 1u}, {1, 0}, 5.f, 5.f);
 	auto other = fix.add_bullet(fix.scene, {5u, 1u}, {-1, 0}, 5.f, 5.f);
-	fix.update(sf::seconds(3.f));
+	fix.update(sf::seconds(0.5f));
 
 	// expect collisions
 	BOOST_CHECK_EQUAL(fix.collisions.size(), 2u);
@@ -668,12 +667,12 @@ BOOST_AUTO_TEST_CASE(object_is_not_stopped_after_teleport) {
 
 	auto mover = fix.add_object(fix.scene, {1u, 1u}, {1, 0}, 1.f, 5.f);
 	fix.move_object(mover, {1, 0}, {-1, 1});
-	fix.update(sf::seconds(16.f));
+	fix.update(sf::seconds(1.f));
 
-	// expect object idle at target position
+	// expect object move off teleport target position
 	auto const& move_data = fix.movement.query(mover);
 	BOOST_CHECK_VECTOR_EQUAL(move_data.move, sf::Vector2i(1, 0));
-	BOOST_CHECK_VECTOR_CLOSE(move_data.target, sf::Vector2f(7.f, 5.f), 0.0001f);
+	BOOST_CHECK_VECTOR_CLOSE(move_data.target, sf::Vector2f(4.f, 5.f), 0.0001f);
 }
 
 BOOST_AUTO_TEST_CASE(bullet_is_not_effected_by_teleport) {
@@ -686,11 +685,11 @@ BOOST_AUTO_TEST_CASE(bullet_is_not_effected_by_teleport) {
 	auto mover = fix.add_bullet(fix.scene, {1u, 1u}, {1, 0}, 0.f, 5.f);
 	fix.update(sf::seconds(8.f));
 
-	// expect object move beyond trigger
+	// expect object move beyond trigger and collide with wall
 	auto const& move_data = fix.movement.query(mover);
 	BOOST_CHECK_EQUAL(move_data.scene, fix.scene);
 	BOOST_CHECK_VECTOR_EQUAL(move_data.move, sf::Vector2i());
-	BOOST_CHECK_VECTOR_CLOSE(move_data.target, sf::Vector2f(5.f, 1.f), 0.0001f);
+	BOOST_CHECK_VECTOR_CLOSE(move_data.target, sf::Vector2f(8.f, 1.f), 0.0001f);
 }
 
 // ---------------------------------------------------------------------------
