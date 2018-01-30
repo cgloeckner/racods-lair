@@ -8,7 +8,6 @@ namespace core {
 
 namespace movement_impl {
 
-extern float const MOVEMENT_VELOCITY;
 extern float const MIN_SPEEDFACTOR;
 extern float const MAX_SPEEDFACTOR;
 extern float const DELTA_SPEEDFACTOR;
@@ -16,13 +15,12 @@ extern float const SIDEWARD_SPEEDFACTOR;
 extern float const BACKWARD_SPEEDFACTOR;
 
 // to fix floating point inaccuracy when reaching tile
+/// @DEPRECATED
 extern float const MOVEMENT_ACCURACY;
 
 // to determine whether an object is centered on a cell or not
+/// @DEPRECATED
 extern float const CELL_CENTER_DIVERGENCE;
-
-// determines maximum step (with lowest frametime)
-float const MAX_SPEED = MAX_TILE_STEP / (MAX_FRAMETIME_MS * MOVEMENT_VELOCITY);
 
 /// helper structure to keep implementation signatures clean and tidy
 struct Context {

@@ -14,12 +14,9 @@ using ObjectID = std::uint16_t;
 
 // ---------------------------------------------------------------------------
 
-// maximum frametime per update
-extern float const MAX_FRAMETIME_MS;
-
-// minimum distances that is stepped during one frame
-// this is used by the movement and collision system
-extern float const MAX_TILE_STEP;
+extern float const MAX_COLLISION_RADIUS; // in tiles
+extern float const MAX_FRAMETIME_MS;     // maxused per physics update
+extern float const MAX_SPEED;
 
 struct ComponentData {
 	ObjectID id;

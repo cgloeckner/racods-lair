@@ -352,15 +352,22 @@ BOOST_AUTO_TEST_CASE(
 	auto const& c_m = fix.movement.query(cross);
 	BOOST_CHECK_VECTOR_EQUAL(c_m.move, sf::Vector2i());
 	BOOST_CHECK_VECTOR_CLOSE(c_m.pos, sf::Vector2f(3.287f, 4.f), 0.001f);
+	
+	// check distance
+	auto const & m_c = fix.collision.query(mover);
+	auto const & c_c = fix.collision.query(cross);
+	auto dist = utils::distance(m_m.pos, c_m.pos); // is squared
+	auto radsum = m_c.shape.radius + c_c.shape.radius;
+	BOOST_CHECK_LE(radsum * radsum, dist);
 }
 
-BOOST_AUTO_TEST_CASE(
-	object_stops_movement_if_it_collides_with_an_oncomming_object_in_case_of_odd_tiles_in_between) {
+BOOST_AUTO_TEST_CASE(direct_tunnelingtest) {
 	auto& fix = Singleton<PhysicsFixture>::get();
 	fix.reset();
 
-	auto mover = fix.add_object(fix.scene, {1u, 2u}, {-1, 0}, 1.f, 5.f);
-	auto oncom = fix.add_object(fix.scene, {5u, 2u}, {-1, 0}, 1.f, 5.f);
+	auto mover = fix.add_object(fix.scene, {1u, 2u}, {-1, 0}, 1.f, core::MAX_SPEED);
+	auto oncom = fix.add_object(fix.scene, {5u, 2u}, {-1, 0}, 1.f, core::MAX_SPEED);
+	std::cout << core::MAX_SPEED << " tiles/second\n";
 	fix.move_object(mover, {1, 0}, {1, 0});
 	fix.move_object(oncom, {-1, 0}, {1, 0});
 	fix.update(sf::seconds(8.f));
@@ -377,10 +384,56 @@ BOOST_AUTO_TEST_CASE(
 	auto const& m_m = fix.movement.query(mover);
 	BOOST_CHECK_VECTOR_EQUAL(m_m.move, sf::Vector2i());
 	BOOST_CHECK_VECTOR_CLOSE(m_m.pos, sf::Vector2f(2.700, 2.f), 0.001f);
+	
 	// and expect oncomming object has stopped too
 	auto const& o_m = fix.movement.query(oncom);
 	BOOST_CHECK_VECTOR_EQUAL(o_m.move, sf::Vector2i());
-	BOOST_CHECK_VECTOR_CLOSE(o_m.pos, sf::Vector2f(3.719f, 2.f), 0.001f);
+	BOOST_CHECK_VECTOR_CLOSE(o_m.pos, sf::Vector2f(3.503f, 2.f), 0.001f);
+	
+	// check distance
+	auto const & m_c = fix.collision.query(mover);
+	auto const & o_c = fix.collision.query(oncom);
+	auto dist = utils::distance(m_m.pos, o_m.pos); // is squared
+	auto radsum = m_c.shape.radius + o_c.shape.radius;
+	BOOST_CHECK_LE(radsum * radsum, dist);
+}
+
+BOOST_AUTO_TEST_CASE(indirect_tunnelingtest) {
+	auto& fix = Singleton<PhysicsFixture>::get();
+	fix.reset();
+
+	auto mover = fix.add_object(fix.scene, {1u, 2u}, {-1, 0}, 1.f, core::MAX_SPEED);
+	auto oncom = fix.add_object(fix.scene, {5u, 2u}, {-1, 0}, 1.f, core::MAX_SPEED);
+	auto& m_c = fix.collision.query(mover);
+	auto& o_c = fix.collision.query(oncom);
+	m_c.shape.radius = 2.f;
+	o_c.shape.radius = 2.f;
+	fix.move_object(mover, {1, 0}, {1, 0});
+	fix.move_object(oncom, {-1, 0}, {1, 0});
+	fix.update(sf::seconds(8.f));
+
+	// expect collisions
+	auto const& colls = fix.collisions;
+	BOOST_REQUIRE_EQUAL(colls.size(), 2u);
+	BOOST_CHECK_EQUAL(colls[0].actor, mover);
+	BOOST_CHECK_EQUAL(colls[0].collider, oncom);
+	BOOST_CHECK_EQUAL(colls[1].actor, oncom);
+	BOOST_CHECK_EQUAL(colls[1].collider, mover);
+
+	// expect actor has stopped near (3, 2)
+	auto const& m_m = fix.movement.query(mover);
+	BOOST_CHECK_VECTOR_EQUAL(m_m.move, sf::Vector2i());
+	BOOST_CHECK_VECTOR_CLOSE(m_m.pos, sf::Vector2f(2.700, 2.f), 0.001f);
+	
+	// and expect oncomming object has stopped too
+	auto const& o_m = fix.movement.query(oncom);
+	BOOST_CHECK_VECTOR_EQUAL(o_m.move, sf::Vector2i());
+	BOOST_CHECK_VECTOR_CLOSE(o_m.pos, sf::Vector2f(3.503f, 2.f), 0.001f);
+	
+	// check distance
+	auto dist = utils::distance(m_m.pos, o_m.pos); // is squared
+	auto radsum = m_c.shape.radius + o_c.shape.radius;
+	BOOST_CHECK_LT(radsum * radsum, dist);
 }
 
 BOOST_AUTO_TEST_CASE(
@@ -406,10 +459,18 @@ BOOST_AUTO_TEST_CASE(
 	auto const& m_m = fix.movement.query(mover);
 	BOOST_CHECK_VECTOR_EQUAL(m_m.move, sf::Vector2i());
 	BOOST_CHECK_VECTOR_CLOSE(m_m.pos, sf::Vector2f(3.138f, 2.f), 0.001f);
+	
 	// and expect oncomming object has stopped too
 	auto const& o_m = fix.movement.query(oncom);
 	BOOST_CHECK_VECTOR_EQUAL(o_m.move, sf::Vector2i());
 	BOOST_CHECK_VECTOR_CLOSE(o_m.pos, sf::Vector2f(4.147f, 2.f), 0.001f);
+	
+	// check distance
+	auto const & m_c = fix.collision.query(mover);
+	auto const & o_c = fix.collision.query(oncom);
+	auto dist = utils::distance(m_m.pos, o_m.pos); // is squared
+	auto radsum = m_c.shape.radius + o_c.shape.radius;
+	BOOST_CHECK_LT(radsum * radsum, dist);
 }
 
 BOOST_AUTO_TEST_CASE(object_is_not_stopped_if_bullet_collides_with_it) {

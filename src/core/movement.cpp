@@ -178,11 +178,11 @@ float calcSpeedFactor(MovementData const& data) {
 	
 	if (speed_factor < movement_impl::MIN_SPEEDFACTOR) {
 		speed_factor = movement_impl::MIN_SPEEDFACTOR;
-	} else if (speed_factor > movement_impl::MAX_SPEEDFACTOR) {
-		speed_factor = movement_impl::MAX_SPEEDFACTOR;
+	} else if (speed_factor > MAX_SPEEDFACTOR) {
+		speed_factor = MAX_SPEEDFACTOR;
 	}
 	ASSERT(speed_factor >= movement_impl::MIN_SPEEDFACTOR);
-	ASSERT(speed_factor <= movement_impl::MAX_SPEEDFACTOR);
+	ASSERT(speed_factor <= MAX_SPEEDFACTOR);
 	
 	return speed_factor;
 }
@@ -193,7 +193,7 @@ void interpolate(Context& context, MovementData& data, sf::Time const& elapsed) 
 		return;
 	}
 	ASSERT(data.max_speed >= 0.f);
-	ASSERT(data.max_speed <= movement_impl::MAX_SPEED);
+	ASSERT(data.max_speed <= MAX_SPEED);
 
 	if (data.move == sf::Vector2i{}) {
 		// leave tile
@@ -203,8 +203,7 @@ void interpolate(Context& context, MovementData& data, sf::Time const& elapsed) 
 	// interpolate movement
 	float delta{1.f};
 	if (data.move != sf::Vector2i{}) {
-		delta = data.max_speed * calcSpeedFactor(data) *
-			movement_impl::MOVEMENT_VELOCITY * elapsed.asMilliseconds();
+		delta = data.max_speed * calcSpeedFactor(data) * elapsed.asSeconds();
 	}
 	auto step = data.pos + delta * sf::Vector2f{data.move};
 

@@ -19,9 +19,6 @@ struct CollisionResult {
 
 namespace collision_impl {
 
-/// maximum collision radius
-extern float const MAX_COLLISION_RADIUS;
-
 /// helper structure to keep implementation signatures clean and tidy
 struct Context {
 	LogContext& log;

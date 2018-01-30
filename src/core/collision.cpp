@@ -20,7 +20,6 @@ bool CollisionResult::meansCollision() const {
 
 namespace collision_impl {
 
-float const MAX_COLLISION_RADIUS = 1.f;
 
 // ---------------------------------------------------------------------------
 
@@ -177,7 +176,7 @@ void checkAnyCollision(MovementManager const & movement_manager, CollisionManage
 	}
 	
 	auto const & cell = scene.getCell(sf::Vector2u{actor.pos});
-	bool is_projectile = collision_manager.query(actor.id).is_projectile;
+	auto const & coll = collision_manager.query(actor.id);
 	
 	// stage 1: perform tile collision check
 	if (checkTileCollision(cell)) {
@@ -185,10 +184,10 @@ void checkAnyCollision(MovementManager const & movement_manager, CollisionManage
 		result.interrupt = true;
 	}
 	
-	if (!result.tile || is_projectile) {
+	if (!result.tile || coll.is_projectile) {
 		// stage 2: query relevant colliders
 		// note: using 2x max collision radius to also detect rare edge cases
-		utils::CircEntityQuery<ObjectID> coll_range{actor.pos, collision_impl::MAX_COLLISION_RADIUS * 2.f};
+		utils::CircEntityQuery<ObjectID> coll_range{actor.pos, coll.shape.radius + MAX_COLLISION_RADIUS};
 		scene.traverse(coll_range);
 		
 		// stage 3: perform multiple object collisions
@@ -202,13 +201,13 @@ void checkAnyCollision(MovementManager const & movement_manager, CollisionManage
 				auto target_is_projectile = collision_manager.query(target.id).is_projectile;
 				
 				// test whether object types can collide this way
-				if (!is_projectile && target_is_projectile) {
+				if (!coll.is_projectile && target_is_projectile) {
 					// ignore collision regular obj -> projectile
 					continue;
 				}
 				
 				// test whether it will interrupt a movement
-				if (!is_projectile && !target_is_projectile) {
+				if (!coll.is_projectile && !target_is_projectile) {
 					// regular obj vs. regular obj -> interrupt
 					result.interrupt = true;
 				}
@@ -216,7 +215,7 @@ void checkAnyCollision(MovementManager const & movement_manager, CollisionManage
 				// object collision detected
 				result.objects.push_back(other);
 				
-				if (!is_projectile && result.interrupt) {
+				if (!coll.is_projectile && result.interrupt) {
 					// break if non-projectile object will be interrupt
 					return;
 				}

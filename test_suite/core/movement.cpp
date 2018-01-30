@@ -244,7 +244,7 @@ BOOST_AUTO_TEST_CASE(cannot_interpolate_with_too_large_speed) {
 	auto& fix = Singleton<MovementFixture>::get();
 	fix.reset();
 
-	auto id = fix.add_object({5u, 1u}, core::movement_impl::MAX_SPEED + 0.3f);
+	auto id = fix.add_object({5u, 1u}, core::MAX_SPEED + 0.3f);
 	auto& data = fix.movement_manager.query(id);
 
 	// trigger movement
@@ -322,7 +322,7 @@ BOOST_AUTO_TEST_CASE(can_interpolate_common_movement) {
 	fix.update(sf::milliseconds(50));
 
 	// assert new position
-	BOOST_CHECK_VECTOR_CLOSE(data.pos, sf::Vector2f(4.975f, 1.025f), 0.0001f);
+	BOOST_CHECK_VECTOR_CLOSE(data.pos, sf::Vector2f(4.750f, 1.250f), 0.0001f);
 }
 
 BOOST_AUTO_TEST_CASE(can_interpolate_large_movement) {
@@ -378,14 +378,14 @@ BOOST_AUTO_TEST_CASE(can_interpolate_movement_with_custom_factor) {
 	fix.update(sf::milliseconds(50));
 
 	// assert new position
-	BOOST_CHECK_VECTOR_CLOSE(data.pos, sf::Vector2f(4.985f, 1.015f), 0.0001f);
+	BOOST_CHECK_VECTOR_CLOSE(data.pos, sf::Vector2f(4.850f, 1.150f), 0.0001f);
 }
 
 BOOST_AUTO_TEST_CASE(can_interpolate_over_multiple_tiles) {
 	auto& fix = Singleton<MovementFixture>::get();
 	fix.reset();
 
-	auto id = fix.add_object({5u, 1u}, 5.f);
+	auto id = fix.add_object({10u, 1u}, core::MAX_SPEED);
 	auto& data = fix.movement_manager.query(id);
 
 	// trigger movement
@@ -393,19 +393,17 @@ BOOST_AUTO_TEST_CASE(can_interpolate_over_multiple_tiles) {
 	core::movement_impl::start(fix.context, data, event);
 
 	// trigger interpolation
-	fix.update(sf::milliseconds(3250));
+	fix.update(sf::milliseconds(1000));
 
 	// assert new position
-	// 20 interpolations (2000ms) lead to <5-20*0.05, 1+20*0.05>=<4,2>
-	// 13 interpolations (1250ms) lead to <4-0.625,1+0.625>=<4.375,1.625>
-	BOOST_CHECK_VECTOR_CLOSE(data.pos, sf::Vector2f(3.375f, 2.625f), 0.0001f);
+	BOOST_CHECK_VECTOR_CLOSE(data.pos, sf::Vector2f(0.950f, 2.625f), 0.0001f);
 }
 
 BOOST_AUTO_TEST_CASE(interpolate_over_multiple_tiles_triggers_multiple_events) {
 	auto& fix = Singleton<MovementFixture>::get();
 	fix.reset();
 
-	auto id = fix.add_object({5u, 1u}, core::movement_impl::MAX_SPEED);
+	auto id = fix.add_object({5u, 1u}, core::MAX_SPEED);
 	auto& data = fix.movement_manager.query(id);
 
 	// trigger movement
@@ -413,7 +411,7 @@ BOOST_AUTO_TEST_CASE(interpolate_over_multiple_tiles_triggers_multiple_events) {
 	core::movement_impl::start(fix.context, data, event);
 
 	// trigger interpolation
-	fix.update(sf::milliseconds(150));
+	fix.update(sf::milliseconds(250));
 
 	// assert multiple "tile left" and "tile reached" events
 	auto const& moves = fix.move_sender.data();
