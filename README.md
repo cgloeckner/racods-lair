@@ -11,6 +11,13 @@ And this repo's [Wiki](https://github.com/cgloeckner/racods-lair/wiki)
 
 ## Build
 
+Replace BRANCH_NAME by the corresponding branch name
+```
+git clone https://github.com/cgloeckner/racods-lair.git
+git checkout BRANCH_NAME
+git submodule update --init --recursive
+```
+
 ```
 mkdir build-release
 cd build-release
@@ -31,7 +38,9 @@ cmake -G Ninja .. -DCMAKE_BUILD_TYPE=Test
 ninja
 ```
 
-optional: `-DCMAKE_CXX_COMPILER=clang++-5.0 -DCMAKE_C_COMPILER=clang-5.0 -DLUA_INCLUDE_DIR=/usr/include/lua5.2 -DLUA_LIBRARY=lua5.2`
+Optional:
+- Force clang: `-DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang`
+- Use proper lua: `-DLUA_INCLUDE_DIR=/usr/include/lua5.2 -DLUA_LIBRARY=lua5.2`
 
 ## Dependencies
 
@@ -41,6 +50,19 @@ Building:
     boost >= 1.36.x
     Dependencies for SFML
 ```
+
+For example, a typical linux ubuntu requires the following packages:
+```
+# boost
+libboost-all-dev
+
+# Lua
+liblua5.2-dev
+
+# dependencies for SMFL
+libpthread-stubs0-dev libgl1-mesa-dev libx11-dev libxrandr-dev libfreetype6-dev libglew1.5-dev libjpeg8-dev libsndfile1-dev libopenal-dev libudev-dev libxcb-image0-dev libjpeg-dev libflac-dev
+```
+(This list might change according to the latest SFML version)
 
 ## Issue
 

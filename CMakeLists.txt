@@ -10,6 +10,9 @@ set(FULL_DEPS sfml-system sfml-graphics sfml-window sfml-audio sfml-network
 # required for proper sol2
 include_directories(${LUA_INCLUDE_DIR})
 
+# required for proper sfml
+set(SFML_ROOT extlibs/sfml)
+
 # ----------------------------------------------------------------------------------------
 # extlibs --------------------------------------------------------------------------------
 
