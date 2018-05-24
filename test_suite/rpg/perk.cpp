@@ -46,6 +46,11 @@ struct PerkFixture {
 		stats_sender.clear();
 		perk_sender.clear();
 		feedback_sender.clear();
+		
+		// clear logs
+		log.debug.clear();
+		log.warning.clear();
+		log.error.clear();
 	}
 };
 

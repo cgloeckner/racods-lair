@@ -199,6 +199,11 @@ struct CombatFixture {
 		effect_sender.clear();
 		projectile_sender.clear();
 		respawn_sender.clear();
+		
+		// clear logs
+		log.debug.clear();
+		log.warning.clear();
+		log.error.clear();
 	}
 };
 

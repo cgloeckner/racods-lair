@@ -530,6 +530,11 @@ struct GameplayFixture
 		feedbacks.clear();
 
 		moves.clear();
+		
+		// clear logs
+		log.debug.clear();
+		log.warning.clear();
+		log.error.clear();
 	}
 
 	void update(sf::Time const& elapsed) {
@@ -635,7 +640,7 @@ struct GameplayFixture
 		objects.push_back(id);
 		auto& move_data = movement.acquire(id);
 		move_data.look = look;
-		move_data.max_speed = 50.f;
+		move_data.max_speed = 10.f;
 		collision.acquire(id);
 		core::spawn(dungeon[1u], move_data, pos);
 		auto& focus_data = focus.acquire(id);
@@ -810,7 +815,8 @@ BOOST_AUTO_TEST_CASE(player_will_moves_if_arrowkey_is_pressed) {
 	auto& move = fix.movement.query(id);
 	BOOST_CHECK_CLOSE(move.pos.x, 1.f, 0.0001f);
 	BOOST_CHECK_GT(move.pos.y, 2.f);
-	BOOST_CHECK_VECTOR_EQUAL(move.target, sf::Vector2u(1u, 3u));
+	BOOST_CHECK_EQUAL(move.target.x, 1u);
+	BOOST_CHECK_GT(move.target.y, 2u);
 }
 
 BOOST_AUTO_TEST_CASE(player_will_stop_if_arrowkey_is_released) {
@@ -822,11 +828,16 @@ BOOST_AUTO_TEST_CASE(player_will_stop_if_arrowkey_is_released) {
 	fix.setInput(rpg::PlayerAction::MoveS, true);
 	fix.update(sf::milliseconds(100));
 	fix.setInput(rpg::PlayerAction::MoveS, false);
-	fix.update(sf::milliseconds(2000));
+	fix.update(sf::milliseconds(1000));
 	// test body
 	auto& move = fix.movement.query(id);
-	BOOST_CHECK_VECTOR_CLOSE(move.pos, sf::Vector2f(1.f, 3.f), 0.0001f);
-	BOOST_CHECK_VECTOR_EQUAL(move.target, sf::Vector2u(1u, 3u));
+	BOOST_CHECK_CLOSE(move.pos.x, 1.f, 0.00001f);
+	BOOST_CHECK_GT(move.pos.y, 2.f);
+	BOOST_CHECK_VECTOR_EQUAL(move.target, sf::Vector2u(move.pos));
+	// test that player won't move further
+	auto last_pos = move.pos;
+	fix.update(sf::milliseconds(5000));
+	BOOST_CHECK_VECTOR_CLOSE(move.pos, last_pos, 0.0001f);
 }
 
 BOOST_AUTO_TEST_CASE(player_will_move_one_tile_if_arrowkeys_are_tapped) {
@@ -844,9 +855,14 @@ BOOST_AUTO_TEST_CASE(player_will_move_one_tile_if_arrowkeys_are_tapped) {
 	fix.update(sf::milliseconds(1000));
 	// test body
 	auto& move = fix.movement.query(id);
-	BOOST_CHECK_VECTOR_CLOSE(move.pos, sf::Vector2f(2.f, 3.f), 0.0001f);
-	BOOST_CHECK_VECTOR_EQUAL(move.target, sf::Vector2u(2u, 3u));
+	BOOST_CHECK_GT(move.pos.x, 1.f);
+	BOOST_CHECK_GT(move.pos.y, 2.f);
+	BOOST_CHECK_VECTOR_EQUAL(move.target, sf::Vector2u(move.pos));
 	BOOST_CHECK_VECTOR_EQUAL(move.look, sf::Vector2i(0, 1));
+	// test that player won't move further
+	auto last_pos = move.pos;
+	fix.update(sf::milliseconds(5000));
+	BOOST_CHECK_VECTOR_CLOSE(move.pos, last_pos, 0.0001f);
 }
 
 BOOST_AUTO_TEST_CASE(player_will_strife_if_move_and_look_are_triggered) {
@@ -1085,7 +1101,7 @@ BOOST_AUTO_TEST_CASE(player_can_kill_enemy_by_attacking_multiple_times) {
 BOOST_AUTO_TEST_CASE(player_can_attack_enemy_by_bow_while_moving_back) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
-
+	
 	auto id = fix.createPlayer({5u, 2u}, {1, 0}, 1u);
 	auto& item = fix.item.query(id);
 	item.equipment[rpg::EquipmentSlot::Weapon] = &fix.icebow;
@@ -1101,7 +1117,7 @@ BOOST_AUTO_TEST_CASE(player_can_attack_enemy_by_bow_while_moving_back) {
 	BOOST_CHECK_EQUAL(target.stats[rpg::Stat::Life], 0);
 	// and player's position
 	auto& body = fix.movement.query(id);
-	BOOST_CHECK_VECTOR_CLOSE(body.pos, sf::Vector2f(1.063f, 2.f), 0.001f);
+	BOOST_CHECK_VECTOR_CLOSE(body.pos, sf::Vector2f(1.2125f, 2.f), 0.001f);
 	BOOST_CHECK_VECTOR_EQUAL(body.target, sf::Vector2u(1u, 2u));
 }
 
@@ -1158,9 +1174,10 @@ BOOST_AUTO_TEST_CASE(player_can_select_next_quickslot) {
 	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
 	auto& qslot = fix.quickslot.query(id);
 	qslot.slot_id = 2u;
+	auto wait = sf::milliseconds(rpg::quickslot_impl::SLOT_COOLDOWN - core::MAX_FRAMETIME_MS);
 	// trigger input
 	fix.setInput(rpg::PlayerAction::NextSlot, true);
-	fix.update(sf::milliseconds(240));
+	fix.update(wait);
 	fix.setInput(rpg::PlayerAction::NextSlot, false);
 	fix.update(sf::milliseconds(100));
 	// test slot_id
@@ -1174,9 +1191,10 @@ BOOST_AUTO_TEST_CASE(player_can_skip_quickslot_by_holding_key) {
 	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
 	auto& qslot = fix.quickslot.query(id);
 	qslot.slot_id = 2u;
+	auto wait = sf::milliseconds(rpg::quickslot_impl::SLOT_COOLDOWN + core::MAX_FRAMETIME_MS);
 	// trigger input
 	fix.setInput(rpg::PlayerAction::NextSlot, true);
-	fix.update(sf::milliseconds(251));
+	fix.update(wait);
 	fix.setInput(rpg::PlayerAction::NextSlot, false);
 	fix.update(sf::milliseconds(100));
 	// test slot_id
@@ -1257,8 +1275,6 @@ BOOST_AUTO_TEST_CASE(player_can_use_defensive_perk_via_quickslot) {
 	stats.stats[rpg::Stat::Life] = 20;
 	
 	// trigger input
-	fix.log.debug << "---\n";
-	
 	fix.setInput(rpg::PlayerAction::UseSlot, true);
 	fix.update(sf::milliseconds(100));
 	fix.setInput(rpg::PlayerAction::UseSlot, false);
@@ -1512,7 +1528,7 @@ BOOST_AUTO_TEST_CASE(player_can_interact) {
 	fix.reset();
 
 	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
-	fix.createBarrier({2u, 2u});
+	auto other = fix.createBarrier({2u, 2u});
 	// push barrier
 	fix.setInput(rpg::PlayerAction::Interact, true);
 	fix.update(sf::milliseconds(100));
@@ -1524,12 +1540,34 @@ BOOST_AUTO_TEST_CASE(player_can_interact) {
 	fix.update(sf::milliseconds(1000));
 	// test ani
 	BOOST_CHECK(ani.current == core::AnimationAction::Idle);
+	// test that barrier was actually moved
+	BOOST_CHECK_GT(fix.movement.query(other).pos.x, 2.f);
+}
+
+BOOST_AUTO_TEST_CASE(barrier_stops_automatically) {
+	auto& fix = Singleton<GameplayFixture>::get();
+	fix.reset();
+	
+	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto other = fix.createBarrier({2u, 2u});
+	// push barrier
+	fix.setInput(rpg::PlayerAction::Interact, true);
+	fix.update(sf::milliseconds(100));
+	fix.setInput(rpg::PlayerAction::Interact, false);
+	// test ani
+	auto const& ani = fix.animation.query(id);
+	BOOST_CHECK(ani.current == core::AnimationAction::Use);
+	// continue
+	fix.update(sf::milliseconds(1000));
+	// test position
+	auto const & barrier_move = fix.movement.query(other);
+	BOOST_CHECK_VECTOR_CLOSE(barrier_move.pos, sf::Vector2f(3.f, 2.f), 0.00001f);
 }
 
 BOOST_AUTO_TEST_CASE(player_is_not_blocked_after_interact) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
-
+	
 	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
 	fix.createBarrier({2u, 2u});
 	// push barrier
@@ -1610,14 +1648,13 @@ BOOST_AUTO_TEST_CASE(barrier_stops_movement_automatically) {
 	fix.update(sf::milliseconds(25));
 	
 	// query barrier's new position
-	auto& body = fix.movement.query(barrier);
-	auto pos = body.pos;
 	auto& i = fix.interact.query(barrier);
 	BOOST_CHECK_TIME_EQUAL(i.cooldown, sf::Time::Zero)
 	
-	// continue simulation and expect same position
+	// continue simulation and expect
 	fix.update(sf::milliseconds(1000));
-	BOOST_CHECK_VECTOR_CLOSE(body.pos, pos, 0.0001f);
+	auto& body = fix.movement.query(barrier);
+	BOOST_CHECK_VECTOR_CLOSE(body.pos, sf::Vector2f(3.f, 2.f), 0.0001f);
 }
 
 BOOST_AUTO_TEST_CASE(player_cannot_push_barrier_towards_wall) {
@@ -1655,7 +1692,7 @@ BOOST_AUTO_TEST_CASE(player_cannot_push_barrier_towards_object) {
 	
 	// expect barrier's new position
 	auto& body = fix.movement.query(barrier);
-	BOOST_CHECK_VECTOR_CLOSE(body.pos, sf::Vector2f(3.45f, 2.f), 0.0001f);
+	BOOST_CHECK_VECTOR_CLOSE(body.pos, sf::Vector2f(3.315f, 2.f), 0.0001f);
 	BOOST_CHECK_VECTOR_EQUAL(body.target, sf::Vector2u(3u, 2u));
 	auto& i = fix.interact.query(barrier);
 	BOOST_CHECK_TIME_EQUAL(i.cooldown, sf::Time::Zero);
@@ -1855,8 +1892,81 @@ BOOST_AUTO_TEST_CASE(player_can_loot_corpse) {
 	corpse.loot[0].emplace_back(fix.manapotion, 5u);
 	// interact with corpse
 	fix.setInput(rpg::PlayerAction::Interact, true);
+	fix.update(sf::milliseconds(100));
+	fix.setInput(rpg::PlayerAction::Interact, false);
 	fix.update(sf::milliseconds(800));
-	// expect items looted
+	// expect corpse's loot for this player is empty
+	BOOST_REQUIRE_EQUAL(corpse.loot.size(), 1u);
+	BOOST_CHECK(corpse.loot[0].empty());
+	// expect items belong to player
+	BOOST_CHECK(rpg::hasItem(item, fix.icebow, 1u));
+	BOOST_CHECK(rpg::hasItem(item, fix.manapotion, 6u));
+}
+
+BOOST_AUTO_TEST_CASE(player_can_loot_closest_of_multiple_corpses) {
+	auto& fix = Singleton<GameplayFixture>::get();
+	fix.reset();
+
+	auto id = fix.createPlayer({2u, 2u}, {0, 1}, 1u);
+	auto& item = fix.item.query(id);
+	item.inventory[rpg::ItemType::Potion].emplace_back(fix.manapotion, 1u);
+	auto other1 = fix.createCorpse({2u, 3u});
+	fix.movement.query(other1).pos.y += 0.1f; // so this one is less optimal
+	auto& corpse1 = fix.interact.query(other1);
+	corpse1.loot.resize(1u);
+	corpse1.loot[0].emplace_back(fix.flamesword, 1u);
+	auto other2 = fix.createCorpse({2u, 3u});
+	auto& corpse2 = fix.interact.query(other2);
+	corpse2.loot.resize(1u);
+	corpse2.loot[0].emplace_back(fix.icebow, 1u);
+	corpse2.loot[0].emplace_back(fix.manapotion, 5u);
+	
+	// interact with first corpse (order based on actor's face direction)
+	fix.setInput(rpg::PlayerAction::Interact, true);
+	fix.update(sf::milliseconds(150));
+	fix.setInput(rpg::PlayerAction::Interact, false);
+	fix.update(sf::milliseconds(800));
+	// expect first corpse's loot for this player is empty
+	BOOST_REQUIRE_EQUAL(corpse2.loot.size(), 1u);
+	BOOST_CHECK(corpse2.loot[0].empty());
+	// expect items belong to player
+	BOOST_CHECK(rpg::hasItem(item, fix.icebow, 1u));
+	BOOST_CHECK(rpg::hasItem(item, fix.manapotion, 6u));
+	// expect second corpse's loot for this player to be left
+	BOOST_REQUIRE_EQUAL(corpse1.loot.size(), 1u);
+	BOOST_CHECK_EQUAL(corpse1.loot[0].size(), 1u);
+	
+	// interact with second corpse
+	fix.setInput(rpg::PlayerAction::Interact, true);
+	fix.update(sf::milliseconds(150));
+	fix.setInput(rpg::PlayerAction::Interact, false);
+	fix.update(sf::milliseconds(800));
+	// expect first corpse's loot for this player is empty
+	BOOST_REQUIRE_EQUAL(corpse1.loot.size(), 1u);
+	BOOST_CHECK(corpse1.loot[0].empty());
+	// expect items belong to player
+	BOOST_CHECK(rpg::hasItem(item, fix.flamesword, 1u));
+}
+
+BOOST_AUTO_TEST_CASE(loot_wont_bug_away_on_autofire_interact) {
+	auto& fix = Singleton<GameplayFixture>::get();
+	fix.reset();
+
+	auto id = fix.createPlayer({2u, 2u}, {1, 0}, 1u);
+	auto& item = fix.item.query(id);
+	item.inventory[rpg::ItemType::Potion].emplace_back(fix.manapotion, 1u);
+	auto other = fix.createCorpse({3u, 2u});
+	auto& corpse = fix.interact.query(other);
+	corpse.loot.resize(1u);
+	corpse.loot[0].emplace_back(fix.icebow, 1u);
+	corpse.loot[0].emplace_back(fix.manapotion, 5u);
+	// interact with corpse
+	fix.setInput(rpg::PlayerAction::Interact, true);
+	fix.update(sf::milliseconds(950));
+	// expect corpse's loot for this player is empty
+	BOOST_REQUIRE_EQUAL(corpse.loot.size(), 1u);
+	BOOST_CHECK(corpse.loot[0].empty());
+	// expect items belong to player
 	BOOST_CHECK(rpg::hasItem(item, fix.icebow, 1u));
 	BOOST_CHECK(rpg::hasItem(item, fix.manapotion, 6u));
 }

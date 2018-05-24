@@ -107,6 +107,11 @@ struct RenderFixture {
 		animation_manager.cleanup();
 		render_manager.cleanup();
 		camera_system.clear();
+		
+		// clear logs
+		log.debug.clear();
+		log.warning.clear();
+		log.error.clear();
 	}
 
 	core::ObjectID add_object(

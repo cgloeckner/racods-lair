@@ -91,6 +91,11 @@ struct InteractFixture {
 
 		input_sender.clear();
 		item_sender.clear();
+		
+		// clear logs
+		log.debug.clear();
+		log.warning.clear();
+		log.error.clear();
 	}
 };
 
@@ -232,6 +237,34 @@ BOOST_AUTO_TEST_CASE(player_can_loot_corpse) {
 	BOOST_CHECK_EQUAL(events[1].quantity, 3u);
 
 	BOOST_CHECK(corpse.loot[0].empty());
+}
+
+BOOST_AUTO_TEST_CASE(player_can_loot_multiple_corpses) {
+	auto& fix = Singleton<InteractFixture>::get();
+	fix.reset();
+
+	auto& player = fix.addPlayer({1.f, 1.f}, 1u);
+	auto& corpse1 = fix.addCorpse({2.f, 1.f});
+	corpse1.loot.resize(1u);
+	corpse1.loot[0].emplace_back(fix.bar, 3u);
+	auto& corpse2 = fix.addCorpse({2.f, 2.f});
+	corpse2.loot.resize(1u);
+	corpse2.loot[0].emplace_back(fix.foo, 2u);
+
+	rpg::interact_impl::lootCorpse(fix.context, corpse1, player.id);
+	rpg::interact_impl::lootCorpse(fix.context, corpse2, player.id);
+
+	auto const& events = fix.context.item_sender.data();
+	BOOST_REQUIRE_EQUAL(events.size(), 2u);
+	BOOST_CHECK_EQUAL(events[0].actor, player.id);
+	BOOST_CHECK_EQUAL(events[0].item, &fix.bar);
+	BOOST_CHECK_EQUAL(events[0].quantity, 3u);
+	BOOST_CHECK_EQUAL(events[1].actor, player.id);
+	BOOST_CHECK_EQUAL(events[1].item, &fix.foo);
+	BOOST_CHECK_EQUAL(events[1].quantity, 2u);
+
+	BOOST_CHECK(corpse1.loot[0].empty());
+	BOOST_CHECK(corpse2.loot[0].empty());
 }
 
 // ---------------------------------------------------------------------------

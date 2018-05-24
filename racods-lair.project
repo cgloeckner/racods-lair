@@ -198,7 +198,6 @@
       <File Name="src/core/render.cpp"/>
       <File Name="src/core/teleport.cpp"/>
       <File Name="src/core/sound.cpp"/>
-      <File Name="src/core/physics.cpp"/>
       <File Name="src/core/music.cpp"/>
       <File Name="src/core/movement.cpp"/>
       <File Name="src/core/focus.cpp"/>
@@ -537,7 +536,6 @@
       <File Name="include/core/teleport.hpp"/>
       <File Name="include/core/sound.hpp"/>
       <File Name="include/core/render.hpp"/>
-      <File Name="include/core/physics.hpp"/>
       <File Name="include/core/music.hpp"/>
       <File Name="include/core/movement.hpp"/>
       <File Name="include/core/focus.hpp"/>
@@ -1789,7 +1787,6 @@
       <File Name="test_suite/core/sound.cpp"/>
       <File Name="test_suite/core/render.cpp"/>
       <File Name="test_suite/core/physics_integration.cpp"/>
-      <File Name="test_suite/core/physics.cpp"/>
       <File Name="test_suite/core/movement.cpp"/>
       <File Name="test_suite/core/focus.cpp"/>
       <File Name="test_suite/core/collision.cpp"/>

@@ -31,6 +31,11 @@ struct ActionFixture {
 		input_sender.clear();
 		animation_sender.clear();
 		action_sender.clear();
+		
+		// clear logs
+		log.debug.clear();
+		log.warning.clear();
+		log.error.clear();
 	}
 };
 

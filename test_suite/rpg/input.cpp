@@ -102,6 +102,11 @@ struct InputFixture {
 		event.type = sf::Event::JoystickConnected;
 		event.joystickConnect.joystickId = 0u;
 		context.mapper.pushEvent(event);
+		
+		// clear logs
+		log.debug.clear();
+		log.warning.clear();
+		log.error.clear();
 	}
 
 	void set(std::size_t gamepad_id, sf::Joystick::Axis axis, float threshold) {

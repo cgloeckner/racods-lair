@@ -25,6 +25,10 @@ void Logger::remove(std::ostream const & stream) {
 	});
 }
 
+void Logger::clear() {
+	streams.clear();
+}
+
 void Logger::flush() {
 	for (auto& ptr : streams) {
 		ptr->flush();

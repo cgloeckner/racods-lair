@@ -44,6 +44,11 @@ struct StatsFixture {
 
 		stats_sender.clear();
 		death_sender.clear();
+		
+		// clear logs
+		log.debug.clear();
+		log.warning.clear();
+		log.error.clear();
 	}
 };
 

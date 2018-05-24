@@ -86,6 +86,11 @@ struct CollisionFixture {
 		collision_sender.clear();
 		move_sender.clear();
 		teleport_sender.clear();
+		
+		// clear logs
+		log.debug.clear();
+		log.warning.clear();
+		log.error.clear();
 	}
 
 	core::ObjectID add_object(sf::Vector2u const& pos, utils::Collider* shape=nullptr) {

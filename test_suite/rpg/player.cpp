@@ -56,6 +56,11 @@ struct PlayerFixture {
 		exp_sender.clear();
 		training_sender.clear();
 		feedback_sender.clear();
+		
+		// clear logs
+		log.debug.clear();
+		log.warning.clear();
+		log.error.clear();
 	}
 };
 

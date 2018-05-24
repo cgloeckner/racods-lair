@@ -75,16 +75,33 @@ core::ObjectID queryInteractable(Context& context, core::ObjectID actor) {
 		}
 
 	} else if (context.player.has(actor)) {
+		core::ObjectID best_id{0u};
+		float best_pos{-1.f};
 		// search corpse that has not been looted yet
 		auto player_id = context.player.query(actor).player_id;
 		for (auto ptr : objects) {
 			ASSERT(ptr->loot.size() <= player_id);
-			if (!ptr->loot[player_id - 1u].empty()) {
-				return ptr->id;
+			if (ptr->loot[player_id - 1u].empty()) {
+				// ignore corpse without loot for this player
+				continue;
+			}
+			// search for best/closest target
+			auto const & move_other = context.movement.query(ptr->id);
+			auto pos_eval = utils::evalPos(actor_move.pos, sf::Vector2f{actor_move.look}, actor_focus.fov, actor_focus.sight, move_other.pos);
+			
+			auto delta = move_other.pos - actor_move.pos;
+			auto dist  = thor::squaredLength(delta);
+			auto angle = std::abs(thor::signedAngle(sf::Vector2f{actor_move.look}, delta));
+			
+			if ((pos_eval < best_pos) || (best_pos < 0.f)) {
+				best_pos = pos_eval;
+				best_id  = ptr->id;
 			}
 		}
+		return best_id;
+	
 	}
-
+	
 	// nothing found
 	return 0u;
 }

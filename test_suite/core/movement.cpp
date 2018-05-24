@@ -64,6 +64,11 @@ struct MovementFixture {
 		collision_manager.cleanup();
 		// reset event senders
 		move_sender.clear();
+		
+		// clear logs
+		log.debug.clear();
+		log.warning.clear();
+		log.error.clear();
 	}
 
 	core::ObjectID add_object(sf::Vector2u const& pos, float max_speed) {

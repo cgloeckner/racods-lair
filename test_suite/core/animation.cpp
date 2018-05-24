@@ -70,6 +70,11 @@ struct AnimationFixture {
 		animation_manager.cleanup();
 		// clear event stuff
 		animation_sender.clear();
+		
+		// clear logs
+		log.debug.clear();
+		log.warning.clear();
+		log.error.clear();
 	}
 
 	core::ObjectID add_object() {

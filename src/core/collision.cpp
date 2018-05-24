@@ -55,6 +55,8 @@ bool updateCollisionMap(Context& context, MovementData const & actor) {
 		return false;
 	}
 	
+	context.log.debug << "[Core/Collision] Updating Position of #" << actor.id << " from " << src_pos << " to " << dst_pos << "\n";
+	
 	ASSERT(actor.scene > 0u);
 	auto& scene = context.dungeon_system[actor.scene];
 	
@@ -62,10 +64,16 @@ bool updateCollisionMap(Context& context, MovementData const & actor) {
 	auto& source = scene.getCell(src_pos);
 	auto& target = scene.getCell(dst_pos);
 	bool found = utils::pop(source.entities, actor.id);
-	ASSERT(found);
-	target.entities.push_back(actor.id);
-	
-	return true;
+	if (found) {
+		// regular case: straight movement
+		target.entities.push_back(actor.id);
+		return true;
+	} else {
+		// edge case: object is already there
+		// this seems to occure in case of wall collision with repeated movement towards the wall
+		ASSERT(utils::contains(target.entities, actor.id));
+		return true;
+	}
 }
 
 void checkAllCollisions(Context& context) {

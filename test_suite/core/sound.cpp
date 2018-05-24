@@ -36,6 +36,11 @@ struct SoundFixture {
 		for (auto& sound: context.pool) {
 			sound.stop();
 		}
+		
+		// clear logs
+		log.debug.clear();
+		log.warning.clear();
+		log.error.clear();
 	}
 
 };

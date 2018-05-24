@@ -532,6 +532,8 @@ ItemSystem::ItemSystem(core::LogContext& log, std::size_t max_objects, StatsMana
 	, context{log, *this, *this, *this, *this, *this, *this, stats} {}
 
 void ItemSystem::handle(ItemEvent const& event) {
+	context.log.debug << "handle " << (event.type == ItemEvent::Add) << "\n";
+
 	if (!has(event.actor)) {
 		// no item component
 		return;
@@ -542,6 +544,7 @@ void ItemSystem::handle(ItemEvent const& event) {
 	bool forward{false};
 	switch (event.type) {
 		case ItemEvent::Add:
+			context.log.debug << to_string(event.item->type) << "\n";
 			forward = item_impl::addItem(actor, *event.item, event.quantity);
 			break;
 

@@ -6,7 +6,7 @@ namespace rpg {
 
 namespace interact_impl {
 
-extern sf::Time const BARRIER_MOVE_COOLDOWN{sf::milliseconds(500)};
+extern sf::Time const BARRIER_MOVE_COOLDOWN{sf::milliseconds(100)};
 
 Context::Context(core::LogContext& log, core::InputSender& input_sender,
 	ItemSender& item_sender, core::MovementManager const& movement,
@@ -51,6 +51,7 @@ void onCollision(Context const & context, InteractData& data) {
 }
 
 void lootCorpse(Context& context, InteractData& data, core::ObjectID actor) {
+	context.log.debug << "looting #" << data.id << "\n";
 	if (!context.player.has(actor)) {
 		// only players can loot
 		return;
@@ -63,6 +64,7 @@ void lootCorpse(Context& context, InteractData& data, core::ObjectID actor) {
 	auto& loot = data.loot[player.player_id - 1u];
 	if (loot.empty()) {
 		// nothing to loo
+		context.log.debug << "no loot for YOU\n";
 		return;
 	}
 
@@ -74,6 +76,7 @@ void lootCorpse(Context& context, InteractData& data, core::ObjectID actor) {
 		event.item = node.item;
 		event.quantity = node.quantity;
 		context.item_sender.send(event);
+		context.log.debug << "looting another item\n";
 	}
 	loot.clear();
 }

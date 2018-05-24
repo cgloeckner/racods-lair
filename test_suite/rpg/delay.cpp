@@ -162,6 +162,11 @@ struct DelayFixture {
 		context.combats.reset();
 		context.projectiles.reset();
 		context.interacts.reset();
+		
+		// clear logs
+		log.debug.clear();
+		log.warning.clear();
+		log.error.clear();
 	}
 };
 
@@ -269,6 +274,79 @@ BOOST_AUTO_TEST_CASE(player_cannot_interact_with_looted_corpse) {
 	i.loot.resize(1u);
 	auto found = rpg::delay_impl::queryInteractable(fix.context, actor);
 	BOOST_CHECK_EQUAL(found, 0u);
+}
+
+BOOST_AUTO_TEST_CASE(queryInteractable_returns_closest_corpse) {
+	auto& fix = Singleton<DelayFixture>::get();
+	fix.reset();
+	
+	auto actor = fix.addActor({1u, 1u}, {1, 0}, 1u);
+	auto target1 = fix.addInteractable({2u, 2u});
+	auto target2 = fix.addInteractable({2u, 2u});
+	fix.movement.query(target1).pos.y += 0.1f; // so this one is less optimal
+	auto& i = fix.interact.query(target1);
+	i.type = rpg::InteractType::Corpse;
+	i.loot.resize(1u);
+	i.loot[0].resize(1u);
+	auto& j = fix.interact.query(target2);
+	j.type = rpg::InteractType::Corpse;
+	j.loot.resize(1u);
+	j.loot[0].resize(1u);
+	auto found = rpg::delay_impl::queryInteractable(fix.context, actor);
+	BOOST_CHECK_EQUAL(found, target2);
+}
+
+BOOST_AUTO_TEST_CASE(queryInteractable_returns_closest_suitable_corpse) {
+	auto& fix = Singleton<DelayFixture>::get();
+	fix.reset();
+	
+	auto actor = fix.addActor({1u, 1u}, {1, 0}, 1u);
+	auto target1 = fix.addInteractable({2u, 2u});
+	auto target2 = fix.addInteractable({2u, 2u});
+	fix.movement.query(target1).pos.y += 0.1f; // so this one is less optimal
+	auto& i = fix.interact.query(target1);
+	i.type = rpg::InteractType::Corpse;
+	i.loot.resize(1u);
+	i.loot[0].resize(1u);
+	auto& j = fix.interact.query(target2);
+	j.type = rpg::InteractType::Corpse;
+	j.loot.resize(1u);
+	j.loot[0].clear();
+	auto found = rpg::delay_impl::queryInteractable(fix.context, actor);
+	BOOST_CHECK_EQUAL(found, target1);
+}
+
+BOOST_AUTO_TEST_CASE(queryInteractable_ignores_behind_line_of_sight) {
+	auto& fix = Singleton<DelayFixture>::get();
+	fix.reset();
+
+	auto actor = fix.addActor({1u, 1u}, {0, -1}, 1u);
+	auto target = fix.addInteractable({1u, 2u});
+	auto& i = fix.interact.query(target);
+	i.type = rpg::InteractType::Corpse;
+	i.loot.resize(1u);
+	i.loot[0].resize(1u);
+	auto found = rpg::delay_impl::queryInteractable(fix.context, actor);
+	BOOST_CHECK_EQUAL(found, 0u);
+}
+
+BOOST_AUTO_TEST_CASE(queryInteractable_returns_first_non_empty_corpse) {
+	auto& fix = Singleton<DelayFixture>::get();
+	fix.reset();
+
+	auto actor = fix.addActor({1u, 1u}, {1, 0}, 1u);
+	auto target1 = fix.addInteractable({2u, 1u});
+	auto target2 = fix.addInteractable({2u, 2u});
+	auto& i = fix.interact.query(target1);
+	i.type = rpg::InteractType::Corpse;
+	i.loot.resize(1u);
+	i.loot[0].clear();
+	auto& j = fix.interact.query(target2);
+	j.type = rpg::InteractType::Corpse;
+	j.loot.resize(1u);
+	j.loot[0].resize(1u);
+	auto found = rpg::delay_impl::queryInteractable(fix.context, actor);
+	BOOST_CHECK_EQUAL(found, target2);
 }
 
 BOOST_AUTO_TEST_CASE(cannot_interact_with_corpse_if_not_a_player) {

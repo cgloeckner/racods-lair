@@ -39,6 +39,11 @@ struct EffectFixture {
 		boni_sender.clear();
 		combat_sender.clear();
 		effect_sender.clear();
+		
+		// clear logs
+		log.debug.clear();
+		log.warning.clear();
+		log.error.clear();
 	}
 };
 

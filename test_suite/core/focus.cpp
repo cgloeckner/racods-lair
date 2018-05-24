@@ -64,6 +64,11 @@ struct FocusFixture {
 		movement_manager.cleanup();
 		// reset event senders
 		focus_sender.clear();
+		
+		// clear logs
+		log.debug.clear();
+		log.warning.clear();
+		log.error.clear();
 	}
 
 	core::ObjectID add_object(

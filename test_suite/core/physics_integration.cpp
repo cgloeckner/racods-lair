@@ -104,6 +104,11 @@ struct PhysicsFixture
 		moves.clear();
 		focuses.clear();
 		teleports.clear();
+		
+		// clear logs
+		log.debug.clear();
+		log.warning.clear();
+		log.error.clear();
 	}
 
 	void handle(core::CollisionEvent const& event) {
@@ -590,6 +595,37 @@ BOOST_AUTO_TEST_CASE(collision_map_is_consistant_after_each_frame) {
 			break;
 		}
 	}
+	
+	// move backwards
+	fix.move_object(actor, {-1, -1}, {1, 1});
+	while (true) {
+		fix.update(sf::milliseconds(10));
+		if (!isConsistant()) {
+			BOOST_FAIL("Object should be located at <" +
+					   std::to_string(move.target.x) + "," +
+					   std::to_string(move.target.y) + "> but it is not.");
+		}
+		if (hasReached(actor, {3u, 2u})) {
+			break;
+		}
+	}
+}
+
+BOOST_AUTO_TEST_CASE(collision_map_works_correct_if_object_collides_with_dungeon_border) {
+	auto& fix = Singleton<PhysicsFixture>::get();
+	fix.reset();
+
+	auto actor = fix.add_object(fix.scene, {3u, 2u}, {1, 0}, 5.f, 5.f);
+	auto const& dungeon = fix.dungeon[fix.scene];
+	auto const& move = fix.movement.query(actor);
+
+	// look right and move backwards (towards end-of-dungeon)
+	fix.move_object(actor, {-1, 0}, {1, 0});
+	fix.update(sf::milliseconds(3000));
+
+	BOOST_CHECK_LT(move.pos.x, 2.f); // e.g. 1.025
+	BOOST_CHECK_CLOSE(move.pos.y, 2.f, 0.0001f);
+	BOOST_CHECK_VECTOR_EQUAL(move.target, sf::Vector2u(1u, 2u));
 }
 
 BOOST_AUTO_TEST_CASE(

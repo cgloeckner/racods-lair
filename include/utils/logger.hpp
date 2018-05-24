@@ -39,6 +39,7 @@ class Logger {
   public:
 	void add(std::ostream& stream);
 	void remove(std::ostream const & stream);
+	void clear();
 	void flush();
 	
 	iterator begin();

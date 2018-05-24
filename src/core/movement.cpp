@@ -76,15 +76,15 @@ void moveToTarget(Context& context, MovementData& data) {
 		return;
 	}
 
-	if (data.next_move == sf::Vector2i{}) {
-		// nothing more to do
-		return;
-	}
-
 	// prepare movement
 	data.move = data.next_move;
 	//data.is_moving = data.move != sf::Vector2i{};
 	data.target = target;
+
+	if (data.next_move == sf::Vector2i{}) {
+		// nothing more to do
+		return;
+	}
 
 	// propagate leaving tile
 	MoveEvent event;
@@ -121,11 +121,11 @@ void stop(Context& context, MovementData& data, CollisionEvent const& event) {
 	//data.pos = sf::Vector2f{event.reset_to};
 	//data.target = event.reset_to;
 	
-	data.pos    = data.last_pos;
-	data.is_moving = false;
-	data.target = sf::Vector2u{data.pos};
-	data.move   = sf::Vector2i{}; /// @TODO Vector2f after overhaul
-	data.next_move = data.move;
+	data.pos         = data.last_pos;
+	data.is_moving   = false;
+	data.target      = sf::Vector2u{data.pos};
+	data.move        = sf::Vector2i{}; /// @TODO Vector2f after overhaul
+	data.next_move   = data.move;
 	data.has_changed = true;
 	
 	// propagate reaching tile -- if collision didn't occure on tile reach
@@ -205,6 +205,7 @@ void interpolate(Context& context, MovementData& data, sf::Time const& elapsed) 
 	if (data.move != sf::Vector2i{}) {
 		delta = data.max_speed * calcSpeedFactor(data) * elapsed.asSeconds();
 	}
+	
 	auto step = data.pos + delta * sf::Vector2f{data.move};
 
 	// check whether target was reached

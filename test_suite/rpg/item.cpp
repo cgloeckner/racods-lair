@@ -90,6 +90,11 @@ struct ItemFixture {
 		boni_sender.clear();
 		stats_sender.clear();
 		feedback_sender.clear();
+		
+		// clear logs
+		log.debug.clear();
+		log.warning.clear();
+		log.error.clear();
 	}
 };
 

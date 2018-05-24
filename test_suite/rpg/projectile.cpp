@@ -90,6 +90,11 @@ struct ProjectileFixture {
 		// reset event senders
 		combat_sender.clear();
 		projectile_sender.clear();
+		
+		// clear logs
+		log.debug.clear();
+		log.warning.clear();
+		log.error.clear();
 	}
 
 	core::ObjectID add_bullet(sf::Vector2f const& pos) {
