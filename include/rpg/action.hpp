@@ -45,32 +45,6 @@ void onInput(
 void onAnimation(
 	Context& context, ActionData& actor, core::AnimationEvent const& event);
 
-/// Handle incomming move event
-/**
- *	Handle incomming move events to know whether an object is moving. The
- *	events are usually received from the physics systems. The object is just
- *	started if it was not moving before but left a tile. It is stopped if it
- *	reached a tile and no further input was previously triggered.
- *	Once an object started its movement, a suitable animation is triggered.
- *
- *	@param context Action context to use
- *	@param actor ActionData of the actor
- *	@param event Received MoveEvent
- */
-void onMove(Context& context, ActionData& actor, core::MoveEvent const& event);
-
-/// Handle incomming collision event
-/**
- *	Handle incomming collision events to know whether an object is stopped by
- *	a collision. No animation events are propagates here.
- *
- *	@param context Action context to use
- *	@param actor ActionData of the actor
- *	@param event Received CollisionEvent
- */
-void onCollision(
-	Context& context, ActionData& actor, core::CollisionEvent const& event);
-
 /// Handle incomming action event
 /**
  *	Handle incomming action events that specify the actor's next action. Those
@@ -113,7 +87,7 @@ void onSpawn(Context& context, ActionData& actor, SpawnEvent const& event);
 /// @param event Received FeedbackEvent
 void onFeedback(Context const & context, ActionData& actor, FeedbackEvent const& event);
 
-}  // ::input_impl
+}  // ::action_impl
 
 // ---------------------------------------------------------------------------
 
@@ -138,7 +112,7 @@ void onFeedback(Context const & context, ActionData& actor, FeedbackEvent const&
 class ActionSystem
 	// Event API
 	: public utils::EventListener<core::InputEvent, core::AnimationEvent,
-		  core::MoveEvent, core::CollisionEvent, ActionEvent, DeathEvent,
+		  ActionEvent, DeathEvent,
 		  SpawnEvent, FeedbackEvent>,
 	  public utils::EventSender<core::InputEvent, core::AnimationEvent,
 		  ActionEvent>
@@ -154,8 +128,6 @@ class ActionSystem
 
 	void handle(core::InputEvent const& event);
 	void handle(core::AnimationEvent const& event);
-	void handle(core::MoveEvent const& event);
-	void handle(core::CollisionEvent const& event);
 	void handle(ActionEvent const& event);
 	void handle(DeathEvent const& event);
 	void handle(SpawnEvent const& event);

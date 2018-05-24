@@ -181,7 +181,7 @@ void updateObject(Context& context, RenderData& data) {
 	ASSERT(move_data.scene > 0u);
 	auto const& dungeon = context.dungeon_system[move_data.scene];
 	// update transformation if necessary
-	if (move_data.has_changed) {
+	if (move_data.has_changed && move_data.look != sf::Vector2f{}) {
 		float angle = thor::polarAngle(move_data.look);
 		auto screen_pos = dungeon.toScreen(move_data.pos);
 		move_data.has_changed = false;

@@ -33,13 +33,12 @@ struct InteractFixture {
 		, foo{}
 		, bar{} {}
 
-	rpg::PlayerData& addPlayer(
-		sf::Vector2f const& pos, rpg::PlayerID player_id) {
+	rpg::PlayerData& addPlayer(sf::Vector2f const& pos, rpg::PlayerID player_id) {
 		auto id = ids.acquire();
 		objects.push_back(id);
 		auto& m = movement.acquire(id);
 		m.pos = pos;
-		m.target = sf::Vector2u{pos};
+		m.last_pos = pos;
 		m.look = {1, 0};
 		auto& f = focus.acquire(id);
 		auto& p = player.acquire(id);
@@ -52,7 +51,7 @@ struct InteractFixture {
 		objects.push_back(id);
 		auto& m = movement.acquire(id);
 		m.pos = pos;
-		m.target = sf::Vector2u{pos};
+		m.last_pos = pos;
 		auto& i = interact.acquire(id);
 		i.type = rpg::InteractType::Barrier;
 		return i;
@@ -63,7 +62,7 @@ struct InteractFixture {
 		objects.push_back(id);
 		auto& m = movement.acquire(id);
 		m.pos = pos;
-		m.target = sf::Vector2u{pos};
+		m.last_pos = pos;
 		auto& i = interact.acquire(id);
 		i.type = rpg::InteractType::Corpse;
 		return i;
@@ -159,6 +158,7 @@ BOOST_AUTO_TEST_CASE(move_barrier_into_movement_direction) {
 	BOOST_REQUIRE_EQUAL(events.size(), 1u);
 	BOOST_CHECK_EQUAL(events[0].actor, barrier.id);
 	BOOST_CHECK_VECTOR_EQUAL(events[0].move, sf::Vector2i(-1, 1));
+	BOOST_CHECK_VECTOR_CLOSE(events[0].look, m.look, 0.0001f);
 	BOOST_CHECK_TIME_EQUAL(barrier.cooldown, rpg::interact_impl::BARRIER_MOVE_COOLDOWN);
 }
 

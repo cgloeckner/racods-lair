@@ -54,6 +54,8 @@ void onCollision(Context& context, core::CollisionEvent const& event) {
 	auto const& projectile = context.projectile.query(event.actor);
 	ASSERT(projectile.bullet != nullptr);
 
+	context.log.debug << event.actor << " vs. " << event.collider << "\n";
+
 	if (event.collider > 0u) {
 		if (utils::contains(projectile.ignore, event.collider)) {
 			// target cannot be damaged by this projectile

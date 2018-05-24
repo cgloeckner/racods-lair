@@ -66,7 +66,7 @@ bool applyStats(Context& context, StatsData& actor, StatsEvent& event) {
 			has_changed = true;
 		}
 	}
-
+	
 	// check whether died or nor
 	if (actor.stats[Stat::Life] == 0u) {
 		// propagate death

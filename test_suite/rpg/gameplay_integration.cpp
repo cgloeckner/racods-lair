@@ -96,7 +96,7 @@ struct GameplayFixture
 		, dungeon{}
 		, movement{log, 1000u, dungeon}
 		, collision{log, 1000u, dungeon, movement}
-		, focus{log, 1000u, dungeon, movement}
+		, focus{log, 1000u}
 		// graphics system
 		, animation{log, 1000u, movement}
 		, render{}
@@ -135,8 +135,7 @@ struct GameplayFixture
 		, trap{}
 		, keys{} {
 		// connect animation events
-		animation.bind<core::AnimationEvent>(
-			action);  // react on finished action
+		animation.bind<core::AnimationEvent>(action);  // react on finished action
 		action.bind<core::AnimationEvent>(animation);  // animate move/stop
 		delay.bind<core::AnimationEvent>(animation);   // animate action
 		item.bind<core::AnimationEvent>(animation);	// update layers
@@ -147,21 +146,15 @@ struct GameplayFixture
 
 		// connect collision events
 		collision.bind<core::CollisionEvent>(movement);  // interrupt movement
-		collision.bind<core::CollisionEvent>(action);	// interrupt movement
-		collision.bind<core::CollisionEvent>(
-			projectile);  // trigger bullet collision
+		collision.bind<core::CollisionEvent>(projectile);  // trigger bullet collision
 		collision.bind<core::CollisionEvent>(interact);
 
 		// connect move events
-		movement.bind<core::MoveEvent>(collision);  // try movement
-		collision.bind<core::MoveEvent>(focus);		// update focus on move
-		collision.bind<core::MoveEvent>(action);	// propagate movement
-		collision.bind<core::MoveEvent>(interact);  // propagate movement
+		movement.bind<core::MoveEvent>(interact);  // movement notify
 
 		// connect input events
 		input.bind<core::InputEvent>(action);		// try movement/looking
 		action.bind<core::InputEvent>(movement);	// try movement
-		action.bind<core::InputEvent>(focus);		// try looking
 		interact.bind<core::InputEvent>(movement);  // move barrier
 
 		// connect action events
@@ -424,15 +417,10 @@ struct GameplayFixture
 		// reset collision events
 		dynamic_cast<core::CollisionSender&>(collision).clear();
 		dynamic_cast<core::CollisionListener&>(movement).clear();
-		dynamic_cast<core::CollisionListener&>(action).clear();
 		dynamic_cast<core::CollisionListener&>(projectile).clear();
 
 		// reset move events
 		dynamic_cast<core::MoveSender&>(movement).clear();
-		dynamic_cast<core::MoveSender&>(collision).clear();
-		dynamic_cast<core::MoveListener&>(collision).clear();
-		dynamic_cast<core::MoveListener&>(focus).clear();
-		dynamic_cast<core::MoveListener&>(action).clear();
 
 		// reset input events
 		dynamic_cast<core::InputSender&>(input).clear();
@@ -440,7 +428,6 @@ struct GameplayFixture
 		dynamic_cast<core::InputSender&>(interact).clear();
 		dynamic_cast<core::InputListener&>(action).clear();
 		dynamic_cast<core::InputListener&>(movement).clear();
-		dynamic_cast<core::InputListener&>(focus).clear();
 
 		// reset action events
 		dynamic_cast<rpg::ActionSender&>(input).clear();
@@ -541,7 +528,6 @@ struct GameplayFixture
 		core::updateChunked([&](sf::Time const& t) {
 			for (auto const& event : moves) {
 				movement.receive(event);
-				focus.receive(event);
 			}
 			moves.clear();
 
@@ -617,25 +603,26 @@ struct GameplayFixture
 	void handle(rpg::DeathEvent const& event) { deaths.push_back(event); }
 	void handle(rpg::FeedbackEvent const& event) { feedbacks.push_back(event); }
 
-	void moveObject(
-		core::ObjectID id, sf::Vector2i const& move, sf::Vector2i const& look) {
+	void moveObject(core::ObjectID id, sf::Vector2f const& move, sf::Vector2f const& look) {
+		ASSERT(look != sf::Vector2f{})
 		core::InputEvent event;
 		event.actor = id;
 		event.move = move;
 		event.look = look;
 		movement.receive(event);
-		focus.receive(event);
 	}
 
-	void rotateObject(core::ObjectID id, sf::Vector2i const& look) {
+	void rotateObject(core::ObjectID id, sf::Vector2f const& look) {
+		ASSERT(look != sf::Vector2f{})
 		core::InputEvent event;
 		event.actor = id;
+		event.move = movement.query(id).move;
 		event.look = look;
-		focus.receive(event);
+		movement.receive(event);
 	}
 
-	core::ObjectID createObject(
-		sf::Vector2u const& pos, sf::Vector2i const& look) {
+	core::ObjectID createObject(sf::Vector2f const& pos, sf::Vector2f const& look) {
+		ASSERT(look != sf::Vector2f{});
 		auto id = id_manager.acquire();
 		objects.push_back(id);
 		auto& move_data = movement.acquire(id);
@@ -643,6 +630,7 @@ struct GameplayFixture
 		move_data.max_speed = 10.f;
 		collision.acquire(id);
 		core::spawn(dungeon[1u], move_data, pos);
+		move_data.pos = pos;
 		auto& focus_data = focus.acquire(id);
 		focus_data.sight = 10.f;
 		focus_data.display_name = "not empty";
@@ -650,17 +638,11 @@ struct GameplayFixture
 		auto& ani = animation.acquire(id);
 		ani.tpl.torso[core::SpriteTorsoLayer::Base] = &body_sprite.torso;
 		render.acquire(id);
-		// publish object
-		core::MoveEvent event;
-		event.actor = id;
-		event.target = pos;
-		event.type = core::MoveEvent::Left;
-		focus.receive(event);
 
 		return id;
 	}
 
-	core::ObjectID createBarrier(sf::Vector2u const& pos) {
+	core::ObjectID createBarrier(sf::Vector2f const& pos) {
 		auto id = createObject(pos, {0, 1});
 		auto& c = collision.query(id);
 		c.shape.is_aabb = true;
@@ -671,15 +653,14 @@ struct GameplayFixture
 		return id;
 	}
 
-	core::ObjectID createCorpse(sf::Vector2u const& pos) {
+	core::ObjectID createCorpse(sf::Vector2f const& pos) {
 		auto id = createObject(pos, {0, 1});
 		auto& i = interact.acquire(id);
 		i.type = rpg::InteractType::Corpse;
 		return id;
 	}
 
-	core::ObjectID createCharacter(
-		sf::Vector2u const& pos, sf::Vector2i const& look) {
+	core::ObjectID createCharacter(sf::Vector2f const& pos, sf::Vector2f const& look) {
 		auto id = createObject(pos, look);
 		action.acquire(id);
 		item.acquire(id);
@@ -702,8 +683,8 @@ struct GameplayFixture
 		return id;
 	}
 
-	core::ObjectID createPlayer(sf::Vector2u const& pos,
-		sf::Vector2i const& look, rpg::PlayerID player_id) {
+	core::ObjectID createPlayer(sf::Vector2f const& pos,
+		sf::Vector2f const& look, rpg::PlayerID player_id) {
 		auto id = createCharacter(pos, look);
 		auto& c = collision.query(id);
 		c.shape.radius = 0.5f;
@@ -723,10 +704,11 @@ struct GameplayFixture
 			auto p = m.pos;
 			p.x = std::round(p.x);
 			p.y = std::round(p.y);
-			spawn.pos = sf::Vector2u{p};
+			spawn.pos = p;
 			spawn.direction = m.look;
 		}
 
+		ASSERT(spawn.direction != sf::Vector2f{})
 		auto id = createObject(spawn.pos, spawn.direction);
 		auto& f = focus.query(id);
 		f.sight = 0.f;  // bullet cannot be focused
@@ -736,7 +718,10 @@ struct GameplayFixture
 		auto& p = projectile.acquire(id);
 		p.owner = event.id;
 		p.bullet = &arrow;
-		p.ignore.push_back(event.id);
+		if (event.id > 0u) {
+			c.ignore.push_back(event.id);
+			p.ignore.push_back(event.id);
+		}
 		p.meta_data = event.meta_data;
 		// schedule movement
 		moves.emplace_back();
@@ -807,7 +792,7 @@ BOOST_AUTO_TEST_CASE(player_will_moves_if_arrowkey_is_pressed) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 
-	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto id = fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	// trigger input
 	fix.setInput(rpg::PlayerAction::MoveS, true);
 	fix.update(sf::milliseconds(200));
@@ -815,15 +800,13 @@ BOOST_AUTO_TEST_CASE(player_will_moves_if_arrowkey_is_pressed) {
 	auto& move = fix.movement.query(id);
 	BOOST_CHECK_CLOSE(move.pos.x, 1.f, 0.0001f);
 	BOOST_CHECK_GT(move.pos.y, 2.f);
-	BOOST_CHECK_EQUAL(move.target.x, 1u);
-	BOOST_CHECK_GT(move.target.y, 2u);
 }
 
 BOOST_AUTO_TEST_CASE(player_will_stop_if_arrowkey_is_released) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 
-	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto id = fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	// trigger input
 	fix.setInput(rpg::PlayerAction::MoveS, true);
 	fix.update(sf::milliseconds(100));
@@ -833,7 +816,6 @@ BOOST_AUTO_TEST_CASE(player_will_stop_if_arrowkey_is_released) {
 	auto& move = fix.movement.query(id);
 	BOOST_CHECK_CLOSE(move.pos.x, 1.f, 0.00001f);
 	BOOST_CHECK_GT(move.pos.y, 2.f);
-	BOOST_CHECK_VECTOR_EQUAL(move.target, sf::Vector2u(move.pos));
 	// test that player won't move further
 	auto last_pos = move.pos;
 	fix.update(sf::milliseconds(5000));
@@ -844,7 +826,7 @@ BOOST_AUTO_TEST_CASE(player_will_move_one_tile_if_arrowkeys_are_tapped) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 
-	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto id = fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	// trigger input
 	fix.setInput(rpg::PlayerAction::MoveS, true);
 	fix.setInput(rpg::PlayerAction::MoveE, true);
@@ -857,7 +839,6 @@ BOOST_AUTO_TEST_CASE(player_will_move_one_tile_if_arrowkeys_are_tapped) {
 	auto& move = fix.movement.query(id);
 	BOOST_CHECK_GT(move.pos.x, 1.f);
 	BOOST_CHECK_GT(move.pos.y, 2.f);
-	BOOST_CHECK_VECTOR_EQUAL(move.target, sf::Vector2u(move.pos));
 	BOOST_CHECK_VECTOR_EQUAL(move.look, sf::Vector2i(0, 1));
 	// test that player won't move further
 	auto last_pos = move.pos;
@@ -885,7 +866,7 @@ BOOST_AUTO_TEST_CASE(player_will_at_least_look_if_movement_is_impossible) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 
-	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto id = fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	// trigger input
 	fix.setInput(rpg::PlayerAction::MoveW, true);
 	fix.update(sf::milliseconds(100));
@@ -899,7 +880,7 @@ BOOST_AUTO_TEST_CASE(player_will_not_move_or_look_if_dead) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 
-	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto id = fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	auto& action = fix.action.query(id);
 	action.dead = true;
 	// trigger input
@@ -931,7 +912,7 @@ BOOST_AUTO_TEST_CASE(player_can_attack_void) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 
-	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto id = fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	// trigger input
 	fix.setInput(rpg::PlayerAction::Attack, true);
 	fix.update(sf::milliseconds(100));
@@ -949,7 +930,7 @@ BOOST_AUTO_TEST_CASE(player_cannot_attack_if_dead) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 
-	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto id = fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	auto& action = fix.action.query(id);
 	action.dead = true;
 	auto& ani = fix.animation.query(id);
@@ -965,7 +946,7 @@ BOOST_AUTO_TEST_CASE(player_can_attack_enemy) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 
-	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto id = fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	auto other = fix.createCharacter({2u, 2u}, {0, 1});
 	// trigger input
 	fix.setInput(rpg::PlayerAction::Attack, true);
@@ -984,7 +965,7 @@ BOOST_AUTO_TEST_CASE(
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 
-	fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	auto other = fix.createCharacter({2u, 2u}, {0, 1});
 	// trigger input
 	fix.setInput(rpg::PlayerAction::Attack, true);
@@ -1005,7 +986,7 @@ BOOST_AUTO_TEST_CASE(player_creates_bullet_when_shooting_by_bow) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 
-	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto id = fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	auto& item = fix.item.query(id);
 	item.equipment[rpg::EquipmentSlot::Weapon] = &fix.icebow;
 	// trigger input
@@ -1030,7 +1011,7 @@ BOOST_AUTO_TEST_CASE(player_can_damage_far_enemy_by_shooting_by_bow) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 
-	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto id = fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	auto& item = fix.item.query(id);
 	item.equipment[rpg::EquipmentSlot::Weapon] = &fix.icebow;
 	auto other = fix.createCharacter({3u, 2u}, {0, 1});
@@ -1050,7 +1031,7 @@ BOOST_AUTO_TEST_CASE(player_can_damage_near_enemy_by_shooting_by_bow) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 
-	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto id = fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	auto& item = fix.item.query(id);
 	item.equipment[rpg::EquipmentSlot::Weapon] = &fix.icebow;
 	auto other = fix.createCharacter({2u, 2u}, {0, 1});
@@ -1070,7 +1051,7 @@ BOOST_AUTO_TEST_CASE(player_can_kill_enemy_by_shooting_multiple_times) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 
-	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto id = fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	auto& item = fix.item.query(id);
 	item.equipment[rpg::EquipmentSlot::Weapon] = &fix.icebow;
 	auto other = fix.createCharacter({3u, 2u}, {0, 1});
@@ -1087,7 +1068,7 @@ BOOST_AUTO_TEST_CASE(player_can_kill_enemy_by_attacking_multiple_times) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 
-	fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	auto other = fix.createCharacter({2u, 2u}, {0, 1});
 	auto& target = fix.stats.query(other);
 	target.stats[rpg::Stat::Life] = 20;
@@ -1098,27 +1079,70 @@ BOOST_AUTO_TEST_CASE(player_can_kill_enemy_by_attacking_multiple_times) {
 	BOOST_CHECK_EQUAL(target.stats[rpg::Stat::Life], 0);
 }
 
-BOOST_AUTO_TEST_CASE(player_can_attack_enemy_by_bow_while_moving_back) {
+BOOST_AUTO_TEST_CASE(player_can_attack_enemy_by_bow_while_standing) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 	
-	auto id = fix.createPlayer({5u, 2u}, {1, 0}, 1u);
+	auto id = fix.createPlayer({1u, 2u}, {-1, 0}, 1u);
 	auto& item = fix.item.query(id);
 	item.equipment[rpg::EquipmentSlot::Weapon] = &fix.icebow;
 	auto other = fix.createCharacter({7u, 2u}, {0, 1});
 	auto& target = fix.stats.query(other);
 	target.stats[rpg::Stat::Life] = 20;
 	// trigger input
+	fix.setInput(rpg::PlayerAction::LookE, true);
+	fix.setInput(rpg::PlayerAction::Attack, true);
+	fix.update(sf::milliseconds(2000));
+	// test target's life
+	BOOST_CHECK_LT(target.stats[rpg::Stat::Life], 20);
+}
+
+BOOST_AUTO_TEST_CASE(player_can_attack_enemy_by_bow_while_moving_back) {
+	auto& fix = Singleton<GameplayFixture>::get();
+	fix.reset();
+	
+	auto id = fix.createPlayer({8u, 2u}, {-1, 0}, 1u);
+	auto& body = fix.movement.query(id);
+	body.max_speed = 2.f;
+	auto& item = fix.item.query(id);
+	item.equipment[rpg::EquipmentSlot::Weapon] = &fix.icebow;
+	auto other = fix.createCharacter({9u, 2u}, {0, 1});
+	auto& target = fix.stats.query(other);
+	target.stats[rpg::Stat::Life] = 20;
+	// trigger input
 	fix.setInput(rpg::PlayerAction::MoveW, true);
 	fix.setInput(rpg::PlayerAction::LookE, true);
 	fix.setInput(rpg::PlayerAction::Attack, true);
-	fix.update(sf::milliseconds(20000));
+	fix.update(sf::milliseconds(2000));
 	// test target's life
-	BOOST_CHECK_EQUAL(target.stats[rpg::Stat::Life], 0);
+	BOOST_CHECK_LT(target.stats[rpg::Stat::Life], 20);
 	// and player's position
+	BOOST_CHECK_LT(body.pos.x, 8.f);
+	BOOST_CHECK_CLOSE(body.pos.y, 2.f, 0.0001f);
+}
+
+BOOST_AUTO_TEST_CASE(player_can_attack_enemy_by_bow_while_moving_towards) {
+	auto& fix = Singleton<GameplayFixture>::get();
+	fix.reset();
+	
+	auto id = fix.createPlayer({1u, 2u}, {-1, 0}, 1u);
 	auto& body = fix.movement.query(id);
-	BOOST_CHECK_VECTOR_CLOSE(body.pos, sf::Vector2f(1.2125f, 2.f), 0.001f);
-	BOOST_CHECK_VECTOR_EQUAL(body.target, sf::Vector2u(1u, 2u));
+	body.max_speed = 5.f;
+	auto& item = fix.item.query(id);
+	item.equipment[rpg::EquipmentSlot::Weapon] = &fix.icebow;
+	auto other = fix.createCharacter({7u, 2u}, {0, 1});
+	auto& target = fix.stats.query(other);
+	target.stats[rpg::Stat::Life] = 20;
+	// trigger input
+	fix.setInput(rpg::PlayerAction::MoveE, true);
+	fix.setInput(rpg::PlayerAction::LookE, true);
+	fix.setInput(rpg::PlayerAction::Attack, true);
+	fix.update(sf::milliseconds(2000));
+	// test target's life
+	BOOST_CHECK_LT(target.stats[rpg::Stat::Life], 20);
+	// and player's position
+	BOOST_CHECK_LT(body.pos.x, 7.f);
+	BOOST_CHECK_CLOSE(body.pos.y, 2.f, 0.0001f);
 }
 
 // ---------------------------------------------------------------------------
@@ -1155,7 +1179,7 @@ BOOST_AUTO_TEST_CASE(player_can_select_previous_quickslot) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 
-	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto id = fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	auto& qslot = fix.quickslot.query(id);
 	qslot.slot_id = 2u;
 	// trigger input
@@ -1171,7 +1195,7 @@ BOOST_AUTO_TEST_CASE(player_can_select_next_quickslot) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 
-	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto id = fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	auto& qslot = fix.quickslot.query(id);
 	qslot.slot_id = 2u;
 	auto wait = sf::milliseconds(rpg::quickslot_impl::SLOT_COOLDOWN - core::MAX_FRAMETIME_MS);
@@ -1188,7 +1212,7 @@ BOOST_AUTO_TEST_CASE(player_can_skip_quickslot_by_holding_key) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 
-	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto id = fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	auto& qslot = fix.quickslot.query(id);
 	qslot.slot_id = 2u;
 	auto wait = sf::milliseconds(rpg::quickslot_impl::SLOT_COOLDOWN + core::MAX_FRAMETIME_MS);
@@ -1205,7 +1229,7 @@ BOOST_AUTO_TEST_CASE(using_empty_quickslot_will_not_crash) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 
-	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto id = fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	auto& qslot = fix.quickslot.query(id);
 	qslot.slot_id = 2u;
 	// trigger input
@@ -1219,7 +1243,7 @@ BOOST_AUTO_TEST_CASE(player_can_use_item_via_quickslot) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 
-	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto id = fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	auto& qslot = fix.quickslot.query(id);
 	qslot.slot_id = 2u;
 	qslot.slots[2u] = {fix.manapotion};
@@ -1240,7 +1264,7 @@ BOOST_AUTO_TEST_CASE(player_can_use_perk) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 
-	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto id = fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	auto& perk = fix.perk.query(id);
 	perk.perks.emplace_back(fix.healing, 1u);
 	auto& qslot = fix.quickslot.query(id);
@@ -1265,7 +1289,7 @@ BOOST_AUTO_TEST_CASE(player_can_use_defensive_perk_via_quickslot) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 
-	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto id = fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	auto& perk = fix.perk.query(id);
 	perk.perks.emplace_back(fix.healing, 1u);
 	auto& qslot = fix.quickslot.query(id);
@@ -1287,7 +1311,7 @@ BOOST_AUTO_TEST_CASE(player_can_damage_enemy_by_offensive_perk_via_quickslot) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 
-	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto id = fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	auto& perk = fix.perk.query(id);
 	perk.perks.emplace_back(fix.fireball, 1u);
 	auto& qslot = fix.quickslot.query(id);
@@ -1349,7 +1373,7 @@ BOOST_AUTO_TEST_CASE(player_cannot_select_prev_slot_if_dead) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 
-	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto id = fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	auto& qslot = fix.quickslot.query(id);
 	qslot.slot_id = 2u;
 
@@ -1367,7 +1391,7 @@ BOOST_AUTO_TEST_CASE(player_cannot_select_next_slot_if_dead) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 
-	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto id = fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	auto& qslot = fix.quickslot.query(id);
 	qslot.slot_id = 2u;
 
@@ -1385,7 +1409,7 @@ BOOST_AUTO_TEST_CASE(player_cannot_use_quickslot_if_dead) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 
-	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto id = fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	auto& perk = fix.perk.query(id);
 	perk.perks.emplace_back(fix.fireball, 1u);
 	auto& qslot = fix.quickslot.query(id);
@@ -1408,7 +1432,7 @@ BOOST_AUTO_TEST_CASE(player_cannot_cast_if_not_enough_mana) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 
-	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto id = fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	auto& stats = fix.stats.query(id);
 	stats.stats[rpg::Stat::Mana] = 0;
 	auto& perk = fix.perk.query(id);
@@ -1419,7 +1443,7 @@ BOOST_AUTO_TEST_CASE(player_cannot_cast_if_not_enough_mana) {
 
 	// trigger input
 	fix.setInput(rpg::PlayerAction::UseSlot, true);
-	fix.update(sf::milliseconds(50));
+	fix.update(sf::milliseconds(core::MAX_FRAMETIME_MS));
 	// check animation
 	auto& ani = fix.animation.query(id);
 	BOOST_CHECK(ani.current == core::AnimationAction::Idle);
@@ -1431,7 +1455,7 @@ BOOST_AUTO_TEST_CASE(player_cannot_quickuse_missing_item) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 
-	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto id = fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	auto& qslot = fix.quickslot.query(id);
 	qslot.slot_id = 2u;
 	qslot.slots[2u] = {fix.manapotion};
@@ -1451,7 +1475,7 @@ BOOST_AUTO_TEST_CASE(player_stops_movement_if_killed) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 
-	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto id = fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	auto& stats = fix.stats.query(id);
 	stats.stats[rpg::Stat::Life] = 1;
 
@@ -1478,7 +1502,7 @@ BOOST_AUTO_TEST_CASE(player_stops_actions_if_killed) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 
-	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto id = fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	auto& stats = fix.stats.query(id);
 	stats.stats[rpg::Stat::Life] = 1;
 
@@ -1529,7 +1553,7 @@ BOOST_AUTO_TEST_CASE(player_can_interact) {
 	
 	fix.log.debug.add(std::cout);
 
-	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto id = fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	auto other = fix.createBarrier({2u, 2u});
 	// push barrier
 	fix.setInput(rpg::PlayerAction::Interact, true);
@@ -1550,27 +1574,29 @@ BOOST_AUTO_TEST_CASE(barrier_stops_automatically) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 	
-	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto id = fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	auto other = fix.createBarrier({2u, 2u});
 	// push barrier
 	fix.setInput(rpg::PlayerAction::Interact, true);
 	fix.update(sf::milliseconds(100));
 	fix.setInput(rpg::PlayerAction::Interact, false);
+	fix.update(sf::milliseconds(500));
 	// test ani
 	auto const& ani = fix.animation.query(id);
 	BOOST_CHECK(ani.current == core::AnimationAction::Use);
-	// continue
-	fix.update(sf::milliseconds(1000));
-	// test position
 	auto const & barrier_move = fix.movement.query(other);
-	BOOST_CHECK_VECTOR_CLOSE(barrier_move.pos, sf::Vector2f(3.f, 2.f), 0.00001f);
+	auto expected = barrier_move.pos;
+	// continue simulation
+	fix.update(rpg::interact_impl::BARRIER_MOVE_COOLDOWN);
+	// test expected position
+	BOOST_CHECK_VECTOR_CLOSE(barrier_move.pos, expected, 0.00001f);
 }
 
 BOOST_AUTO_TEST_CASE(player_is_not_blocked_after_interact) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 	
-	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto id = fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	fix.createBarrier({2u, 2u});
 	// push barrier
 	fix.setInput(rpg::PlayerAction::Interact, true);
@@ -1590,7 +1616,7 @@ BOOST_AUTO_TEST_CASE(player_is_not_blocked_after_failed_interact) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 
-	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto id = fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	// push barrier
 	fix.setInput(rpg::PlayerAction::Interact, true);
 	fix.update(sf::milliseconds(100));
@@ -1605,7 +1631,7 @@ BOOST_AUTO_TEST_CASE(player_cannot_interact_if_dead) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 
-	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto id = fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	fix.createBarrier({2u, 2u});
 	auto& action = fix.action.query(id);
 	action.dead = true;
@@ -1622,7 +1648,7 @@ BOOST_AUTO_TEST_CASE(player_can_push_barrier) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 
-	auto player = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto player = fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	auto barrier = fix.createBarrier({2u, 2u});
 	// push barrier
 	fix.setInput(rpg::PlayerAction::Interact, true);
@@ -1639,7 +1665,7 @@ BOOST_AUTO_TEST_CASE(barrier_stops_movement_automatically) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 
-	auto player = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto player = fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	auto barrier = fix.createBarrier({2u, 2u});
 	// push barrier
 	fix.setInput(rpg::PlayerAction::Interact, true);
@@ -1651,12 +1677,13 @@ BOOST_AUTO_TEST_CASE(barrier_stops_movement_automatically) {
 	
 	// query barrier's new position
 	auto& i = fix.interact.query(barrier);
-	BOOST_CHECK_TIME_EQUAL(i.cooldown, sf::Time::Zero)
+	BOOST_CHECK_TIME_EQUAL(i.cooldown, sf::Time::Zero);
+	auto const & body = fix.movement.query(barrier);
+	auto expected = body.pos;
 	
-	// continue simulation and expect
+	// continue simulation and expect old position
 	fix.update(sf::milliseconds(1000));
-	auto& body = fix.movement.query(barrier);
-	BOOST_CHECK_VECTOR_CLOSE(body.pos, sf::Vector2f(3.f, 2.f), 0.0001f);
+	BOOST_CHECK_VECTOR_CLOSE(body.pos, expected, 0.0001f);
 }
 
 BOOST_AUTO_TEST_CASE(player_cannot_push_barrier_towards_wall) {
@@ -1674,7 +1701,6 @@ BOOST_AUTO_TEST_CASE(player_cannot_push_barrier_towards_wall) {
 	// expect barrier's new position
 	auto& body = fix.movement.query(barrier);
 	BOOST_CHECK_VECTOR_CLOSE(body.pos, sf::Vector2f(1.f, 2.f), 0.0001f);
-	BOOST_CHECK_VECTOR_EQUAL(body.target, sf::Vector2u(1u, 2u));
 	auto& i = fix.interact.query(barrier);
 	BOOST_CHECK_TIME_EQUAL(i.cooldown, sf::Time::Zero);
 }
@@ -1684,8 +1710,8 @@ BOOST_AUTO_TEST_CASE(player_cannot_push_barrier_towards_object) {
 	fix.reset();
 
 	fix.createPlayer({2u, 2u}, {1, 0}, 1u);
-	auto barrier = fix.createBarrier({3u, 2u});
-	fix.createBarrier({4u, 2u});
+	auto barrier1 = fix.createBarrier({3u, 2u});
+	auto barrier2 = fix.createBarrier({4u, 2u});
 	// try to push barrier
 	fix.setInput(rpg::PlayerAction::Interact, true);
 	fix.update(sf::milliseconds(10));
@@ -1693,10 +1719,12 @@ BOOST_AUTO_TEST_CASE(player_cannot_push_barrier_towards_object) {
 	fix.update(sf::milliseconds(2000));
 	
 	// expect barrier's new position
-	auto& body = fix.movement.query(barrier);
-	BOOST_CHECK_VECTOR_CLOSE(body.pos, sf::Vector2f(3.315f, 2.f), 0.0001f);
-	BOOST_CHECK_VECTOR_EQUAL(body.target, sf::Vector2u(3u, 2u));
-	auto& i = fix.interact.query(barrier);
+	auto& body = fix.movement.query(barrier1);
+	auto& other = fix.movement.query(barrier2);
+	BOOST_CHECK_GT(body.pos.x, 3.f);
+	BOOST_CHECK_LT(body.pos.x, other.pos.x);
+	BOOST_CHECK_CLOSE(body.pos.y, 2.f, 0.0001f);
+	auto& i = fix.interact.query(barrier1);
 	BOOST_CHECK_TIME_EQUAL(i.cooldown, sf::Time::Zero);
 }
 
@@ -1706,7 +1734,7 @@ BOOST_AUTO_TEST_CASE(player_gains_exp_for_attack) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 
-	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto id = fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	fix.createCharacter({2u, 2u}, {0, 1});
 	// trigger input
 	fix.setInput(rpg::PlayerAction::Attack, true);
@@ -1720,7 +1748,7 @@ BOOST_AUTO_TEST_CASE(player_can_levelup) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 
-	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto id = fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	fix.createCharacter({2u, 2u}, {0, 1});
 	auto& player = fix.player.query(id);
 	player.exp = 999999ul;
@@ -1737,7 +1765,7 @@ BOOST_AUTO_TEST_CASE(player_can_train_attribute) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 
-	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto id = fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	auto& player = fix.player.query(id);
 	player.attrib_points = 2u;
 	auto& stats = fix.stats.query(id);
@@ -1760,7 +1788,7 @@ BOOST_AUTO_TEST_CASE(player_can_train_perk) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 
-	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto id = fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	auto& player = fix.player.query(id);
 	player.perk_points = 2u;
 	auto& perk = fix.perk.query(id);
@@ -1782,7 +1810,7 @@ BOOST_AUTO_TEST_CASE(player_cannot_train_attribute_without_attrib_points) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 
-	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto id = fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	auto& stats = fix.stats.query(id);
 	auto strength = stats.attributes[rpg::Attribute::Strength];
 	// trigger training
@@ -1802,7 +1830,7 @@ BOOST_AUTO_TEST_CASE(player_cannot_train_perk_withou_perk_points) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 
-	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto id = fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	auto& perk = fix.perk.query(id);
 	perk.perks.emplace_back(fix.fireball, 1u);
 	// trigger training
@@ -1822,7 +1850,7 @@ BOOST_AUTO_TEST_CASE(player_can_equip_via_shortcut) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 
-	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto id = fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	auto& qslot = fix.quickslot.query(id);
 	qslot.slot_id = 2u;
 	qslot.slots[2u] = {fix.icebow};
@@ -1841,7 +1869,7 @@ BOOST_AUTO_TEST_CASE(player_uses_mana_to_cast) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 
-	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto id = fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	auto& perk = fix.perk.query(id);
 	perk.perks.emplace_back(fix.fireball, 1u);
 	auto& qslot = fix.quickslot.query(id);
@@ -1867,7 +1895,7 @@ BOOST_AUTO_TEST_CASE(shortcut_is_cleared_if_last_item_is_quickused) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
 
-	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
+	auto id = fix.createPlayer({1.f, 2.f}, {1.f, 0.f}, 1u);
 	auto& qslot = fix.quickslot.query(id);
 	qslot.slot_id = 2u;
 	qslot.slots[2u] = {fix.manapotion};

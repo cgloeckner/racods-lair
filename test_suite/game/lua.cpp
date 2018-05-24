@@ -157,7 +157,7 @@ struct LuaFixture
 		BOOST_REQUIRE_EQUAL(id, 1u);
 	}
 
-	core::ObjectID createPlayer(sf::Vector2u const& pos) {
+	core::ObjectID createPlayer(sf::Vector2f const& pos) {
 		rpg::SpawnMetaData spawn;
 		spawn.scene = 1u;
 		spawn.pos = pos;
@@ -172,7 +172,7 @@ struct LuaFixture
 		return id;
 	}
 
-	game::LuaApi& createBot(sf::Vector2u const& pos, bool hostile) {
+	game::LuaApi& createBot(sf::Vector2f const& pos, bool hostile) {
 		rpg::SpawnMetaData spawn;
 		spawn.scene = 1u;
 		spawn.pos = pos;

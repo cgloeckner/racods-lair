@@ -33,6 +33,11 @@ void setMovement(Context& context, MovementData& actor, sf::Vector2f const & mov
 	actor.look = utils::normalize(look);
 	actor.has_changed = true;
 	
+	if (actor.look == sf::Vector2f{}) {
+		actor.look.y = 1.f;
+		context.log.debug << "[Core/Movement] Zero direction vector of #" << actor.id << " reset to (0,1)\n";
+	}
+	
 	// propagate event if behavior changed
 	if (was_moving != will_move) {
 		MoveEvent event;
@@ -44,8 +49,6 @@ void setMovement(Context& context, MovementData& actor, sf::Vector2f const & mov
 
 void onCollision(Context& context, MovementData& actor, CollisionEvent const & event) {
 	if (event.interrupt) {
-		actor.pos         = actor.last_pos;
-		actor.has_changed = true;
 		movement_impl::setMovement(context, actor, {}, actor.look);
 	}
 }

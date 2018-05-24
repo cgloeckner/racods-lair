@@ -4,15 +4,15 @@
 
 namespace core {
 
-void spawn(Dungeon& dungeon, MovementData& data, sf::Vector2u const& pos) {
+void spawn(Dungeon& dungeon, MovementData& data, sf::Vector2f const& pos) {
 	ASSERT(data.scene == 0u);
 
 	// add to new cell
-	auto& cell = dungeon.getCell(pos);
+	auto& cell = dungeon.getCell(sf::Vector2u{pos});
 	cell.entities.push_back(data.id);
 
 	// update object
-	data.pos = sf::Vector2f{pos};
+	data.pos = pos;
 	data.last_pos = data.pos;
 	data.scene = dungeon.id;
 	data.has_changed = true;
@@ -103,7 +103,7 @@ void TeleportTrigger::execute(core::ObjectID actor) {
 	auto from = sf::Vector2u{move_data.pos};
 	auto& src = dungeon[move_data.scene];
 	vanish(src, move_data);
-	spawn(dst, move_data, p);
+	spawn(dst, move_data, sf::Vector2f{p});
 
 	// propagate teleport
 	TeleportEvent tele;

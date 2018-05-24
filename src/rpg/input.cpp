@@ -64,13 +64,17 @@ void queryInput(Context const& context, InputData& data,
 			data.cooldown = sf::milliseconds(input_impl::TOGGLE_COOLDOWN);
 		}
 	}
-	if (input.move != sf::Vector2i{} && input.look != sf::Vector2i{}) {
+	if (input.move != sf::Vector2f{} && input.look != sf::Vector2f{}) {
 		// disable auto looking if strifing is explicitly given
 		data.auto_look = false;
 	}
-	if (input.move != sf::Vector2i{} && data.auto_look) {
-		// ignore looking keys while moving
+	if (input.move != sf::Vector2f{} && data.auto_look) {
+		// ignore looking keys while moving with auto look
 		input.look = input.move;
+	}
+	if (input.look == sf::Vector2f{}) {
+		// use previous looking
+		input.look = context.movement.query(data.id).look;
 	}
 
 	// setup player action
@@ -111,8 +115,8 @@ void updateInput(Context& context, InputData& data, sf::Time const& elapsed) {
 }
 
 void adjustMovement(
-	Context const& context, InputData const& data, sf::Vector2i& vector) {
-	if (vector == sf::Vector2i{}) {
+	Context const& context, InputData const& data, sf::Vector2f& vector) {
+	if (vector == sf::Vector2f{}) {
 		return;
 	}
 
@@ -120,8 +124,8 @@ void adjustMovement(
 	ASSERT(move_data.scene > 0u);
 	auto const& dungeon = context.dungeon[move_data.scene];
 
-	auto canAccess = [&](sf::Vector2i const& move) {
-		auto target = sf::Vector2u{sf::Vector2i{move_data.target} + move};
+	auto canAccess = [&](sf::Vector2f const& move) {
+		auto target = sf::Vector2u{move_data.pos + move};
 		if (!dungeon.has(target)) {
 			return false;
 		}
@@ -136,7 +140,7 @@ void adjustMovement(
 	// try alternative direction (randomly chosen)
 	auto right = core::rotate(vector, true);
 	auto left = core::rotate(vector, false);
-	sf::Vector2i decision, other;
+	sf::Vector2f decision, other;
 	if (thor::random(0u, 1u) == 0u) {
 		decision = right;
 		other = left;
@@ -152,7 +156,7 @@ void adjustMovement(
 		vector = other;
 	} else {
 		// cannot move, clear vector!
-		vector = sf::Vector2i{};
+		vector = sf::Vector2f{};
 	}
 }
 

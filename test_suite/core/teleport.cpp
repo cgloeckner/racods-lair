@@ -252,9 +252,9 @@ BOOST_AUTO_TEST_CASE(finding_free_pos_can_find_rare_spots) {
 	auto& data = fix.add_object();
 	auto& coll = fix.collision.query(data.id);
 	sf::Vector2u pos{3, 3};
-	core::spawn(dungeon, data, pos);
+	core::spawn(dungeon, data, sf::Vector2f{pos});
 
-	core::SpawnHelper helper{fix.collision, fix.movement, dungeon, data.id};	
+	core::SpawnHelper helper{fix.collision, fix.movement, dungeon, data.id};
 	BOOST_CHECK(!core::getFreePosition(helper, pos, 1));
 	BOOST_CHECK(core::getFreePosition(helper, pos, 2));
 	BOOST_CHECK_VECTOR_EQUAL(pos, sf::Vector2u(1u, 1u));

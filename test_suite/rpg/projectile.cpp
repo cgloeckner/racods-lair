@@ -103,8 +103,8 @@ struct ProjectileFixture {
 		auto& move = movement_manager.acquire(id);
 		move.scene = 1u;
 		move.pos = pos;
-		move.target = sf::Vector2u{pos};
-		auto& cell = dungeon_system[move.scene].getCell(move.target);
+		move.last_pos = pos;
+		auto& cell = dungeon_system[move.scene].getCell(sf::Vector2u{pos});
 		cell.entities.push_back(id);
 		auto& coll = collision_manager.acquire(id);
 		coll.is_projectile = true;
@@ -121,8 +121,8 @@ struct ProjectileFixture {
 		auto& move = movement_manager.acquire(id);
 		move.scene = 1u;
 		move.pos = pos;
-		move.target = sf::Vector2u{pos};
-		auto& cell = dungeon_system[move.scene].getCell(move.target);
+		move.last_pos = pos;
+		auto& cell = dungeon_system[move.scene].getCell(sf::Vector2u{pos});
 		cell.entities.push_back(id);
 		auto& c = collision_manager.acquire(id);
 		c.shape.radius = 0.5f;
@@ -233,7 +233,6 @@ BOOST_AUTO_TEST_CASE(projectile_destruction_is_triggered_if_nobody_is_hit) {
 	core::CollisionEvent event;
 	event.actor = bullet;
 	event.collider = 0u;
-	event.pos = {2u, 2u};
 	rpg::projectile_impl::onCollision(fix.context, event);
 	auto const& events = fix.projectile_sender.data();
 	BOOST_REQUIRE_EQUAL(events.size(), 1u);

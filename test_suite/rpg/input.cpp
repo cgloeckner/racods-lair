@@ -52,9 +52,9 @@ struct InputFixture {
 		// setup actor
 		auto& move = movement.acquire(1u);
 		move.pos = {1.f, 1.f};
-		move.target = {1u, 1u};
+		move.last_pos = move.pos;
 		move.scene = scene;
-		move.look = {1, 0};
+		move.look = {1.f, 0.f};
 		d.getCell({1u, 1u}).entities.push_back(1u);
 		auto& f = focus.acquire(1u);
 		// connect gamepad
@@ -147,8 +147,8 @@ BOOST_AUTO_TEST_CASE(gamepad_can_trigger_movement) {
 	// expect move+look to (-1,1) without an action
 	BOOST_CHECK(
 		action.action == rpg::PlayerAction::ToggleAutoLook);  // aka idle
-	BOOST_CHECK_VECTOR_EQUAL(event.move, sf::Vector2i(-1, 1));
-	BOOST_CHECK_VECTOR_EQUAL(event.look, event.move);
+	BOOST_CHECK_VECTOR_CLOSE(event.move, sf::Vector2f(-1.f, 1.f), 0.0001f);
+	BOOST_CHECK_VECTOR_CLOSE(event.look, event.move, 0.0001f);
 }
 
 BOOST_AUTO_TEST_CASE(gamepad_can_trigger_looking) {
@@ -165,8 +165,8 @@ BOOST_AUTO_TEST_CASE(gamepad_can_trigger_looking) {
 	// expect look to (1,1) without a move or action
 	BOOST_CHECK(
 		action.action == rpg::PlayerAction::ToggleAutoLook);  // aka idle
-	BOOST_CHECK_VECTOR_EQUAL(event.move, sf::Vector2i());
-	BOOST_CHECK_VECTOR_EQUAL(event.look, sf::Vector2i(1, 1));
+	BOOST_CHECK_VECTOR_CLOSE(event.move, sf::Vector2f(), 0.0001f);
+	BOOST_CHECK_VECTOR_CLOSE(event.look, sf::Vector2f(1.f, 1.f), 0.0001f);
 }
 
 BOOST_AUTO_TEST_CASE(gamepad_can_trigger_strife) {
@@ -205,7 +205,8 @@ BOOST_AUTO_TEST_CASE(gamepad_can_trigger_strife_without_explicitly_looking) {
 	BOOST_CHECK(
 		action.action == rpg::PlayerAction::ToggleAutoLook);  // aka idle
 	BOOST_CHECK_VECTOR_EQUAL(event.move, sf::Vector2i(-1, 1));
-	BOOST_CHECK_VECTOR_EQUAL(event.look, sf::Vector2i());
+	auto const & move = fix.movement.query(fix.data.id);
+	BOOST_CHECK_VECTOR_CLOSE(event.look, move.look, 0.0001f);
 }
 
 BOOST_AUTO_TEST_CASE(gamepad_can_trigger_pause) {
@@ -220,8 +221,9 @@ BOOST_AUTO_TEST_CASE(gamepad_can_trigger_pause) {
 	rpg::input_impl::queryInput(fix.context, fix.data, event, action);
 	// expect pause but nothing else
 	BOOST_CHECK(action.action == rpg::PlayerAction::Pause);
-	BOOST_CHECK_VECTOR_EQUAL(event.move, sf::Vector2i());
-	BOOST_CHECK_VECTOR_EQUAL(event.look, sf::Vector2i());
+	BOOST_CHECK_VECTOR_EQUAL(event.move, sf::Vector2f());
+	auto const & move = fix.movement.query(fix.data.id);
+	BOOST_CHECK_VECTOR_CLOSE(event.look, move.look, 0.0001f);
 }
 
 BOOST_AUTO_TEST_CASE(gamepad_can_trigger_interact) {
@@ -237,7 +239,8 @@ BOOST_AUTO_TEST_CASE(gamepad_can_trigger_interact) {
 	// expect interaction but nothing else
 	BOOST_CHECK(action.action == rpg::PlayerAction::Interact);
 	BOOST_CHECK_VECTOR_EQUAL(event.move, sf::Vector2i());
-	BOOST_CHECK_VECTOR_EQUAL(event.look, sf::Vector2i());
+	auto const & move = fix.movement.query(fix.data.id);
+	BOOST_CHECK_VECTOR_CLOSE(event.look, move.look, 0.0001f);
 }
 
 BOOST_AUTO_TEST_CASE(gamepad_can_disable_autolook) {
@@ -254,7 +257,8 @@ BOOST_AUTO_TEST_CASE(gamepad_can_disable_autolook) {
 	BOOST_CHECK(
 		action.action == rpg::PlayerAction::ToggleAutoLook);  // aka idle
 	BOOST_CHECK_VECTOR_EQUAL(event.move, sf::Vector2i());
-	BOOST_CHECK_VECTOR_EQUAL(event.look, sf::Vector2i());
+	auto const & move = fix.movement.query(fix.data.id);
+	BOOST_CHECK_VECTOR_CLOSE(event.look, move.look, 0.0001f);
 	BOOST_CHECK(!fix.data.auto_look);
 }
 
@@ -273,7 +277,8 @@ BOOST_AUTO_TEST_CASE(gamepad_can_enable_autolook) {
 	BOOST_CHECK(
 		action.action == rpg::PlayerAction::ToggleAutoLook);  // aka idle
 	BOOST_CHECK_VECTOR_EQUAL(event.move, sf::Vector2i());
-	BOOST_CHECK_VECTOR_EQUAL(event.look, sf::Vector2i());
+	auto const & move = fix.movement.query(fix.data.id);
+	BOOST_CHECK_VECTOR_CLOSE(event.look, move.look, 0.0001f);
 	BOOST_CHECK(fix.data.auto_look);
 }
 
@@ -309,7 +314,7 @@ BOOST_AUTO_TEST_CASE(move_is_forwarded) {
 	rpg::input_impl::updateInput(fix.context, fix.data, sf::milliseconds(50));
 	// expect an outgoing event
 	auto const& events = fix.input_sender.data();
-	BOOST_CHECK_EQUAL(events.size(), 1u);
+	BOOST_REQUIRE_EQUAL(events.size(), 1u);
 }
 
 BOOST_AUTO_TEST_CASE(look_is_forwarded) {
@@ -363,9 +368,9 @@ BOOST_AUTO_TEST_CASE(
 	auto& fix = Singleton<InputFixture>::get();
 	fix.reset();
 
-	sf::Vector2i move{1, -1};
+	sf::Vector2f move{1.f, -0.f};
 	rpg::input_impl::adjustMovement(fix.context, fix.data, move);
-	BOOST_CHECK_VECTOR_EQUAL(move, sf::Vector2i(1, 0));
+	BOOST_CHECK_VECTOR_CLOSE(move, sf::Vector2f(1.f, 0.f), 0.0001f);
 }
 
 BOOST_AUTO_TEST_CASE(
@@ -373,18 +378,18 @@ BOOST_AUTO_TEST_CASE(
 	auto& fix = Singleton<InputFixture>::get();
 	fix.reset();
 
-	sf::Vector2i move{-1, 1};
+	sf::Vector2f move{-1.f, 1.f};
 	rpg::input_impl::adjustMovement(fix.context, fix.data, move);
-	BOOST_CHECK_VECTOR_EQUAL(move, sf::Vector2i(0, 1));
+	BOOST_CHECK_VECTOR_CLOSE(move, sf::Vector2f(0.f, 1.f), 0.0001f);
 }
 
 BOOST_AUTO_TEST_CASE(adjustMovement_will_drop_movevector_if_impossible) {
 	auto& fix = Singleton<InputFixture>::get();
 	fix.reset();
 
-	sf::Vector2i move{0, -1};
+	sf::Vector2f move{0.f, -1.f};
 	rpg::input_impl::adjustMovement(fix.context, fix.data, move);
-	BOOST_CHECK_VECTOR_EQUAL(move, sf::Vector2i());
+	BOOST_CHECK_VECTOR_CLOSE(move, sf::Vector2f(), 0.0001f);
 }
 
 // ---------------------------------------------------------------------------

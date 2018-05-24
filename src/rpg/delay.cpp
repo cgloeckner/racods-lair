@@ -43,6 +43,7 @@ core::ObjectID queryInteractable(Context& context, core::ObjectID actor) {
 	auto const& actor_move = context.movement.query(actor);
 	auto const& actor_focus = context.focus.query(actor);
 	ASSERT(actor_move.scene > 0u);
+	ASSERT(actor_move.look != sf::Vector2f{});
 	auto const& dungeon = context.dungeon[actor_move.scene];
 	
 	// query all entities in range
@@ -58,7 +59,7 @@ core::ObjectID queryInteractable(Context& context, core::ObjectID actor) {
 		}
 		// check fov
 		auto const & move = context.movement.query(id);
-		if (utils::isWithinFov(actor_move.pos, sf::Vector2f{actor_move.look}, actor_focus.fov, combat_impl::MAX_MELEE_DISTANCE, move.pos)) {
+		if (utils::isWithinFov(actor_move.pos, actor_move.look, actor_focus.fov, combat_impl::MAX_MELEE_DISTANCE, move.pos)) {
 			auto ptr = &context.interact.query(id);
 			objects.push_back(ptr);
 			found_barrier = found_barrier || (ptr->type == InteractType::Barrier);

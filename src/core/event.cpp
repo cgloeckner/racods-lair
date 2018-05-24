@@ -11,7 +11,6 @@ InputEvent::InputEvent()
 CollisionEvent::CollisionEvent()
 	: actor{0u}
 	, collider{0u}
-	, pos{}
 	, interrupt{false} {
 }
 

@@ -92,7 +92,7 @@ void updateInput(Context& context, InputData& data, sf::Time const& elapsed);
  *	@param vector Movement vector to modify.
  */
 void adjustMovement(
-	Context const& context, InputData const& data, sf::Vector2i& vector);
+	Context const& context, InputData const& data, sf::Vector2f& vector);
 
 /// Handle actor's death
 /**

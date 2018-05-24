@@ -281,5 +281,36 @@ BOOST_AUTO_TEST_CASE(feedback_does_not_reset_action_idle_if_dead) {
 	BOOST_CHECK(!fix.actor.idle);
 }
 
+// --------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE(animation_event_can_start_idle) {
+	auto& fix = Singleton<ActionFixture>::get();
+	fix.reset();
+
+	fix.actor.idle = false;
+	fix.actor.dead = false;
+	
+	core::AnimationEvent event;
+	event.type   = core::AnimationEvent::Action;
+	event.action = core::AnimationAction::Idle;
+	rpg::action_impl::onAnimation(fix.context, fix.actor, event);
+	
+	BOOST_CHECK(fix.actor.idle);
+}
+
+BOOST_AUTO_TEST_CASE(animation_event_can_stop_idle) {
+	auto& fix = Singleton<ActionFixture>::get();
+	fix.reset();
+
+	fix.actor.idle = true;
+	fix.actor.dead = false;
+	
+	core::AnimationEvent event;
+	event.type   = core::AnimationEvent::Action;
+	event.action = core::AnimationAction::Melee;
+	rpg::action_impl::onAnimation(fix.context, fix.actor, event);
+	
+	BOOST_CHECK(!fix.actor.idle);
+}
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -33,7 +33,7 @@ void moveBarrier(Context& context, InteractData& data, core::ObjectID actor) {
 
 	// determine movement direction
 	auto dir = actor_move.move;
-	if (dir == sf::Vector2i{}) {
+	if (dir == sf::Vector2f{}) {
 		dir = actor_move.look;
 	}
 
@@ -41,6 +41,7 @@ void moveBarrier(Context& context, InteractData& data, core::ObjectID actor) {
 	core::InputEvent event;
 	event.actor = data.id;
 	event.move = dir;
+	event.look = actor_move.look;
 	context.input_sender.send(event);
 
 	data.cooldown = BARRIER_MOVE_COOLDOWN;
@@ -51,7 +52,6 @@ void onCollision(Context const & context, InteractData& data) {
 }
 
 void lootCorpse(Context& context, InteractData& data, core::ObjectID actor) {
-	context.log.debug << "looting #" << data.id << "\n";
 	if (!context.player.has(actor)) {
 		// only players can loot
 		return;
@@ -63,8 +63,7 @@ void lootCorpse(Context& context, InteractData& data, core::ObjectID actor) {
 	ASSERT(player.player_id <= data.loot.size());
 	auto& loot = data.loot[player.player_id - 1u];
 	if (loot.empty()) {
-		// nothing to loo
-		context.log.debug << "no loot for YOU\n";
+		// nothing to loot
 		return;
 	}
 
@@ -76,7 +75,6 @@ void lootCorpse(Context& context, InteractData& data, core::ObjectID actor) {
 		event.item = node.item;
 		event.quantity = node.quantity;
 		context.item_sender.send(event);
-		context.log.debug << "looting another item\n";
 	}
 	loot.clear();
 }
@@ -102,7 +100,8 @@ void onUpdate(Context& context, InteractData& data, sf::Time const& elapsed) {
 			// trigger stop
 			core::InputEvent event;
 			event.actor = data.id;
-			event.move = sf::Vector2i{};
+			event.move = sf::Vector2f{};
+			event.look = context.movement.query(data.id).look;
 			context.input_sender.send(event);
 		}
 	}

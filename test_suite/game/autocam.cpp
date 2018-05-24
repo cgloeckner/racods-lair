@@ -78,7 +78,7 @@ struct AutoCamFixture {
 		context.changed = false;
 	}
 	
-	core::ObjectID create(sf::Vector2u const & pos, utils::SceneID scene) {
+	core::ObjectID create(sf::Vector2f const & pos, utils::SceneID scene) {
 		auto id = id_manager.acquire();
 		ids.push_back(id);
 		auto& data = movement.acquire(id);

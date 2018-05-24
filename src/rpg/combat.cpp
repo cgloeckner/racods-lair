@@ -301,7 +301,7 @@ void onCombat(Context& context, CombatEvent const& event) {
 		if (dead && !revive) {
 			// cannot harm already dead target
 			context.log.debug << "[Rpg/Combat] " << "Combat of #" << event.actor
-							  << " was ignored - target died\n";
+							  << " was ignored - target #" << event.target << " died\n";
 			return;
 		} else if (!dead && revive) {
 			// cannot revive already living target
@@ -326,7 +326,7 @@ void onCombat(Context& context, CombatEvent const& event) {
 		if (target.stats[Stat::Life] == 0u) {
 			// cannot harm dead target
 			context.log.debug << "[Rpg/Combat] " << "Combat of #" << event.actor
-							  << " was ignored - target died\n";
+							  << " was ignored - target #" << event.target << " died\n";
 			return;
 		}
 	}

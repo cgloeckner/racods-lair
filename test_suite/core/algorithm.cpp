@@ -3,6 +3,7 @@
 #include <testsuite/sfml_system.hpp>
 #include <testsuite/singleton.hpp>
 
+#include <utils/math2d.hpp>
 #include <core/algorithm.hpp>
 
 std::vector<sf::Time> testChunked(
@@ -44,29 +45,28 @@ BOOST_AUTO_TEST_CASE(
 }
 
 BOOST_AUTO_TEST_CASE(clockwise_rotated_north_vector_equals_northeast_vector) {
-	sf::Vector2i n{0, -1};
+	sf::Vector2f n{0.f, -1.f};
 	auto ne = core::rotate(n, true);
-	BOOST_CHECK_VECTOR_EQUAL(ne, sf::Vector2i(1, -1));
+	BOOST_CHECK_VECTOR_CLOSE(ne, utils::normalize(sf::Vector2f(1.f, -1.f)), 0.0001f);
 }
 
 BOOST_AUTO_TEST_CASE(
 	counterclockwise_rotated_north_vector_equals_northwest_vector) {
-	sf::Vector2i n{0, -1};
+	sf::Vector2f n{0.f, -1.f};
 	auto nw = core::rotate(n, false);
-	BOOST_CHECK_VECTOR_EQUAL(nw, sf::Vector2i(-1, -1));
+	BOOST_CHECK_VECTOR_CLOSE(nw, utils::normalize(sf::Vector2f{-1.f, -1.f}), 0.0001f);
 }
 
-BOOST_AUTO_TEST_CASE(
-	rotate_vector_clockwise_is_inverse_to_counter_clockwise_rotation) {
+BOOST_AUTO_TEST_CASE(rotate_vector_clockwise_is_inverse_to_counter_clockwise_rotation) {
 	sf::Vector2i dir;
 	for (dir.y = -1; dir.y <= 1; ++dir.y) {
 		for (dir.x = -1; dir.x <= 1; ++dir.x) {
 			if (dir.x == 0 && dir.y == 0) {
 				continue;
 			}
-			auto clockwise = core::rotate(dir, true);
+			auto clockwise = core::rotate(sf::Vector2f{dir}, true);
 			auto counterwise = core::rotate(clockwise, false);
-			BOOST_CHECK_VECTOR_EQUAL(counterwise, dir);
+			BOOST_CHECK_VECTOR_CLOSE(counterwise, utils::normalize(sf::Vector2f{dir}), 0.0001f);
 		}
 	}
 }

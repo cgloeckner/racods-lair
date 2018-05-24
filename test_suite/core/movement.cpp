@@ -399,7 +399,7 @@ BOOST_AUTO_TEST_CASE(movement_direction_can_be_modified) {
 	BOOST_CHECK_GT(data.pos.x, 4.f);
 }
 
-BOOST_AUTO_TEST_CASE(object_movement_stopps_and_resets_position_as_interupt_collision_occures) {
+BOOST_AUTO_TEST_CASE(object_movement_stopps_movement_as_interrupt_collision_occures) {
 	auto& fix = Singleton<MovementFixture>::get();
 	fix.reset();
 
@@ -417,8 +417,10 @@ BOOST_AUTO_TEST_CASE(object_movement_stopps_and_resets_position_as_interupt_coll
 	ev.interrupt = true;
 	core::movement_impl::onCollision(fix.context, data, ev);
 
-	// assert stop at position <3,2>
-	BOOST_CHECK_VECTOR_CLOSE(data.pos, sf::Vector2f(3.f, 2.f), 0.0001f);
+	// assert stop at (invalid) position <3,1>
+	/// @note that the position reset and collision map update are handled by the
+	///		collision system (not the movement system)
+	BOOST_CHECK_VECTOR_CLOSE(data.pos, sf::Vector2f(3.f, 1.f), 0.0001f);
 	auto& dungeon = fix.dungeon_system[1];
 	auto& cell = dungeon.getCell({3u, 2u});
 	BOOST_CHECK(utils::contains(cell.entities, id));

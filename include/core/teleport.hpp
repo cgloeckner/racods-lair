@@ -19,7 +19,7 @@ namespace core {
  *	@param data MovementData of the object to spawn
  *	@param pos Position to spawn at
  */
-void spawn(Dungeon& dungeon, MovementData& data, sf::Vector2u const& pos);
+void spawn(Dungeon& dungeon, MovementData& data, sf::Vector2f const& pos);
 
 /// Vanish the given object from the dungeon
 /**

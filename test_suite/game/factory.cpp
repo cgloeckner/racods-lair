@@ -411,7 +411,7 @@ BOOST_AUTO_TEST_CASE(object_is_spawned_correctly) {
 	BOOST_CHECK_CLOSE(data.max_speed, 15.f, 0.0001f);
 
 	auto const& dungeon = fix.dungeon[1u];
-	auto const& cell = dungeon.getCell(spawn.pos);
+	auto const& cell = dungeon.getCell(sf::Vector2u{spawn.pos});
 	BOOST_CHECK(utils::contains(cell.entities, id));
 }
 
@@ -1714,7 +1714,6 @@ BOOST_AUTO_TEST_CASE(bullet_stops_on_explosion) {
 	fix.factory.onBulletExploded(id);
 	BOOST_CHECK_VECTOR_CLOSE(data.pos, sf::Vector2f(5.3f, 5.f), 0.0001f);
 	BOOST_CHECK_VECTOR_EQUAL(data.move, sf::Vector2i());
-	BOOST_CHECK_VECTOR_EQUAL(data.next_move, sf::Vector2i());
 }
 
 BOOST_AUTO_TEST_CASE(bullet_loses_collision_component_on_explosion) {
@@ -1907,7 +1906,7 @@ BOOST_AUTO_TEST_CASE(character_death_causes_blood_if_entity_if_textures_and_colo
 	data.layer = core::ObjectLayer::Top;
 
 	fix.onCharacterDied(id);
-	auto& blood = fix.dungeon[1u].getCell(spawn.pos).ambiences;
+	auto& blood = fix.dungeon[1u].getCell(sf::Vector2u{spawn.pos}).ambiences;
 	BOOST_REQUIRE_EQUAL(blood.size(), 1u);
 	BOOST_CHECK_EQUAL(blood[0].getTexture(), &fix.dummy);
 }
@@ -1930,7 +1929,7 @@ BOOST_AUTO_TEST_CASE(character_death_does_not_cause_blood_if_no_textures_are_pro
 	data.layer = core::ObjectLayer::Top;
 
 	fix.onCharacterDied(id);
-	auto& blood = fix.dungeon[1u].getCell(spawn.pos).ambiences;
+	auto& blood = fix.dungeon[1u].getCell(sf::Vector2u{spawn.pos}).ambiences;
 	BOOST_CHECK(blood.empty());
 }
 
@@ -1952,7 +1951,7 @@ BOOST_AUTO_TEST_CASE(powerup_can_be_created_on_character_death) {
 	thor::setRandomSeed(536304u); // manipulate RNG to generate a powerup :3
 	fix.update();
 
-	auto& trigger = fix.dungeon[spawn.scene].getCell(spawn.pos).trigger;
+	auto& trigger = fix.dungeon[spawn.scene].getCell(sf::Vector2u{spawn.pos}).trigger;
 	BOOST_REQUIRE(trigger != nullptr);
 }
 
@@ -1970,7 +1969,7 @@ BOOST_AUTO_TEST_CASE(powerup_cannot_be_spawned_if_another_trigger_is_placed) {
 	
 	// create another trigger to block
 	fix.factory.createPowerup(*fix.factory.gem_tpl, spawn, game::PowerupType::Life);
-	auto const & cell = fix.dungeon[spawn.scene].getCell(spawn.pos);
+	auto const & cell = fix.dungeon[spawn.scene].getCell(sf::Vector2u{spawn.pos});
 	BOOST_REQUIRE(cell.trigger != nullptr);
 	
 	auto result = game::factory_impl::canHoldPowerup(fix.session, spawn.scene, spawn.pos);
@@ -1989,7 +1988,7 @@ BOOST_AUTO_TEST_CASE(powerup_cannot_be_spawned_if_not_a_floor_tile) {
 	spawn.pos = {0u, 0u};
 	spawn.direction = {1, 0};
 	
-	auto const & cell = fix.dungeon[spawn.scene].getCell(spawn.pos);
+	auto const & cell = fix.dungeon[spawn.scene].getCell(sf::Vector2u{spawn.pos});
 	BOOST_REQUIRE(cell.terrain != core::Terrain::Floor);
 	
 	auto result = game::factory_impl::canHoldPowerup(fix.session, spawn.scene, spawn.pos);
@@ -2008,7 +2007,7 @@ BOOST_AUTO_TEST_CASE(powerup_cannot_be_spawned_outside_dungeon) {
 	spawn.pos = sf::Vector2u(-1, -1);
 	spawn.direction = {1, 0};
 	
-	BOOST_REQUIRE(!fix.dungeon[spawn.scene].has(spawn.pos));
+	BOOST_REQUIRE(!fix.dungeon[spawn.scene].has(sf::Vector2u{spawn.pos}));
 	
 	auto result = game::factory_impl::canHoldPowerup(fix.session, spawn.scene, spawn.pos);
 	BOOST_CHECK(!result);
@@ -2042,7 +2041,7 @@ BOOST_AUTO_TEST_CASE(powerup_can_be_released_through_release_event) {
 
 	fix.factory.createPowerup(*fix.factory.gem_tpl, spawn, game::PowerupType::Life);
 	
-	auto& trigger = fix.dungeon[spawn.scene].getCell(spawn.pos).trigger;
+	auto& trigger = fix.dungeon[spawn.scene].getCell(sf::Vector2u{spawn.pos}).trigger;
 	auto powerup = dynamic_cast<game::PowerupTrigger*>(trigger.get());
 	BOOST_REQUIRE(powerup != nullptr);
 	game::ReleaseEvent release;

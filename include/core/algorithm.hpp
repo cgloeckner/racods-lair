@@ -8,9 +8,7 @@ template <typename Func>
 void updateChunked(
 	Func func, sf::Time const& elapsed, sf::Time const& steptime);
 
-sf::Vector2i rotate(sf::Vector2i const& vector, bool clockwise);
-
-void fixDirection(sf::Vector2i& vector);
+sf::Vector2f rotate(sf::Vector2f const& vector, bool clockwise);
 
 }  // ::core
 

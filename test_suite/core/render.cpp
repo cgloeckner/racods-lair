@@ -307,8 +307,7 @@ BOOST_AUTO_TEST_CASE(object_with_only_move_and_render_can_be_updated) {
 	auto& dungeon = fix.dungeon_system[1u];
 	dungeon.getCell({2u, 5u}).entities.push_back(id);
 	// update
-	BOOST_CHECK_NO_ASSERT(
-		core::render_impl::updateObject(fix.context, render_data));
+	BOOST_CHECK_NO_ASSERT(core::render_impl::updateObject(fix.context, render_data));
 }
 
 BOOST_AUTO_TEST_CASE(

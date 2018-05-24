@@ -3,7 +3,7 @@
 namespace core {
 
 float constexpr MAX_COLLISION_RADIUS = 1.f;
-float constexpr MAX_FRAMETIME_MS     = 35.f;
+float constexpr MAX_FRAMETIME_MS     = 10.f;
 
 // -----------------------------------------------------------
 

@@ -41,7 +41,8 @@ struct FocusData : ComponentData {
 };
 
 struct MovementData : ComponentData {
-	sf::Vector2f pos, last_pos, move, look;
+	mutable sf::Vector2f pos; // mutable to be reset by collision system
+	sf::Vector2f last_pos, move, look;
 	utils::SceneID scene;
 	float max_speed;
 	int num_speed_boni;		// negative for mali

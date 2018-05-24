@@ -102,18 +102,31 @@ void checkAllCollisions(Context& context) {
 			}
 		}
 		
-		auto changed = updateCollisionMap(context, move_data);
-		if (changed) {
-			// query and execute trigger
-			auto& cell = context.dungeon_system[move_data.scene].getCell(sf::Vector2u{move_data.pos});
-			if (cell.trigger != nullptr) {
-				// note: this might stop the object
-				cell.trigger->execute(move_data.id);
-				if (cell.trigger->isExpired()) {
-					// delete expired trigger
-					cell.trigger = nullptr;
+		if (!result.interrupt) {
+			/// @note no interrupting collision happened, hence the movement
+			///		can be completed by updating the collision map
+			auto changed = updateCollisionMap(context, move_data);
+			if (changed) {
+				// query and execute trigger
+				auto& cell = context.dungeon_system[move_data.scene].getCell(sf::Vector2u{move_data.pos});
+				if (cell.trigger != nullptr) {
+					// note: this might stop the object
+					cell.trigger->execute(move_data.id);
+					if (cell.trigger->isExpired()) {
+						// delete expired trigger
+						cell.trigger = nullptr;
+					}
 				}
 			}
+		} else {
+			/// @note the collision was propagated, so the movement will stop
+			///		but the collision system NEEDS to reset the position
+			///		immediately to avoid movement artifacts
+			///		Both attributes are mutable (to ignore the constness here)
+			context.log.debug << "[Core/Collision] Reset Position of #" << move_data.id << " from "
+				<< move_data.pos << " to " << move_data.last_pos << "\n";
+			move_data.pos         = move_data.last_pos;
+			move_data.has_changed = true;
 		}
 	}
 }

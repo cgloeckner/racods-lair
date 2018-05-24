@@ -117,7 +117,6 @@ BOOST_AUTO_TEST_CASE(teleport_triggers_are_avoided_at_narrowphase) {
 	game::NavigationScene scene{movement, collision, dungeon};
 	game::Navigator navigator{std::move(grid), std::move(scene)};
 	
-	core::MoveSender move_sender;
 	core::TeleportSender teleport_sender;
 	core::DungeonSystem dungeonsystem;
 	
@@ -135,7 +134,7 @@ BOOST_AUTO_TEST_CASE(teleport_triggers_are_avoided_at_narrowphase) {
 	{
 		auto& cell = dungeon.getCell({2u, 4u});
 		cell.terrain = core::Terrain::Floor;
-		cell.trigger = std::make_unique<core::TeleportTrigger>(move_sender,
+		cell.trigger = std::make_unique<core::TeleportTrigger>(
 			teleport_sender, movement, collision, dungeonsystem, dungeon.id,
 			sf::Vector2u{3u, 3u});
 	}

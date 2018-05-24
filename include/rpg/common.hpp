@@ -18,8 +18,7 @@ float const MAX_DISTANCE = 1.5f * 1.5f;
 
 struct SpawnMetaData {
 	utils::SceneID scene;
-	sf::Vector2u pos;
-	sf::Vector2i direction;
+	sf::Vector2f pos, direction;
 
 	SpawnMetaData();
 };

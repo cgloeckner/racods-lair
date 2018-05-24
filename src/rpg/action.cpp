@@ -18,7 +18,7 @@ Context::Context(core::LogContext& log, core::InputSender& input_sender,
 void onInput(Context& context, ActionData& data, core::InputEvent const& event) {
 	// ignore move or looking input if actor is dead
 	if (data.dead) {
-		if (event.move != sf::Vector2i() || event.look != sf::Vector2i()) {
+		if (event.move != sf::Vector2f() || event.look != sf::Vector2f()) {
 			return;
 		}
 	}
@@ -31,39 +31,10 @@ void onInput(Context& context, ActionData& data, core::InputEvent const& event) 
 	context.input_sender.send(event);
 }
 
-void onAnimation(
-	Context& context, ActionData& data, core::AnimationEvent const& event) {
+void onAnimation(Context& context, ActionData& data, core::AnimationEvent const& event) {
 	if (event.type == core::AnimationEvent::Action) {
 		data.idle = event.action == core::AnimationAction::Idle;
 	}
-}
-
-void onMove(Context& context, ActionData& data, core::MoveEvent const& event) {
-	/*if (event.type == core::MoveEvent::Left) {
-		data.moving = true;
-		// start leg animation
-		core::AnimationEvent ani;
-		ani.actor = data.id;
-		ani.type = core::AnimationEvent::Move;
-		ani.move = true;
-		context.animation_sender.send(ani);
-
-	} else if (event.type == core::MoveEvent::Reached) {
-		// stop leg animation
-		core::AnimationEvent ani;
-		ani.actor = data.id;
-		ani.type = core::AnimationEvent::Move;
-		ani.move = false;
-		context.animation_sender.send(ani);
-	}*/
-}
-
-void onCollision(
-	Context& context, ActionData& data, core::CollisionEvent const& event) {
-	//data.moving = false;
-	// note: collision never occures in the middle of a movement. so the
-	// movement is either started or stopped. the corresponding move event
-	// will handle the legs' animation
 }
 
 void onAction(Context& context, ActionData& data, ActionEvent const& event) {	
@@ -145,8 +116,7 @@ void onFeedback(Context const & context, ActionData& actor, FeedbackEvent const&
 
 ActionSystem::ActionSystem(core::LogContext& log, std::size_t max_objects)
 	: utils::EventListener<core::InputEvent, core::AnimationEvent,
-		  core::MoveEvent, core::CollisionEvent, ActionEvent, DeathEvent,
-		  SpawnEvent, FeedbackEvent>{}
+		ActionEvent, DeathEvent, SpawnEvent, FeedbackEvent>{}
 	, utils::EventSender<core::InputEvent, core::AnimationEvent, ActionEvent>{}
 	, ActionManager{max_objects}
 	, context{log, *this, *this, *this} {}
@@ -170,26 +140,6 @@ void ActionSystem::handle(core::AnimationEvent const& event) {
 	auto& actor = query(event.actor);
 
 	onAnimation(context, actor, event);
-}
-
-void ActionSystem::handle(core::MoveEvent const& event) {
-	if (!has(event.actor)) {
-		// no such component
-		return;
-	}
-	auto& actor = query(event.actor);
-
-	onMove(context, actor, event);
-}
-
-void ActionSystem::handle(core::CollisionEvent const& event) {
-	if (!has(event.actor)) {
-		// no such component
-		return;
-	}
-	auto& actor = query(event.actor);
-
-	onCollision(context, actor, event);
 }
 
 void ActionSystem::handle(ActionEvent const& event) {
@@ -237,8 +187,6 @@ void ActionSystem::update(sf::Time const& elapsed) {
 	dispatch<SpawnEvent>(*this);
 	dispatch<core::InputEvent>(*this);
 	dispatch<core::AnimationEvent>(*this);
-	dispatch<core::MoveEvent>(*this);
-	dispatch<core::CollisionEvent>(*this);
 	dispatch<ActionEvent>(*this);
 	dispatch<DeathEvent>(*this);
 	dispatch<SpawnEvent>(*this);

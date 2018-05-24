@@ -82,16 +82,15 @@ struct DelayFixture {
 		bow.melee = false;
 	}
 
-	core::ObjectID addActor(sf::Vector2u const& pos = {},
-		sf::Vector2i const& look = {1, 0}, rpg::PlayerID player_id = 0u) {
+	core::ObjectID addActor(sf::Vector2f const& pos = {},
+		sf::Vector2f const& look = {1, 0}, rpg::PlayerID player_id = 0u) {
 		auto id = ids.acquire();
 		objects.push_back(id);
 		auto& move = movement.acquire(id);
-		move.pos = sf::Vector2f{pos};
-		move.target = pos;
+		move.pos = pos;
 		move.scene = 1u;
 		move.look = look;
-		dungeon[1u].getCell(pos).entities.push_back(id);
+		dungeon[1u].getCell(sf::Vector2u{pos}).entities.push_back(id);
 		auto& foc = focus.acquire(id);
 		foc.fov = 120.f;
 		auto& ani = animation.acquire(id);
@@ -106,13 +105,12 @@ struct DelayFixture {
 		return id;
 	}
 
-	core::ObjectID addInteractable(sf::Vector2u const& pos = {}) {
+	core::ObjectID addInteractable(sf::Vector2f const& pos = {}) {
 		auto id = ids.acquire();
 		objects.push_back(id);
 		auto& move = movement.acquire(id);
-		move.pos = sf::Vector2f{pos};
-		move.target = pos;
-		dungeon[1u].getCell(pos).entities.push_back(id);
+		move.pos = pos;
+		dungeon[1u].getCell(sf::Vector2u{pos}).entities.push_back(id);
 		focus.acquire(id);
 		interact.acquire(id);
 		return id;
