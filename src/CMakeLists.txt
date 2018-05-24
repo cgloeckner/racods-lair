@@ -6,7 +6,7 @@ if(NOT(DEFINED UNIT_TEST))
 	add_executable(racod_game main.cpp)
 	
 	# link external libs
-	target_link_libraries(racod_game ${FULL_DEPS})
+	target_link_libraries(racod_game ${FULL_DEPS} X11)
 endif()
 
 # macro for building a module

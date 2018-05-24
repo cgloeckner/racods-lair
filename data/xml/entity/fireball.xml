@@ -1,4 +1,5 @@
-<general is_projectile="true" collide="true" max_sight="0.0" max_speed="110.0" fov="120.0" sprite_name="fireball" />
+<!-- max_speed is used to be around 110, but currently reduced implementation-wise -->
+<general is_projectile="true" collide="true" max_sight="0.0" max_speed="57.0" fov="120.0" sprite_name="fireball" />
 <light red="255" green="64" blue="96" radius="10.0" intensity="255" cast_shadow="true" lod="2" />
 <sounds>
 	<Spawn>

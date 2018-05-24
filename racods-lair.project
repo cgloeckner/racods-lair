@@ -67,8 +67,8 @@
     </VirtualDirectory>
   </VirtualDirectory>
   <VirtualDirectory Name="src">
-    <File Name="src/sfml-fix.cpp"/>
     <File Name="src/main.cpp"/>
+    <File Name="src/sfml-fix.cpp"/>
     <File Name="src/CMakeLists.txt"/>
     <VirtualDirectory Name="utils">
       <File Name="src/utils/color.cpp"/>
