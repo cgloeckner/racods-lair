@@ -1526,6 +1526,8 @@ BOOST_AUTO_TEST_CASE(bullet_is_blocked_by_barrier) {
 BOOST_AUTO_TEST_CASE(player_can_interact) {
 	auto& fix = Singleton<GameplayFixture>::get();
 	fix.reset();
+	
+	fix.log.debug.add(std::cout);
 
 	auto id = fix.createPlayer({1u, 2u}, {1, 0}, 1u);
 	auto other = fix.createBarrier({2u, 2u});

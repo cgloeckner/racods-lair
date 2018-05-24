@@ -13,8 +13,7 @@ void spawn(Dungeon& dungeon, MovementData& data, sf::Vector2u const& pos) {
 
 	// update object
 	data.pos = sf::Vector2f{pos};
-	
-	data.target = pos;
+	data.last_pos = data.pos;
 	data.scene = dungeon.id;
 	data.has_changed = true;
 }
@@ -73,12 +72,10 @@ bool TriggerHelper::operator()(sf::Vector2u const& pos) {
 
 // ---------------------------------------------------------------------------
 
-TeleportTrigger::TeleportTrigger(MoveSender& move_sender,
-	TeleportSender& teleport_sender, MovementManager& movement,
+TeleportTrigger::TeleportTrigger(TeleportSender& teleport_sender, MovementManager& movement,
 	CollisionManager const& collision, DungeonSystem& dungeon,
 	utils::SceneID target, sf::Vector2u pos)
 	: BaseTrigger{}
-	, move_sender{move_sender}
 	, teleport_sender{teleport_sender}
 	, movement{movement}
 	, collision{collision}
@@ -108,13 +105,6 @@ void TeleportTrigger::execute(core::ObjectID actor) {
 	vanish(src, move_data);
 	spawn(dst, move_data, p);
 
-	// propagate move to update focus
-	MoveEvent left;
-	left.actor = actor;
-	left.target = p;
-	left.type = MoveEvent::Left;
-	move_sender.send(left);
-	
 	// propagate teleport
 	TeleportEvent tele;
 	tele.actor = actor;

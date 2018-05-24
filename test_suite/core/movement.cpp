@@ -29,8 +29,8 @@ struct MovementFixture {
 		, dungeon_system{}
 		, context{log, move_sender, movement_manager, dungeon_system} {
 		// add a scenes
-		auto scene = dungeon_system.create(
-			dummy_tileset, sf::Vector2u{12u, 10u}, sf::Vector2f{1.f, 1.f});
+		auto scene = dungeon_system.create(dummy_tileset, sf::Vector2u{12u, 10u},
+			sf::Vector2f{1.f, 1.f});
 		assert(scene == 1u);
 		auto& dungeon = dungeon_system[1u];
 		for (auto y = 0u; y < 10u; ++y) {
@@ -76,21 +76,14 @@ struct MovementFixture {
 		ids.push_back(id);
 		auto& data = movement_manager.acquire(id);
 		data.pos = sf::Vector2f{pos};
-		data.target = pos;
+		data.last_pos = data.pos;
 		data.max_speed = max_speed;
 		data.scene = 1u;
+		data.look = {0.f, 1.f};
 		auto& dungeon = dungeon_system[1u];
 		dungeon.getCell(pos).entities.push_back(id);
 		collision_manager.acquire(id);
 		return id;
-	}
-
-	core::InputEvent move_object(core::ObjectID id, sf::Vector2i const& move) {
-		core::InputEvent event;
-		event.actor = id;
-		event.move = move;
-		event.look = move;
-		return event;
 	}
 
 	void update(sf::Time const& elapsed) {
@@ -105,34 +98,81 @@ struct MovementFixture {
 
 BOOST_AUTO_TEST_SUITE(movement_test)
 
+// ---------------------------------------------------------------------------
+// Referring helper functions
+
+BOOST_AUTO_TEST_CASE(moving_with_same_look_and_move_vector_is_forward) {
+	core::MovementData data;
+	data.move = {1.f, 0.f};
+	data.look = {1.f, 0.f};
+	BOOST_CHECK(core::movement_impl::getMoveStyle(data) == core::MoveStyle::Forward);
+}
+
+BOOST_AUTO_TEST_CASE(move_with_slightly_different_look_vector_is_forward) {
+	core::MovementData data;
+	data.move = {1.f, 0.f};
+	data.look = thor::rotatedVector(data.move, 15.f);
+	BOOST_CHECK(core::movement_impl::getMoveStyle(data) == core::MoveStyle::Forward);
+}
+
+BOOST_AUTO_TEST_CASE(moving_with_look_move_delta_up_to_180_degree_is_sideward) {
+	core::MovementData data;
+	data.move = {1.f, 0.f};
+	data.look = {0.f, 1.f};
+	BOOST_CHECK(core::movement_impl::getMoveStyle(data) == core::MoveStyle::Sideward);
+	data.look = {1.f, -1.f};
+	BOOST_CHECK(core::movement_impl::getMoveStyle(data) == core::MoveStyle::Sideward);
+	data.look = {1.f, 1.f};
+	BOOST_CHECK(core::movement_impl::getMoveStyle(data) == core::MoveStyle::Sideward);
+	data.look = {0.f, 1.f};
+	BOOST_CHECK(core::movement_impl::getMoveStyle(data) == core::MoveStyle::Sideward);
+	data.look = thor::rotatedVector(data.move, 60.f);
+	BOOST_CHECK(core::movement_impl::getMoveStyle(data) == core::MoveStyle::Sideward);
+	data.look = thor::rotatedVector(data.move, 120.f);
+	BOOST_CHECK(core::movement_impl::getMoveStyle(data) == core::MoveStyle::Sideward);
+}
+
+BOOST_AUTO_TEST_CASE(moving_with_look_move_delta_above_180_degree_is_backward) {
+	core::MovementData data;
+	data.move = {1.f, 0.f};
+	data.look = {-1.f, -1.f};
+	BOOST_CHECK(core::movement_impl::getMoveStyle(data) == core::MoveStyle::Backward);
+	data.look = {-1.f, 0.f};
+	BOOST_CHECK(core::movement_impl::getMoveStyle(data) == core::MoveStyle::Backward);
+	data.look = {-1.f, 1.f};
+	BOOST_CHECK(core::movement_impl::getMoveStyle(data) == core::MoveStyle::Backward);
+	data.look = thor::rotatedVector(data.move, 140.f);
+	BOOST_CHECK(core::movement_impl::getMoveStyle(data) == core::MoveStyle::Backward);
+	data.look = thor::rotatedVector(data.move, 180.f);
+	BOOST_CHECK(core::movement_impl::getMoveStyle(data) == core::MoveStyle::Backward);
+}
+
 BOOST_AUTO_TEST_CASE(speed_mali_cause_small_speed_factor) {
 	core::MovementData data;
-	data.move = {1, 0};
-	data.look = {1, 0};
+	data.move = {1.f, 0.f};
+	data.look = {1.f, 0.f};
 	data.num_speed_boni = -5;
 	auto factor = core::movement_impl::calcSpeedFactor(data);
-	float expected =
-		1.f + data.num_speed_boni * core::movement_impl::DELTA_SPEEDFACTOR;
+	float expected = 1.f + data.num_speed_boni * core::movement_impl::DELTA_SPEEDFACTOR;
 
 	BOOST_CHECK_CLOSE(factor, expected, 0.0001f);
 }
 
 BOOST_AUTO_TEST_CASE(speed_boni_cause_large_speed_factor) {
 	core::MovementData data;
-	data.move = {1, 0};
-	data.look = {1, 0};
+	data.move = {1.f, 0.f};
+	data.look = {1.f, 0.f};
 	data.num_speed_boni = 5;
 	auto factor = core::movement_impl::calcSpeedFactor(data);
-	float expected =
-		1.f + data.num_speed_boni * core::movement_impl::DELTA_SPEEDFACTOR;
+	float expected = 1.f + data.num_speed_boni * core::movement_impl::DELTA_SPEEDFACTOR;
 
 	BOOST_CHECK_CLOSE(factor, expected, 0.0001f);
 }
 
 BOOST_AUTO_TEST_CASE(no_boni_or_mali_cause_default_speed_factor) {
 	core::MovementData data;
-	data.move = {1, 0};
-	data.look = {1, 0};
+	data.move = {1.f, 0.f};
+	data.look = {1.f, 0.f};
 	data.num_speed_boni = 0;
 	auto factor = core::movement_impl::calcSpeedFactor(data);
 
@@ -141,8 +181,8 @@ BOOST_AUTO_TEST_CASE(no_boni_or_mali_cause_default_speed_factor) {
 
 BOOST_AUTO_TEST_CASE(too_many_speed_mali_are_capped) {
 	core::MovementData data;
-	data.move = {1, 0};
-	data.look = {1, 0};
+	data.move = {1.f, 0.f};
+	data.look = {1.f, 0.f};
 	data.num_speed_boni = -21;
 	auto factor = core::movement_impl::calcSpeedFactor(data);
 
@@ -152,49 +192,18 @@ BOOST_AUTO_TEST_CASE(too_many_speed_mali_are_capped) {
 
 BOOST_AUTO_TEST_CASE(too_many_speed_boni_are_capped) {
 	core::MovementData data;
-	data.move = {1, 0};
-	data.look = {1, 0};
+	data.move = {1.f, 0.f};
+	data.look = {1.f, 0.f};
 	data.num_speed_boni = 21;
 	auto factor = core::movement_impl::calcSpeedFactor(data);
 
 	BOOST_CHECK_CLOSE(factor, core::movement_impl::MAX_SPEEDFACTOR, 0.0001f);
 }
 
-BOOST_AUTO_TEST_CASE(moving_with_same_look_and_move_vector_is_forward) {
-	core::MovementData data;
-	data.move = {1, 0};
-	data.look = {1, 0};
-	BOOST_CHECK(core::movement_impl::getMoveStyle(data) == core::movement_impl::MoveStyle::Forward);
-}
-
-BOOST_AUTO_TEST_CASE(moving_with_look_move_delta_up_to_180_degree_is_sideward) {
-	core::MovementData data;
-	data.move = {1, 0};
-	data.look = {0, -1};
-	BOOST_CHECK(core::movement_impl::getMoveStyle(data) == core::movement_impl::MoveStyle::Sideward);
-	data.look = {1, -1};
-	BOOST_CHECK(core::movement_impl::getMoveStyle(data) == core::movement_impl::MoveStyle::Sideward);
-	data.look = {1, 1};
-	BOOST_CHECK(core::movement_impl::getMoveStyle(data) == core::movement_impl::MoveStyle::Sideward);
-	data.look = {0, 1};
-	BOOST_CHECK(core::movement_impl::getMoveStyle(data) == core::movement_impl::MoveStyle::Sideward);
-}
-
-BOOST_AUTO_TEST_CASE(moving_with_look_move_delta_above_180_degree_is_backward) {
-	core::MovementData data;
-	data.move = {1, 0};
-	data.look = {-1, -1};
-	BOOST_CHECK(core::movement_impl::getMoveStyle(data) == core::movement_impl::MoveStyle::Backward);
-	data.look = {-1, 0};
-	BOOST_CHECK(core::movement_impl::getMoveStyle(data) == core::movement_impl::MoveStyle::Backward);
-	data.look = {-1, 1};
-	BOOST_CHECK(core::movement_impl::getMoveStyle(data) == core::movement_impl::MoveStyle::Backward);
-}
-
 BOOST_AUTO_TEST_CASE(moving_backward_with_malus_results_in_low_factor) {
 	core::MovementData data;
-	data.move = {1, 0};
-	data.look = {-1, -1};
+	data.move = {1.f, 0.f};
+	data.look = {-1.f, -1.f};
 	data.num_speed_boni = -1;
 	auto factor = core::movement_impl::calcSpeedFactor(data);
 	auto expect = (1.f - core::movement_impl::DELTA_SPEEDFACTOR) * core::movement_impl::BACKWARD_SPEEDFACTOR;
@@ -204,8 +213,8 @@ BOOST_AUTO_TEST_CASE(moving_backward_with_malus_results_in_low_factor) {
 
 BOOST_AUTO_TEST_CASE(moving_forward_causes_speedfactor_1) {
 	core::MovementData data;
-	data.move = {1, 0};
-	data.look = {1, 0};
+	data.move = {1.f, 0.f};
+	data.look = {1.f, 0.f};
 	auto factor = core::movement_impl::calcSpeedFactor(data);
 
 	BOOST_CHECK_CLOSE(factor, 1.f, 0.0001f);
@@ -213,8 +222,8 @@ BOOST_AUTO_TEST_CASE(moving_forward_causes_speedfactor_1) {
 
 BOOST_AUTO_TEST_CASE(moving_sideward_causes_slightly_decreased_speedfactor) {
 	core::MovementData data;
-	data.move = {1, 0};
-	data.look = {0, 1};
+	data.move = {1.f, 0.f};
+	data.look = {0.f, 1.f};
 	auto factor = core::movement_impl::calcSpeedFactor(data);
 
 	BOOST_CHECK_CLOSE(factor, core::movement_impl::SIDEWARD_SPEEDFACTOR, 0.0001f);
@@ -222,8 +231,8 @@ BOOST_AUTO_TEST_CASE(moving_sideward_causes_slightly_decreased_speedfactor) {
 
 BOOST_AUTO_TEST_CASE(moving_backward_causes_decreased_speedfactor) {
 	core::MovementData data;
-	data.move = {1, 0};
-	data.look = {-1, 0};
+	data.move = {1.f, 0.f};
+	data.look = {-1.f, 0.f};
 	auto factor = core::movement_impl::calcSpeedFactor(data);
 
 	BOOST_CHECK_CLOSE(factor, core::movement_impl::BACKWARD_SPEEDFACTOR, 0.0001f);
@@ -237,8 +246,7 @@ BOOST_AUTO_TEST_CASE(cannot_interpolate_with_negative_speed) {
 	auto& data = fix.movement_manager.query(id);
 
 	// trigger movement
-	auto event = fix.move_object(id, {-1, 1});
-	core::movement_impl::start(fix.context, data, event);
+	core::movement_impl::setMovement(fix.context, data, {-1.f, 1.f}, {-1.f, 1.f});
 
 	// trigger interpolation
 	BOOST_CHECK_ASSERT(core::movement_impl::interpolate(
@@ -253,8 +261,7 @@ BOOST_AUTO_TEST_CASE(cannot_interpolate_with_too_large_speed) {
 	auto& data = fix.movement_manager.query(id);
 
 	// trigger movement
-	auto event = fix.move_object(id, {-1, 1});
-	core::movement_impl::start(fix.context, data, event);
+	core::movement_impl::setMovement(fix.context, data, {-1.f, 1.f}, {-1.f, 1.f});
 
 	// trigger interpolation
 	BOOST_CHECK_ASSERT(core::movement_impl::interpolate(
@@ -275,7 +282,7 @@ BOOST_AUTO_TEST_CASE(object_remains_at_rest_without_move_vector) {
 	BOOST_CHECK_VECTOR_CLOSE(data.pos, sf::Vector2f(5.f, 1.f), 0.0001f);
 }
 
-BOOST_AUTO_TEST_CASE(can_set_look_direction) {
+BOOST_AUTO_TEST_CASE(can_interpolate_small_movement) {
 	auto& fix = Singleton<MovementFixture>::get();
 	fix.reset();
 
@@ -283,51 +290,14 @@ BOOST_AUTO_TEST_CASE(can_set_look_direction) {
 	auto& data = fix.movement_manager.query(id);
 
 	// trigger movement
-	core::InputEvent event;
-	event.actor = id;
-	event.look = {1, 0};
-	core::movement_impl::start(fix.context, data, event);
-
-	// assert new looking direction
-	BOOST_CHECK_VECTOR_EQUAL(data.look, event.look);
-	BOOST_CHECK(data.has_changed);
-}
-
-BOOST_AUTO_TEST_CASE(cannot_null_look_direction) {
-	auto& fix = Singleton<MovementFixture>::get();
-	fix.reset();
-
-	auto id = fix.add_object({5u, 1u}, 5.f);
-	auto& data = fix.movement_manager.query(id);
-	data.has_changed = false;
-
-	// trigger movement
-	core::InputEvent event;
-	event.actor = id;
-	event.look = {0, 0};
-	core::movement_impl::start(fix.context, data, event);
-
-	// assert new looking direction
-	BOOST_CHECK_VECTOR_EQUAL(data.look, sf::Vector2i(0, 1));
-	BOOST_CHECK(!data.has_changed);
-}
-
-BOOST_AUTO_TEST_CASE(can_interpolate_common_movement) {
-	auto& fix = Singleton<MovementFixture>::get();
-	fix.reset();
-
-	auto id = fix.add_object({5u, 1u}, 5.f);
-	auto& data = fix.movement_manager.query(id);
-
-	// trigger movement
-	auto event = fix.move_object(id, {-1, 1});
-	core::movement_impl::start(fix.context, data, event);
+	core::movement_impl::setMovement(fix.context, data, {-1.f, 1.f}, {-1.f, 1.f});
 
 	// trigger interpolation
 	fix.update(sf::milliseconds(50));
 
 	// assert new position
-	BOOST_CHECK_VECTOR_CLOSE(data.pos, sf::Vector2f(4.750f, 1.250f), 0.0001f);
+	BOOST_CHECK_GT(data.pos.x, 4.5f);
+	BOOST_CHECK_GT(data.pos.y, 1.f);
 }
 
 BOOST_AUTO_TEST_CASE(can_interpolate_large_movement) {
@@ -338,8 +308,7 @@ BOOST_AUTO_TEST_CASE(can_interpolate_large_movement) {
 	auto& data = fix.movement_manager.query(id);
 
 	// trigger movement
-	auto event = fix.move_object(id, {1, 1});
-	core::movement_impl::start(fix.context, data, event);
+	core::movement_impl::setMovement(fix.context, data, {1.f, 1.f}, {1.f, 1.f});
 
 	// trigger interpolation
 	fix.update(sf::seconds(5.f));
@@ -357,8 +326,7 @@ BOOST_AUTO_TEST_CASE(movement_sets_dirtyflag) {
 	auto& data = fix.movement_manager.query(id);
 
 	// trigger movement
-	auto event = fix.move_object(id, {-1, 1});
-	core::movement_impl::start(fix.context, data, event);
+	core::movement_impl::setMovement(fix.context, data, {-1.f, 1.f}, {-1.f, 1.f});
 
 	// trigger interpolation
 	fix.update(sf::milliseconds(50));
@@ -376,73 +344,14 @@ BOOST_AUTO_TEST_CASE(can_interpolate_movement_with_custom_factor) {
 	data.num_speed_boni = -8;
 
 	// trigger movement
-	auto event = fix.move_object(id, {-1, 1});
-	core::movement_impl::start(fix.context, data, event);
+	core::movement_impl::setMovement(fix.context, data, {-1.f, 1.f}, {-1.f, 1.f});
 
 	// trigger interpolation
 	fix.update(sf::milliseconds(50));
 
 	// assert new position
-	BOOST_CHECK_VECTOR_CLOSE(data.pos, sf::Vector2f(4.850f, 1.150f), 0.0001f);
-}
-
-BOOST_AUTO_TEST_CASE(can_interpolate_over_multiple_tiles) {
-	auto& fix = Singleton<MovementFixture>::get();
-	fix.reset();
-
-	auto id = fix.add_object({10u, 1u}, core::MAX_SPEED);
-	auto& data = fix.movement_manager.query(id);
-
-	// trigger movement
-	auto event = fix.move_object(id, {-1, 1});
-	core::movement_impl::start(fix.context, data, event);
-
-	// trigger interpolation
-	fix.update(sf::milliseconds(1000));
-
-	// assert new position
-	BOOST_CHECK_VECTOR_CLOSE(data.pos, sf::Vector2f(1.f, 10.f), 0.0001f);
-}
-
-/// @DEPRECATED
-BOOST_AUTO_TEST_CASE(interpolate_over_multiple_tiles_triggers_multiple_events) {
-	auto& fix = Singleton<MovementFixture>::get();
-	fix.reset();
-
-	auto id = fix.add_object({5u, 1u}, 5.f);
-	auto& data = fix.movement_manager.query(id);
-
-	// trigger movement
-	auto event = fix.move_object(id, {-1, 1});
-	core::movement_impl::start(fix.context, data, event);
-
-	// trigger interpolation
-	fix.update(sf::milliseconds(250));
-
-	// assert multiple "tile left" and "tile reached" events
-	auto const& moves = fix.move_sender.data();
-	BOOST_REQUIRE_EQUAL(moves.size(), 3u);
-	BOOST_CHECK_EQUAL(moves[0].actor, id);
-	BOOST_CHECK_EQUAL(moves[0].type, core::MoveEvent::Left);
-	BOOST_CHECK_VECTOR_EQUAL(moves[0].source, sf::Vector2u(5u, 1u));
-	BOOST_CHECK_VECTOR_EQUAL(moves[0].target, sf::Vector2u(4u, 2u));
-	BOOST_CHECK_EQUAL(moves[1].type, core::MoveEvent::Reached);
-	BOOST_CHECK_VECTOR_EQUAL(moves[0].source, sf::Vector2u(5u, 1u));
-	BOOST_CHECK_VECTOR_EQUAL(moves[0].target, sf::Vector2u(4u, 2u));
-	BOOST_CHECK_EQUAL(moves[2].type, core::MoveEvent::Left);
-	BOOST_CHECK_VECTOR_EQUAL(moves[2].source, sf::Vector2u(4u, 2u));
-	BOOST_CHECK_VECTOR_EQUAL(moves[2].target, sf::Vector2u(3u, 3u));
-	/*
-	BOOST_CHECK_EQUAL(moves[3].type, core::MoveEvent::Reached);
-	BOOST_CHECK_VECTOR_EQUAL(moves[3].source, sf::Vector2u(4u, 2u));
-	BOOST_CHECK_VECTOR_EQUAL(moves[3].target, sf::Vector2u(3u, 3u));
-	BOOST_CHECK_EQUAL(moves[4].type, core::MoveEvent::Left);
-	BOOST_CHECK_VECTOR_EQUAL(moves[4].source, sf::Vector2u(3u, 3u));
-	BOOST_CHECK_VECTOR_EQUAL(moves[4].target, sf::Vector2u(2u, 4u));
-	BOOST_CHECK_EQUAL(moves[5].type, core::MoveEvent::Reached);
-	BOOST_CHECK_VECTOR_EQUAL(moves[5].source, sf::Vector2u(3u, 3u));
-	BOOST_CHECK_VECTOR_EQUAL(moves[5].target, sf::Vector2u(2u, 4u));
-	*/
+	BOOST_CHECK_GT(data.pos.x, 4.5f);
+	BOOST_CHECK_GT(data.pos.y, 1.f);
 }
 
 BOOST_AUTO_TEST_CASE(movement_can_be_stopped) {
@@ -452,23 +361,17 @@ BOOST_AUTO_TEST_CASE(movement_can_be_stopped) {
 	auto id = fix.add_object({1u, 1u}, 5.f);
 	auto& data = fix.movement_manager.query(id);
 
-	// trigger movement
-	auto event = fix.move_object(id, {1, 0});
-	core::movement_impl::start(fix.context, data, event);
-
-	// trigger interpolation
+	// move and then step
+	core::movement_impl::setMovement(fix.context, data, {1.f, 0.f}, {1.f, 0.f});
 	fix.update(sf::milliseconds(1000));
-	BOOST_REQUIRE_VECTOR_CLOSE(data.pos, sf::Vector2f(5.1f, 1.f), 0.0001f);
-
-	// trigger idle
-	event.move = {0, 0};
-	core::movement_impl::start(fix.context, data, event);
+	auto pos = data.pos;
+	core::movement_impl::setMovement(fix.context, data, {}, data.look);
 
 	// try to continue interpolation
 	fix.update(sf::milliseconds(1000));
 
-	// assert position <4,1> where movement finished
-	BOOST_CHECK_VECTOR_CLOSE(data.pos, sf::Vector2f(6.f, 1.f), 0.0001f);
+	// expect previous position
+	BOOST_CHECK_VECTOR_CLOSE(data.pos, pos, 0.0001f);
 }
 
 BOOST_AUTO_TEST_CASE(movement_direction_can_be_modified) {
@@ -479,71 +382,24 @@ BOOST_AUTO_TEST_CASE(movement_direction_can_be_modified) {
 	auto& data = fix.movement_manager.query(id);
 
 	// trigger movement
-	auto event = fix.move_object(id, {-1, 1});
-	core::movement_impl::start(fix.context, data, event);
+	core::movement_impl::setMovement(fix.context, data, {-1.f, 1.f}, {-1.f, 1.f});
 
 	// trigger interpolation
 	fix.update(sf::milliseconds(3000));
 
 	// trigger another direction
-	event.move = {1, 0};
-	event.look = {1, 0};
-	core::movement_impl::start(fix.context, data, event);
+	core::movement_impl::setMovement(fix.context, data, {1.f, 0.f}, {1.f, 0.f});
 
 	// try to continue interpolation
 	fix.update(sf::milliseconds(2250));
 
 	// assert new direction applied at position <3,3>
 	// note: looking direction is changed while previous move direction is executed
-	BOOST_CHECK_CLOSE(data.pos.y, 6.f, 0.0001f);
-	BOOST_CHECK_GE(data.pos.x, 3.f);
+	BOOST_CHECK_GT(data.pos.y, 10.f);
+	BOOST_CHECK_GT(data.pos.x, 4.f);
 }
 
-BOOST_AUTO_TEST_CASE(movement_is_stopped_when_tile_is_reached) {
-	auto& fix = Singleton<MovementFixture>::get();
-	fix.reset();
-
-	auto id = fix.add_object({5u, 1u}, 5.f);
-	auto& data = fix.movement_manager.query(id);
-
-	// trigger movement
-	auto event = fix.move_object(id, {-1, 1});
-	core::movement_impl::start(fix.context, data, event);
-	/*
-	auto const & moves = fix.move_sender.data();
-	BOOST_REQUIRE_EQUAL(moves.size(), 1u);
-	BOOST_CHECK_EQUAL(moves[0].actor, id);
-	BOOST_CHECK_EQUAL(moves[0].type, core::MoveEvent::Left);
-	*/
-
-	// interpolate until tile was reached
-	auto const& moves = fix.move_sender.data();
-	int count = 0;
-	while (true) {
-		core::movement_impl::interpolate(
-			fix.context, data, sf::milliseconds(100));
-		if (moves.size() > 1u) {
-			BOOST_REQUIRE_EQUAL(moves[1].type, core::MoveEvent::Reached);
-			BOOST_CHECK_VECTOR_EQUAL(moves[1].target, sf::Vector2u(4.f, 2.f));
-			break;
-		}
-		++count;
-		if (count > 20) {
-			BOOST_FAIL("Too many steps");
-		}
-	}
-
-	// trigger idle
-	event.move = {0, 0};
-	core::movement_impl::start(fix.context, data, event);
-	core::movement_impl::interpolate(fix.context, data, sf::milliseconds(50));
-
-	// assert that object hasn't moved any further
-	BOOST_CHECK_VECTOR_CLOSE(data.pos, sf::Vector2f(4.f, 2.f), 0.0001f);
-}
-
-BOOST_AUTO_TEST_CASE(
-	object_movement_stopps_and_resets_position_as_collision_occures) {
+BOOST_AUTO_TEST_CASE(object_movement_stopps_and_resets_position_as_interupt_collision_occures) {
 	auto& fix = Singleton<MovementFixture>::get();
 	fix.reset();
 
@@ -553,14 +409,13 @@ BOOST_AUTO_TEST_CASE(
 	data.last_pos = {3.f, 2.f};
 
 	// trigger movement
-	auto event = fix.move_object(id, {0, -1});
-	core::movement_impl::start(fix.context, data, event);
+	core::movement_impl::setMovement(fix.context, data, {0.f, -1.f}, {0.f, -1.f});
 
 	// cause collision
 	core::CollisionEvent ev;
 	ev.actor = id;
 	ev.interrupt = true;
-	core::movement_impl::stop(fix.context, data, ev);
+	core::movement_impl::onCollision(fix.context, data, ev);
 
 	// assert stop at position <3,2>
 	BOOST_CHECK_VECTOR_CLOSE(data.pos, sf::Vector2f(3.f, 2.f), 0.0001f);
@@ -577,75 +432,26 @@ BOOST_AUTO_TEST_CASE(object_movement_is_continued_if_collision_does_not_interrup
 	auto& data = fix.movement_manager.query(id);
 
 	// trigger movement
-	auto event = fix.move_object(id, {1, 0});
-	core::movement_impl::start(fix.context, data, event);
+	core::movement_impl::setMovement(fix.context, data, {1.f, 0.f}, {1.f, 0.f});
 
 	// assert moving
-	BOOST_CHECK_VECTOR_EQUAL(data.next_move, sf::Vector2i(1, 0));
+	BOOST_CHECK_VECTOR_EQUAL(data.move, sf::Vector2f(1.f, 0.f));
 	
 	// cause collision
 	core::CollisionEvent ev;
 	ev.actor = id;
 	ev.interrupt = false;
-	core::movement_impl::stop(fix.context, data, ev);
+	core::movement_impl::onCollision(fix.context, data, ev);
 	
 	// update using only small step because there is no collision system that
 	// will update the collision grid as it is expected when leaving a tile
 	fix.update(sf::milliseconds(10));
 
 	// assert moving on
-	BOOST_CHECK_VECTOR_EQUAL(data.move, sf::Vector2i(1, 0));
+	BOOST_CHECK_VECTOR_EQUAL(data.move, sf::Vector2f(1.f, 0.f));
 	BOOST_CHECK_LT(data.pos.y, 3.f);
 }
 
-BOOST_AUTO_TEST_CASE(bullet_movement_stopps_as_collision_occures) {
-	auto& fix = Singleton<MovementFixture>::get();
-	fix.reset();
-
-	auto id = fix.add_object({3u, 2u}, 15.f);
-	auto& data = fix.movement_manager.query(id);
-
-	// trigger movement
-	auto event = fix.move_object(id, {0, -1});
-	core::movement_impl::start(fix.context, data, event);
-
-	// interpolate until tile reached
-	auto& moves = fix.move_sender.data();
-	int steps = 0u;
-	while (true) {
-		fix.update(sf::milliseconds(20));
-		if (moves.size() >= 2u) {
-			BOOST_REQUIRE_EQUAL(moves[1].type, core::MoveEvent::Reached);
-			BOOST_CHECK_EQUAL(moves[1].actor, id);
-			BOOST_CHECK_VECTOR_EQUAL(moves[1].source, sf::Vector2u(3, 2));
-			BOOST_CHECK_VECTOR_EQUAL(moves[1].target, sf::Vector2u(3, 1));
-			break;
-		}
-		++steps;
-		if (steps > 100) {
-			BOOST_FAIL("Too many interpolation steps done");
-		}
-	}
-
-	// cause collision
-	core::CollisionEvent ev;
-	ev.actor = id;
-	ev.interrupt = true;
-	// reset grid pos (is actually done by collision system)
-	auto& dungeon = fix.dungeon_system[1];
-	auto& src = dungeon.getCell({3u, 2u});
-	auto& dst = dungeon.getCell({3u, 1u});
-	BOOST_CHECK(utils::pop(src.entities, id));
-	BOOST_CHECK(!utils::contains(dst.entities, id));
-	dst.entities.push_back(id);
-	data.pos = {3.f, 1.f};
-	data.last_pos = {3.f, 2.f};
-
-	// propagate event
-	core::movement_impl::stop(fix.context, data, ev);
-
-	// assert to be stopped at <3,2>
-	BOOST_CHECK_VECTOR_CLOSE(data.pos, sf::Vector2f(3.f, 2.f), 0.0001f);
-}
+/// @TODO test MoveEvent::Start & ::Stop
 
 BOOST_AUTO_TEST_SUITE_END()

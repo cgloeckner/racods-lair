@@ -15,15 +15,14 @@ namespace core {
 
 struct InputEvent {
 	ObjectID actor;
-	sf::Vector2i move, look;
+	sf::Vector2f move, look;
 	
 	InputEvent();
 };
 
 struct MoveEvent {
 	ObjectID actor;
-	sf::Vector2u source, target;
-	enum { Left, Reached } type;
+	enum { Start, Stop } type;
 };
 
 struct FocusEvent {
@@ -33,7 +32,7 @@ struct FocusEvent {
 
 struct CollisionEvent {
 	ObjectID actor, collider;
-	sf::Vector2u pos, reset_to;
+	sf::Vector2f pos;
 	bool interrupt;
 	
 	CollisionEvent();

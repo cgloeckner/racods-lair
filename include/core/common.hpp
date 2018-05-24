@@ -47,6 +47,9 @@ ENUM(ObjectLayer, Bottom, (Bottom)(Middle)(Top))
 // used by objects and items
 ENUM(SoundAction, Spawn, (Spawn)(Move)(Item)(Perk)(Attack)(Hit)(Death))
 
+// used by movement system
+ENUM(MoveStyle, Forward, (Forward)(Sideward)(Backward))
+
 // ---------------------------------------------------------------------------
 
 struct LogContext {

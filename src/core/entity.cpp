@@ -25,13 +25,9 @@ MovementData::MovementData()
 	: ComponentData{}
 	, pos{}
 	, last_pos{}
+	, move{}
 	, scene{0u}
 	, max_speed{0.f}
-	, is_moving{false}
-	, target{}
-	, move{}
-	, look{0, 1}
-	, next_move{}
 	, num_speed_boni{0}
 	, has_changed{true} {}
 

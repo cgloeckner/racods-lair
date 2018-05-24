@@ -24,12 +24,10 @@ namespace collision_impl {
 // ---------------------------------------------------------------------------
 
 Context::Context(LogContext& log, CollisionSender& collision_sender,
-	MoveSender& move_sender, TeleportSender& teleport_sender,
-	CollisionManager& collision_manager, DungeonSystem& dungeon_system,
-	MovementManager const & movement_manager)
+	TeleportSender& teleport_sender, CollisionManager& collision_manager,
+	DungeonSystem& dungeon_system, MovementManager const & movement_manager)
 	: log{log}
 	, collision_sender{collision_sender}
-	, move_sender{move_sender}
 	, teleport_sender{teleport_sender}
 	, collision_manager{collision_manager}
 	, dungeon_system{dungeon_system}
@@ -64,16 +62,9 @@ bool updateCollisionMap(Context& context, MovementData const & actor) {
 	auto& source = scene.getCell(src_pos);
 	auto& target = scene.getCell(dst_pos);
 	bool found = utils::pop(source.entities, actor.id);
-	if (found) {
-		// regular case: straight movement
-		target.entities.push_back(actor.id);
-		return true;
-	} else {
-		// edge case: object is already there
-		// this seems to occure in case of wall collision with repeated movement towards the wall
-		ASSERT(utils::contains(target.entities, actor.id));
-		return true;
-	}
+	ASSERT(found);
+	target.entities.push_back(actor.id);
+	return true;
 }
 
 void checkAllCollisions(Context& context) {
@@ -82,7 +73,8 @@ void checkAllCollisions(Context& context) {
 	
 	// iterate through MoveData to instantly determine whether is_moving or not
 	for (auto const & move_data: context.movement_manager) {
-		if (!move_data.is_moving) {
+		if (move_data.move == sf::Vector2f{}) {
+			// object is not moving
 			continue;
 		}
 		
@@ -237,42 +229,15 @@ void checkAnyCollision(MovementManager const & movement_manager, CollisionManage
 CollisionSystem::CollisionSystem(LogContext& log, std::size_t max_objects, DungeonSystem& dungeon,
 	MovementManager const & movement_manager)
 	// Event API
-	: utils::EventListener<MoveEvent>{}
-	, utils::EventSender<CollisionEvent, MoveEvent, TeleportEvent>{}  // Component API
+	: utils::EventSender<CollisionEvent, TeleportEvent>{}  // Component API
 	, CollisionManager{max_objects}
 	, passed{sf::Time::Zero}
-	, context{log, *this, *this, *this, *this, dungeon, movement_manager} {}
-
-void CollisionSystem::handle(MoveEvent const& event) {
-	/// note: remove later
-	
-	/*
-	if (!has(event.actor)) {
-		// object has no collision component
-		// note: object might have been deleted
-		return;
-	}
-	auto const& data = query(event.actor);
-
-	switch (event.type) {
-		case MoveEvent::Left:
-			collision_impl::onTileLeft(context, data, event);
-			break;
-
-		case MoveEvent::Reached:
-			collision_impl::onTileReached(context, data, event);
-			break;
-	}
-	*/
-}
+	, context{log, *this, *this, *this, dungeon, movement_manager} {}
 
 void CollisionSystem::update(sf::Time const& elapsed) {
-	dispatch<MoveEvent>(*this);
-
 	collision_impl::checkAllCollisions(context);
 
 	propagate<CollisionEvent>();
-	propagate<MoveEvent>();
 	propagate<TeleportEvent>();
 }
 

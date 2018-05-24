@@ -12,7 +12,6 @@ CollisionEvent::CollisionEvent()
 	: actor{0u}
 	, collider{0u}
 	, pos{}
-	, reset_to{}
 	, interrupt{false} {
 }
 

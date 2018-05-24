@@ -16,7 +16,6 @@ struct FocusFixture {
 	core::FocusManager focus_manager;
 	core::DungeonSystem dungeon_system;
 	core::MovementManager movement_manager;
-	core::focus_impl::Context context;
 
 	FocusFixture()
 		: dummy_tileset{}
@@ -25,9 +24,7 @@ struct FocusFixture {
 		, focus_sender{}
 		, focus_manager{}
 		, dungeon_system{}
-		, movement_manager{}
-		, context{log, focus_sender, focus_manager, dungeon_system,
-			  movement_manager} {
+		, movement_manager{} {
 		// add a scenes
 		auto scene = dungeon_system.create(
 			dummy_tileset, sf::Vector2u{12u, 10u}, sf::Vector2f{1.f, 1.f});
@@ -83,43 +80,13 @@ struct FocusFixture {
 		}
 		auto& mve = movement_manager.acquire(id);
 		mve.pos = sf::Vector2f{pos};
-		mve.look = look;
-		mve.target = pos;
+		mve.last_pos = mve.pos;
 		mve.scene = 1u;
+		mve.look = {1.f, 0.f};
 		auto& dungeon = dungeon_system[1u];
 		dungeon.getCell(pos).entities.push_back(id);
 
 		return id;
-	}
-
-	core::InputEvent look_object(core::ObjectID id, sf::Vector2i const& look) {
-		core::InputEvent event;
-		event.actor = id;
-		event.move = {0, 0};
-		event.look = look;
-		return event;
-	}
-
-	core::MoveEvent move_object(
-		core::ObjectID id, sf::Vector2u const& pos, sf::Vector2i const& look) {
-		// move object directly to target cell
-		auto& move = movement_manager.query(id);
-		auto prev = sf::Vector2u{move.pos};
-		move.pos = sf::Vector2f{pos};
-		move.target = pos;
-		auto& focus = focus_manager.query(id);
-		auto& dungeon = dungeon_system[1];
-		auto& src = dungeon.getCell(prev);
-		auto& dst = dungeon.getCell(move.target);
-		ASSERT(utils::pop(src.entities, id));
-		dst.entities.push_back(id);
-		// propagate
-		core::MoveEvent event;
-		event.actor = id;
-		event.source = prev;
-		event.target = move.target;
-		event.type = core::MoveEvent::Left;
-		return event;
 	}
 };
 

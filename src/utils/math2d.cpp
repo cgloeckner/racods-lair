@@ -11,6 +11,14 @@ unsigned int distance(unsigned int u, unsigned int v) {
 	}
 }
 
+sf::Vector2f normalize(sf::Vector2f const & vec) {
+	if (vec == sf::Vector2f{}) {
+		return vec;
+	} else {
+		return thor::unitVector(vec);
+	}
+}
+
 // --------------------------------------------------------------------------------
 
 bool isWithinFov(sf::Vector2f const & center, sf::Vector2f const & direction, float fov,

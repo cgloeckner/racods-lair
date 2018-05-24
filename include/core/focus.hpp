@@ -13,21 +13,6 @@ extern float const MAX_SIGHT;
 
 namespace focus_impl {
 
-/// helper structure to keep implementation signatures clean and tidy
-struct Context {
-	LogContext& log;
-	FocusSender& focus_sender;
-	FocusManager& focus_manager;
-	DungeonSystem& dungeon_system;
-	MovementManager const& movement_manager;
-
-	Context(LogContext& log, FocusSender& focus_sender,
-		FocusManager& focus_manager, DungeonSystem& dungeon_system,
-		MovementManager const& movement_manager);
-};
-
-// ---------------------------------------------------------------------------
-
 // FoV Query Traverser
 struct FovQuery {
 	MovementManager const & move_manager;
@@ -62,22 +47,11 @@ ObjectID getFocus(ObjectID actor, Dungeon const & dungeon,
 /// The focus is NOT updated automatically but on demand. So this system does
 /// not do very much anymore.
 class FocusSystem
-	// Event API
-	: public utils::EventListener<InputEvent, MoveEvent>,
-	  public utils::EventSender<FocusEvent>
-	  // Component API
-	  ,
-	  public FocusManager {
-
-  protected:
-	focus_impl::Context context;
+	// Component API
+	: public FocusManager {
 
   public:
-	FocusSystem(LogContext& log, std::size_t max_objects, DungeonSystem& dungeon,
-		MovementManager const& movement_manager);
-
-	void handle(InputEvent const& event);
-	void handle(MoveEvent const& event);
+	FocusSystem(LogContext& log, std::size_t max_objects);
 
 	void update(sf::Time const& elapsed);
 };

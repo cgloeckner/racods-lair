@@ -14,14 +14,6 @@ extern float const DELTA_SPEEDFACTOR;
 extern float const SIDEWARD_SPEEDFACTOR;
 extern float const BACKWARD_SPEEDFACTOR;
 
-// to fix floating point inaccuracy when reaching tile
-/// @DEPRECATED
-extern float const MOVEMENT_ACCURACY;
-
-// to determine whether an object is centered on a cell or not
-/// @DEPRECATED
-extern float const CELL_CENTER_DIVERGENCE;
-
 /// helper structure to keep implementation signatures clean and tidy
 struct Context {
 	LogContext& log;
@@ -31,10 +23,6 @@ struct Context {
 
 	Context(LogContext& log, MoveSender& move_sender,
 		MovementManager& movement_manager, DungeonSystem& dungeon_system);
-};
-
-enum class MoveStyle {
-	Forward, Sideward, Backward
 };
 
 }  // ::movement_impl
@@ -73,14 +61,14 @@ class MovementSystem
 	: public utils::EventListener<InputEvent, CollisionEvent>,
 	  public utils::EventSender<MoveEvent>
 	  // Component API
-	  ,
-	  public MovementManager {
+	  , public MovementManager {
 
   protected:
 	movement_impl::Context context;
 
   public:
-	MovementSystem(LogContext& log, std::size_t max_objects, DungeonSystem& dungeon);
+	MovementSystem(LogContext& log, std::size_t max_objects,
+		DungeonSystem& dungeon);
 
 	void handle(InputEvent const& event);
 	void handle(CollisionEvent const& event);
@@ -93,101 +81,62 @@ namespace movement_impl {
 // ---------------------------------------------------------------------------
 // Internal Movement API
 
-/// This will update a range of components in a primitive sense
-/**
- *	This function is used to update the given components directly, so each
- *	component is interpolated only once per this function's call. If the
- *	component is supposed to move, a new position will be calculated using
- *	the `interpolate` function.
- *
- *	@param context Movement context to work with
- *	@param begin Iterator to the start of the component range
- *	@param end Iterator to the end of the component range
- *	@param elapsed Duration that is used for interpolation
- */
-void updateRange(Context& context, MovementManager::iterator begin,
-	MovementManager::iterator end, sf::Time const& elapsed);
+/// This set the movement (start, restart, stop)
+/// The given movement vector is applied. Depending whether the vector is zero
+/// or nor, MoveEvent::Start or MoveEvent::Stop are propagated.
+/// MoveEvent::Start is triggerd if a standing object starts moving.
+/// MoveEvent::Stop is trigged if a moving object stopped
+/// @param context Movement context to work with
+/// @param actor Movement data to work with
+/// @param move Movement vector to apply
+/// @param focus Looking vector to apply
+void setMovement(Context& context, MovementData& actor, sf::Vector2f const & move,
+	sf::Vector2f const & look);
 
-/// This will trigger or schedule a new movement for the given object
-/**
- *	Applying a new movement direction while moving is dangerous, because this
- *	leads to inconsistent world positions by ignoring the fact, that movement
- *	is done (here) in a strictly discrete sense.
- *	So this function triggers a new movement if and only if the object is
- *	currently located at a cell's center. Otherwise the movement is scheduled
- *	for later execution. For instance: The object is currently located at
- *	<3.7,1.7> moving by <1,1> and should go <1,0>. It will continue <1,1>
- *	until it reaches <4,2> and will then go to <5,2> by <1,0>.
- *	If two directions are scheduled while moving, the first one will be lost
- *	and overriden by the second one and so forth.
- *	If no movement is specified, the object will stop moving as soon as
- *	possible.
- *
- *	@param context Movement context to work with
- *	@param data Component data to update
- *	@param event InputEvent that triggered a movement
- */
-void start(Context& context, MovementData& data, InputEvent const& event);
+/// This reacts on a collision event
+/// If the collision interrupts the actor, he is stopped and reset to his
+/// last position
+/// @param context Movement context to work with
+/// @param actor Movement data to work with
+/// @param event Collision event to apply
+void onCollision(Context& context, MovementData& actor, CollisionEvent const & event);
 
-/// This will trigger a new movement for the given object
-/**
- *	This function will adjust the movement target to the tile that is
- *	specified by the current position and movement direction. Do NEVER change
- *	that direction directly and even NEVER call this function afterwards.
- *	This function will propagate a MoveEvent if a tile was left.
- *
- *	@param context Movement context to work with
- *	@param data Component data to update
- */
-void moveToTarget(Context& context, MovementData& data);
-
-/// This will stop the current movement immediately
-/**
- *	This function is used to react on collisions in order to avoid forbidden
- *	movements. The object will be stopped and its position will be reset to
- *	the position specified in the collision event.
- *
- *	@param context Movement context to work with
- *	@param data Component data to update
- *	@param event CollisionEvent that should cause the object to stop
- */
-void stop(Context& context, MovementData& data, CollisionEvent const& event);
-
-/// Determine movement style
-/// @param data Component data to use for getting move style
+/// Determine movement style depending on movement and focus vectors
+/// @param actor Movement data to consider
 /// @return forward, sideward or backward based on movement and look vector
-MoveStyle getMoveStyle(MovementData const & data);
+MoveStyle getMoveStyle(MovementData const & actor);
 
 /// Calculates object's speed factor
-/**
- *	The speed factor is determined by `num_speed_boni` and some constants.
- *
- *	@post The resulting speed_factor is located within [MIN_SPEEDFACTOR,
- *MAX_SPEEDFACTOR]
- *	@param data Component data to use for calculation
- *	@return speed factor within specified bounds
- */
-float calcSpeedFactor(MovementData const& data);
+/// The speed factor is determined by `num_speed_boni` and some constants.
+/// @post The resulting speed_factor is located within [MIN_SPEEDFACTOR, MAX_SPEEDFACTOR]
+/// @param actor Movement data to use for calculation
+/// @return speed factor within specified bounds
+float calcSpeedFactor(MovementData const& actor);
 
 /// Used to interpolate a movement
-/**
- *	This function calculates a new world position. Be aware not to call this
- *	method directly! It's part of `updateRange` and `updateSmallSteps` in
- *	order to guarantee consistent state.
- *	The size of an interpolation step can be modified by the component's
- *	max_speed and its speed_factor. Consider the limitations of this values!
- *	Once a tile is reached, a MoveEvent is propagated about which object
- *	reached which tile. If a zero movement is scheduled, the movement will be
- *	stopped. Otherwise the movement is continued and a MoveEvent about leaving
- *	the tile is propagated by calling `moveToTarget`.
- *
- *	@pre data.max_speed >= 0.f
- *	@pre data.max_speed <= MAX_SPEED
- *	@param context Movement context to work with
- *	@param data Component data to update
- *	@param elapsed Duration to use for interpolation
- */
+/// This function calculates a new world position. Be aware not to call this
+/// method directly! It's part of `updateRange` and `updateSmallSteps` in
+/// order to guarantee consistent state.
+/// The size of an interpolation step can be modified by the component's
+/// max_speed and its speed_factor. Consider the limitations of this values!
+/// @pre data.max_speed >= 0.f
+/// @pre data.max_speed <= MAX_SPEED
+/// @param context Movement context to work with
+/// @param data Component data to update
+/// @param elapsed Duration to use for interpolation
 void interpolate(Context& context, MovementData& data, sf::Time const& elapsed);
+
+/// This will update a range of components in a primitive sense
+/// This function is used to update the given components directly, so each
+/// component is interpolated only once per this function's call. If the
+/// component is supposed to move, a new position will be calculated using
+/// the `interpolate` function.
+/// @param context Movement context to work with
+/// @param begin Iterator to the start of the component range
+/// @param end Iterator to the end of the component range
+/// @param elapsed Duration that is used for interpolation
+void updateRange(Context& context, MovementManager::iterator begin,
+	MovementManager::iterator end, sf::Time const& elapsed);
 
 }  // ::movement_impl
 

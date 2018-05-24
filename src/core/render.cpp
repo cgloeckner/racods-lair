@@ -111,29 +111,6 @@ Context::Context(LogContext& log, RenderManager& render_manager,
 
 // ---------------------------------------------------------------------------
 
-float getRotation(sf::Vector2i const& dir) {
-	if (dir == sf::Vector2i{0, -1}) {
-		return 180.f;
-	} else if (dir == sf::Vector2i{1, -1}) {
-		return -135.f;
-	} else if (dir == sf::Vector2i{1, 0}) {
-		return -90.f;
-	} else if (dir == sf::Vector2i{1, 1}) {
-		return -45.f;
-	} else if (dir == sf::Vector2i{0, 1}) {
-		return 0.f;
-	} else if (dir == sf::Vector2i{-1, 1}) {
-		return 45.f;
-	} else if (dir == sf::Vector2i{-1, 0}) {
-		return 90.f;
-	} else if (dir == sf::Vector2i{-1, -1}) {
-		return 135.f;
-	}
-	throw std::out_of_range{"Invalid direction vector <" +
-							std::to_string(dir.x) + "," +
-							std::to_string(dir.y) + ">"};
-}
-
 void updateTexture(Context& context, RenderData& data, SpriteLegLayer layer,
 	sf::Texture const* texture) {
 	if (texture == nullptr) {
@@ -205,7 +182,7 @@ void updateObject(Context& context, RenderData& data) {
 	auto const& dungeon = context.dungeon_system[move_data.scene];
 	// update transformation if necessary
 	if (move_data.has_changed) {
-		float angle = getRotation(move_data.look);
+		float angle = thor::polarAngle(move_data.look);
 		auto screen_pos = dungeon.toScreen(move_data.pos);
 		move_data.has_changed = false;
 		// modify transformation matrix

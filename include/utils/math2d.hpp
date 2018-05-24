@@ -13,6 +13,11 @@ unsigned int distance(unsigned int u, unsigned int v);
 template <typename T>
 T distance(sf::Vector2<T> const& u, sf::Vector2<T> const& v);
 
+/// Normalizes a vector (ignores zero vector)
+/// @param vec Vector to normalize
+/// @result normaled vector (or zero if input was zero)
+sf::Vector2f normalize(sf::Vector2f const & vec);
+
 // ---------------------------------------------------------------------------
 
 /// Check whether point is inside Field of View

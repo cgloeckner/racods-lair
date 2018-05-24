@@ -13,17 +13,6 @@ float const MAX_SIGHT = 25.f;
 
 namespace focus_impl {
 
-Context::Context(LogContext& log, FocusSender& focus_sender,
-	FocusManager& focus_manager, DungeonSystem& dungeon_system,
-	MovementManager const& movement_manager)
-	: log{log}
-	, focus_sender{focus_sender}
-	, focus_manager{focus_manager}
-	, dungeon_system{dungeon_system}
-	, movement_manager{movement_manager} {}
-
-// ---------------------------------------------------------------------------
-
 FovQuery::FovQuery(FocusData const & actor_focus, MovementData const & actor_move, MovementManager const & move_manager, FocusManager const & focus_manager)
 	: move_manager{move_manager}
 	, focus_manager{focus_manager}
@@ -55,7 +44,7 @@ void FovQuery::operator()(sf::Vector2f const & pos, std::vector<ObjectID> const 
 			// inactive entities
 			continue;
 		}
-		auto value = utils::evalPos(actor_move.pos, sf::Vector2f{actor_move.look}, actor_focus.fov, actor_focus.sight, move_data.pos);
+		auto value = utils::evalPos(actor_move.pos, actor_move.look, actor_focus.fov, actor_focus.sight, move_data.pos);
 		if (value > -1.f && value < best_value) {
 			focus = id;
 			best_value = value;
@@ -78,25 +67,14 @@ ObjectID getFocus(ObjectID actor, Dungeon const & dungeon,
 
 // ---------------------------------------------------------------------------
 
-FocusSystem::FocusSystem(LogContext& log, std::size_t max_objects, DungeonSystem& dungeon,
-	MovementManager const& movement_manager)
-	// Event API
-	: utils::EventListener<InputEvent, MoveEvent>{}
-	, utils::EventSender<FocusEvent>{}  // Component API
-	, FocusManager{max_objects}
-	, context{log, *this, *this, dungeon, movement_manager} {}
-
-void FocusSystem::handle(InputEvent const& event) {
-}
-
-void FocusSystem::handle(MoveEvent const& event) {
+FocusSystem::FocusSystem(LogContext& log, std::size_t max_objects)
+	// Component API
+	: FocusManager{max_objects} {
 }
 
 void FocusSystem::update(sf::Time const& elapsed) {
-	dispatch<MoveEvent>(*this);
-	dispatch<InputEvent>(*this);
-
-	propagate<FocusEvent>();
+	/// @note focus stuff is manually triggered by other systems,
+	///		so this system is only used for focus container purpose
 }
 
 }  // ::core

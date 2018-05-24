@@ -74,7 +74,6 @@ bool getFreePosition(Pred pred, sf::Vector2u& pos, std::size_t max_drift = 0u);
 class TeleportTrigger : public BaseTrigger {
 
   private:
-	MoveSender& move_sender;
 	TeleportSender& teleport_sender;
 	MovementManager& movement;
 	CollisionManager const& collision;
@@ -93,7 +92,6 @@ class TeleportTrigger : public BaseTrigger {
 	 *	In order to notify the focus system about "leaving a tile", the
 	 *	event is supposed to be parts of the collision system.
 	 *
-	 *	@param move_sender EventSender for MoveEvents
 	/// @param teleport_sender EventSender for TeleportEvents
 	 *	@param movement ComponentManager for MovementData
 	 *	@param collision ComponentManger for CollisionData
@@ -101,9 +99,9 @@ class TeleportTrigger : public BaseTrigger {
 	 *	@param target SceneID of the teleport's target dungeon
 	 *	@param pos Target position within the target dungeon.
 	 */
-	TeleportTrigger(MoveSender& move_sender, TeleportSender& teleport_sender,
-		MovementManager& movement, CollisionManager const& collision,
-		DungeonSystem& dungeon, utils::SceneID target, sf::Vector2u pos);
+	TeleportTrigger(TeleportSender& teleport_sender, MovementManager& movement,
+		CollisionManager const& collision, DungeonSystem& dungeon,
+		utils::SceneID target, sf::Vector2u pos);
 
 	/// Execute the actual teleport
 	/**

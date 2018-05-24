@@ -148,7 +148,7 @@ void update(Context& context, AnimationData& data, sf::Time const& elapsed) {
 		light_radius_updated{false};
 
 	// update legs
-	if (move_data.is_moving && data.tpl.legs[SpriteLegLayer::Base] != nullptr) {
+	if (move_data.move != sf::Vector2f{} && data.tpl.legs[SpriteLegLayer::Base] != nullptr) {
 		// assuming leg layers to be synchronous
 		auto& layer = *data.tpl.legs[SpriteLegLayer::Base];
 		utils::updateActionState(data.legs, layer, elapsed, legs_updated);

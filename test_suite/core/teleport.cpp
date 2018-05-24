@@ -84,8 +84,8 @@ BOOST_AUTO_TEST_CASE(can_spawn_if_object_has_not_spawned_somewhereyed) {
 	data.scene = 0u;
 	auto& dungeon = fix.dungeon[1u];
 	BOOST_CHECK_NO_ASSERT(core::spawn(dungeon, data, {1u, 2u}));
-	BOOST_CHECK_VECTOR_EQUAL(data.pos, sf::Vector2u(1u, 2u));
-	BOOST_CHECK_VECTOR_EQUAL(data.target, data.pos);
+	BOOST_CHECK_VECTOR_CLOSE(data.pos, sf::Vector2f(1.f, 2.f), 0.00001f);
+	BOOST_CHECK_VECTOR_CLOSE(data.last_pos, data.pos, 0.00001f);
 	BOOST_CHECK_EQUAL(data.scene, 1u);
 	auto const& cell = dungeon.getCell({1u, 2u});
 	BOOST_CHECK(utils::contains(cell.entities, data.id));
@@ -125,7 +125,7 @@ BOOST_AUTO_TEST_CASE(cannot_vanish_if_object_is_not_located_at_its_cell) {
 	auto& dungeon = fix.dungeon[1u];
 	core::spawn(dungeon, data, {1u, 2u});
 	data.pos = {1.f, 3.f};
-	data.target = {1u, 4u};
+	data.last_pos = data.pos;
 	BOOST_CHECK_ASSERT(core::vanish(dungeon, data));
 }
 
@@ -267,9 +267,8 @@ BOOST_AUTO_TEST_CASE(teleport_trigger_doesnt_expire) {
 	fix.reset();
 
 	auto& data = fix.add_object();
-	core::MoveSender move;
 	core::TeleportSender teleport_sender;
-	core::TeleportTrigger trigger{move, teleport_sender, fix.movement,
+	core::TeleportTrigger trigger{teleport_sender, fix.movement,
 		fix.collision, fix.dungeon, 2u, {5u, 7u}};
 	core::spawn(fix.dungeon[1u], data, {1u, 1u});
 
@@ -282,16 +281,14 @@ BOOST_AUTO_TEST_CASE(teleport_trigger_moves_to_given_spot) {
 	fix.reset();
 
 	auto& data = fix.add_object();
-	core::MoveSender move;
 	core::TeleportSender teleport_sender;
-	core::TeleportTrigger trigger{move, teleport_sender, fix.movement,
+	core::TeleportTrigger trigger{teleport_sender, fix.movement,
 		fix.collision, fix.dungeon, 2u, {5u, 7u}};
 	core::spawn(fix.dungeon[1u], data, {1u, 1u});
 
 	trigger.execute(data.id);
 
 	BOOST_CHECK_VECTOR_CLOSE(data.pos, sf::Vector2f(5.f, 7.f), 0.0001f);
-	BOOST_CHECK_VECTOR_EQUAL(data.target, sf::Vector2u(5u, 7u));
 	BOOST_CHECK_EQUAL(data.scene, 2u);
 	BOOST_CHECK(data.has_changed);
 }
@@ -301,9 +298,8 @@ BOOST_AUTO_TEST_CASE(teleport_trigger_causes_teleport_event) {
 	fix.reset();
 
 	auto& data = fix.add_object();
-	core::MoveSender move;
 	core::TeleportSender teleport_sender;
-	core::TeleportTrigger trigger{move, teleport_sender, fix.movement,
+	core::TeleportTrigger trigger{teleport_sender, fix.movement,
 		fix.collision, fix.dungeon, 2u, {5u, 7u}};
 	core::spawn(fix.dungeon[1u], data, {1u, 1u});
 
@@ -318,41 +314,20 @@ BOOST_AUTO_TEST_CASE(teleport_trigger_causes_teleport_event) {
 	BOOST_CHECK_VECTOR_EQUAL(events[0].dst_pos, sf::Vector2u(5u, 7u));
 }
 
-BOOST_AUTO_TEST_CASE(teleport_trigger_stops_object_after_teleport) {
+BOOST_AUTO_TEST_CASE(teleport_trigger_does_not_stop_movement_after_teleport) {
 	auto& fix = Singleton<TeleportFixture>::get();
 	fix.reset();
 
 	auto& data = fix.add_object();
-	core::MoveSender move;
+	data.move = {1.f, -1.f};
 	core::TeleportSender teleport_sender;
-	core::TeleportTrigger trigger{move, teleport_sender, fix.movement,
+	core::TeleportTrigger trigger{teleport_sender, fix.movement,
 		fix.collision, fix.dungeon, 2u, {5u, 7u}};
 	core::spawn(fix.dungeon[1u], data, {1u, 1u});
 
 	trigger.execute(data.id);
 
-	BOOST_CHECK_VECTOR_EQUAL(data.move, sf::Vector2i());
-	BOOST_CHECK_VECTOR_EQUAL(data.next_move, sf::Vector2i());
-}
-
-BOOST_AUTO_TEST_CASE(teleport_trigger_propagates_tile_reached) {
-	auto& fix = Singleton<TeleportFixture>::get();
-	fix.reset();
-
-	auto& data = fix.add_object();
-	core::MoveSender move;
-	core::TeleportSender teleport_sender;
-	core::TeleportTrigger trigger{move, teleport_sender, fix.movement,
-		fix.collision, fix.dungeon, 2u, {5u, 7u}};
-	core::spawn(fix.dungeon[1u], data, {1u, 1u});
-
-	trigger.execute(data.id);
-
-	auto const events = move.data();
-	BOOST_REQUIRE_EQUAL(events.size(), 1u);
-	BOOST_CHECK_EQUAL(events[0].actor, data.id);
-	BOOST_CHECK_VECTOR_EQUAL(events[0].target, sf::Vector2u(5u, 7u));
-	BOOST_CHECK(events[0].type == core::MoveEvent::Left);
+	BOOST_CHECK_VECTOR_CLOSE(data.move, sf::Vector2f(1.f, -1.f), 0.0001f);
 }
 
 BOOST_AUTO_TEST_CASE(teleport_trigger_fails_if_position_unaccessable) {
@@ -360,9 +335,8 @@ BOOST_AUTO_TEST_CASE(teleport_trigger_fails_if_position_unaccessable) {
 	fix.reset();
 
 	auto& data = fix.add_object();
-	core::MoveSender move;
 	core::TeleportSender teleport_sender;
-	core::TeleportTrigger trigger{move, teleport_sender, fix.movement,
+	core::TeleportTrigger trigger{teleport_sender, fix.movement,
 		fix.collision, fix.dungeon, 2u, {8u, 9u}};
 	core::spawn(fix.dungeon[1u], data, {1u, 1u});
 	data.has_changed = false;
@@ -377,9 +351,7 @@ BOOST_AUTO_TEST_CASE(teleport_trigger_fails_if_position_unaccessable) {
 
 	trigger.execute(data.id);
 
-	BOOST_CHECK(move.data().empty());
 	BOOST_CHECK_VECTOR_CLOSE(data.pos, sf::Vector2f(1.f, 1.f), 0.0001f);
-	BOOST_CHECK_VECTOR_EQUAL(data.target, sf::Vector2u(1u, 1u));
 	BOOST_CHECK_EQUAL(data.scene, 1u);
 	BOOST_CHECK(!data.has_changed);
 }

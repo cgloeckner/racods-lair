@@ -112,19 +112,6 @@ namespace render_impl {
 // ---------------------------------------------------------------------------
 // Internal Render API
 
-/// Determine rotation angle of an object
-/**
- *	Returns the rotation angle (in degree) for the given object. Looking south
- *	is used as 0°, other directions imply clock-wise rotations. The object's
- *	looking direction must be one of 8 possible directions: S, SW, W, NW, N,
- *	NE, E, SE.
- *
- *	@pre vector needs to be a valid looking direction
- *	@param data Vector to use
- *	@return rotation angle in degree
- */
-float getRotation(sf::Vector2i const& vector);
-
 /// Update the sprite leg's texture
 /**
  *	The sprite is specified by the given layer. Its texture will be updated.

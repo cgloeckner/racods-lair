@@ -31,7 +31,6 @@ struct CollisionFixture {
 
 	core::LogContext log;
 	core::CollisionSender collision_sender;
-	core::MoveSender move_sender;
 	core::TeleportSender teleport_sender;
 	core::CollisionManager collision_manager;
 	core::DungeonSystem dungeon_system;
@@ -43,11 +42,10 @@ struct CollisionFixture {
 		, id_manager{}
 		, log{}
 		, collision_sender{}
-		, move_sender{}
 		, collision_manager{}
 		, dungeon_system{}
 		, movement_manager{}
-		, context{log, collision_sender, move_sender, teleport_sender,
+		, context{log, collision_sender, teleport_sender,
 			collision_manager, dungeon_system, movement_manager} {
 		// add a scenes
 		auto scene = dungeon_system.create(
@@ -84,7 +82,6 @@ struct CollisionFixture {
 		movement_manager.cleanup();
 		// reset event senders
 		collision_sender.clear();
-		move_sender.clear();
 		teleport_sender.clear();
 		
 		// clear logs
@@ -532,7 +529,7 @@ BOOST_AUTO_TEST_CASE(regular_tile_collision_is_propagated_on_movement) {
 	
 	auto& actor_move = fix.movement_manager.query(actor);
 	actor_move.pos = {2.03f, 2.17f};
-	actor_move.is_moving = true;
+	actor_move.move = {1.f, 0.f};
 	auto& cell = fix.dungeon_system[1u].getCell({2u, 2u});
 	cell.terrain = core::Terrain::Wall;
 	auto& data = fix.collision_sender.data();
@@ -557,7 +554,7 @@ BOOST_AUTO_TEST_CASE(regular_object_collision_is_propagated_on_movement) {
 	
 	auto& actor_move = fix.movement_manager.query(actor);
 	actor_move.pos = {2.03f, 2.17f};
-	actor_move.is_moving = true;
+	actor_move.move = {1.f, 0.f};
 	auto& data = fix.collision_sender.data();
 	
 	core::collision_impl::checkAllCollisions(fix.context);
@@ -579,7 +576,7 @@ BOOST_AUTO_TEST_CASE(no_regular_collision_propagated_without_movement) {
 	
 	auto& actor_move = fix.movement_manager.query(actor);
 	actor_move.pos = {2.03f, 2.17f};
-	actor_move.is_moving = false;
+	actor_move.move = {};
 	auto& cell = fix.dungeon_system[1u].getCell({1u, 1u});
 	cell.terrain = core::Terrain::Wall;
 	auto& data = fix.collision_sender.data();
@@ -600,7 +597,7 @@ BOOST_AUTO_TEST_CASE(projectile_tile_collision_is_propagated_on_movement) {
 	
 	auto& actor_move = fix.movement_manager.query(actor);
 	actor_move.pos = {2.03f, 2.17f};
-	actor_move.is_moving = true;
+	actor_move.move = {1.f, 0.f};
 	auto& actor_coll = fix.collision_manager.query(actor);
 	actor_coll.is_projectile = true;
 	auto& cell = fix.dungeon_system[1u].getCell(sf::Vector2u{actor_move.pos});
@@ -627,7 +624,7 @@ BOOST_AUTO_TEST_CASE(projectile_object_collisions_are_propagated_on_movement) {
 	
 	auto& actor_move = fix.movement_manager.query(actor);
 	actor_move.pos = {2.03f, 2.17f};
-	actor_move.is_moving = true;
+	actor_move.move = {1.f, 0.f};
 	auto& actor_coll = fix.collision_manager.query(actor);
 	actor_coll.is_projectile = true;
 	auto& data = fix.collision_sender.data();
@@ -654,7 +651,7 @@ BOOST_AUTO_TEST_CASE(projectile_object_collisions_updates_collisionmap) {
 	
 	auto& actor_move = fix.movement_manager.query(actor);
 	actor_move.pos = {2.03f, 2.17f};
-	actor_move.is_moving = true;
+	actor_move.move = {1.f, 0.f};
 	auto& actor_coll = fix.collision_manager.query(actor);
 	actor_coll.is_projectile = true;
 	auto& data = fix.collision_sender.data();
@@ -681,7 +678,7 @@ BOOST_AUTO_TEST_CASE(no_projectile_collisions_are_propagated_without_movement) {
 	
 	auto& actor_move = fix.movement_manager.query(actor);
 	actor_move.pos = {2.03f, 2.17f};
-	actor_move.is_moving = false;
+	actor_move.move = {};
 	auto& actor_coll = fix.collision_manager.query(actor);
 	actor_coll.is_projectile = true;
 	auto& data = fix.collision_sender.data();
@@ -703,7 +700,7 @@ BOOST_AUTO_TEST_CASE(projectiles_only_collide_once_with_each_object) {
 	auto other = fix.add_object({1u, 2u}, &shape);
 	
 	auto& actor_move = fix.movement_manager.query(actor);
-	actor_move.is_moving = true;
+	actor_move.move = {1.f, 0.f};
 	auto& actor_coll = fix.collision_manager.query(actor);
 	actor_coll.is_projectile = true;
 	auto& data = fix.collision_sender.data();
@@ -732,7 +729,7 @@ BOOST_AUTO_TEST_CASE(reaching_tile_executes_and_expires_trigger) {
 
 	auto actor = fix.add_object({1u, 1u}, &shape);
 	auto& actor_move = fix.movement_manager.query(actor);
-	actor_move.is_moving = true;
+	actor_move.move = {1.f, 0.f};
 	actor_move.pos = {1.f, 2.f};
 	
 	core::collision_impl::checkAllCollisions(fix.context);
@@ -747,7 +744,7 @@ BOOST_AUTO_TEST_CASE(collision_system_can_handle_entity_without_collisiondata) {
 
 	auto actor = fix.add_object({1u, 1u}, nullptr);
 	auto& actor_move = fix.movement_manager.query(actor);
-	actor_move.is_moving = true;
+	actor_move.move = {1.f, 0.f};
 	actor_move.pos = {1.f, 2.f};
 	
 	BOOST_CHECK_NO_ASSERT(core::collision_impl::checkAllCollisions(fix.context));

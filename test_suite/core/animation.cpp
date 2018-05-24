@@ -213,7 +213,7 @@ BOOST_AUTO_TEST_CASE(suitable_update_duration_does_change_dirtyflag) {
 	auto& move = fix.movement_manager.query(id);
 
 	// trigger action
-	move.is_moving = true;
+	move.move = sf::Vector2f{1.f, 0.f};
 	core::animation_impl::trigger(fix.context, ani, core::AnimationAction::Range);
 	BOOST_REQUIRE(ani.current == core::AnimationAction::Range);
 
@@ -448,12 +448,12 @@ BOOST_AUTO_TEST_CASE(start_movement_sets_ani_dirtyflag) {
 	auto& move = fix.movement_manager.query(id);
 	
 	// prepare
-	move.is_moving = false;
+	move.move = sf::Vector2f{};
 	core::animation_impl::update(fix.context, ani, sf::milliseconds(10));
 	ani.has_changed = false;
 	
 	// trigger movement
-	move.is_moving = true;
+	move.move = sf::Vector2f{1.f, 0.f};
 	core::animation_impl::update(fix.context, ani, sf::milliseconds(10));
 	BOOST_CHECK(ani.has_changed);
 }
@@ -467,12 +467,12 @@ BOOST_AUTO_TEST_CASE(stop_movement_sets_ani_dirtyflag) {
 	auto& move = fix.movement_manager.query(id);
 	
 	// prepare
-	move.is_moving = true;
+	move.move = sf::Vector2f{1.f, 0.f};
 	core::animation_impl::update(fix.context, ani, sf::milliseconds(10));
 	ani.has_changed = false;
 	
 	// trigger stop
-	move.is_moving = false;
+	move.move = sf::Vector2f{};
 	core::animation_impl::update(fix.context, ani, sf::milliseconds(10));
 	BOOST_CHECK(ani.has_changed);
 }

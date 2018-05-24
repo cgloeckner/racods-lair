@@ -23,7 +23,6 @@ namespace collision_impl {
 struct Context {
 	LogContext& log;
 	CollisionSender& collision_sender;
-	MoveSender& move_sender;
 	TeleportSender& teleport_sender;
 	CollisionManager& collision_manager;
 	DungeonSystem& dungeon_system;
@@ -32,9 +31,8 @@ struct Context {
 	CollisionResult collision_result;
 	
 	Context(LogContext& log, CollisionSender& collision_sender,
-		MoveSender& move_sender, TeleportSender& teleport_sender,
-		CollisionManager& collision_manager, DungeonSystem& dungeon_system,
-		MovementManager const & movement_manager);
+		TeleportSender& teleport_sender, CollisionManager& collision_manager,
+		DungeonSystem& dungeon_system, MovementManager const & movement_manager);
 };
 
 // ---------------------------------------------------------------------------
@@ -131,8 +129,7 @@ void checkAnyCollision(MovementManager const & movement_manager,
 /// invoked.
 class CollisionSystem
 	// Event API
-	: public utils::EventListener<MoveEvent>,
-	  public utils::EventSender<CollisionEvent, MoveEvent, TeleportEvent>
+	: public utils::EventSender<CollisionEvent, TeleportEvent>
 	  // Component API
 	  ,
 	  public CollisionManager {
@@ -144,8 +141,6 @@ class CollisionSystem
   public:
 	CollisionSystem(LogContext& log, std::size_t max_objects, DungeonSystem& dungeon,
 		MovementManager const & movement);
-
-	void handle(MoveEvent const& event);
 
 	void update(sf::Time const& elapsed);
 };

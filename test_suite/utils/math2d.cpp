@@ -1,4 +1,5 @@
 #include <boost/test/unit_test.hpp>
+#include <testsuite/sfml_system.hpp>
 
 #include <utils/assert.hpp>
 #include <utils/math2d.hpp>
@@ -17,6 +18,18 @@ BOOST_AUTO_TEST_CASE(float_distance) {
 	sf::Vector2f y{23.0f, 7.3f};
 
 	BOOST_CHECK_CLOSE(173.4525f, utils::distance(x, y), 0.0001f);
+}
+
+BOOST_AUTO_TEST_CASE(normalize_regular_vector) {
+	sf::Vector2f v{2.f, 4.f};
+	
+	BOOST_CHECK_VECTOR_CLOSE(utils::normalize(v), thor::unitVector(v), 0.0001f);
+}
+
+BOOST_AUTO_TEST_CASE(normalize_zero_vector) {
+	sf::Vector2f v;
+	
+	BOOST_CHECK_VECTOR_CLOSE(utils::normalize(v), v, 0.0001f);
 }
 
 // ---------------------------------------------------------------------------

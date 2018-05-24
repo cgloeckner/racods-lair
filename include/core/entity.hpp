@@ -31,8 +31,8 @@ struct CollisionData : ComponentData {
 
 struct FocusData : ComponentData {
 	std::string display_name;
-	float sight;					  // range of sight
-	float fov;						  // angle of fov
+	float sight;	// range of sight
+	float fov;		// angle of fov
 	bool is_active;
 
 	mutable bool has_changed;  // dirty flag
@@ -41,13 +41,10 @@ struct FocusData : ComponentData {
 };
 
 struct MovementData : ComponentData {
-	sf::Vector2f pos, last_pos;
+	sf::Vector2f pos, last_pos, move, look;
 	utils::SceneID scene;
 	float max_speed;
-	bool is_moving;
-	sf::Vector2u target;				 // for interpolation
-	sf::Vector2i move, look, next_move;  // look is redundant
-	int num_speed_boni;					 // negative for mali
+	int num_speed_boni;		// negative for mali
 
 	mutable bool has_changed;  // dirty flag
 
