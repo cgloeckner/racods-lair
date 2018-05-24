@@ -85,9 +85,9 @@ void showPair(std::string const & key, std::string const & value) {
 	ImGui::Separator();
 }
 
-bool editBool(std::string const & key, bool* ptr) {
+bool editBool(std::string const & key, bool& val) {
 	ImGui::Text("%s", key.c_str()); ImGui::NextColumn();
-	bool result = ImGui::Checkbox(*ptr ? "true" : "false", ptr); ImGui::NextColumn();
+	bool result = ImGui::Checkbox(val ? "true" : "false", &val); ImGui::NextColumn();
 	ImGui::Separator();
 	return result;
 }

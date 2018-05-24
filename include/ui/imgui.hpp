@@ -45,7 +45,7 @@ void showPair(std::string const & key, std::string const & value);
 
 void showSprite(std::string const & key, sf::Sprite const & sprite);
 
-bool editBool(std::string const & key, bool* ptr);
+bool editBool(std::string const & key, bool& ptr);
 
 template <typename T>
 bool editInt(std::string const & key, T& value, std::string const & id="");

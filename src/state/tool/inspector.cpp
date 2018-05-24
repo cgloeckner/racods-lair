@@ -65,6 +65,7 @@ void ComponentInspector<core::MovementData>::update() {
 		ImGui::Separator();
 		ui::showPair("World Position", thor::toString(data.pos));
 		ui::showPair("Movement Target", thor::toString(data.target));
+		ui::editFloat("Max Speed", data.max_speed, 0.f, core::MAX_SPEED);
 		ui::showPair("Scene ID", std::to_string(data.scene));
 		ui::showPair("Move Vector", thor::toString(data.move));
 		ui::showPair("Look Vector", thor::toString(data.look));
@@ -81,7 +82,8 @@ void ComponentInspector<core::FocusData>::update() {
 	ui::editString("Display Name", data.display_name);
 	ui::showPair("Sight Radius", std::to_string(data.sight));
 	ui::showPair("FoV Angle", std::to_string(data.fov));
-	
+	ui::editBool("Is Active", data.is_active);
+
 	ImGui::Columns();
 }
 
@@ -92,15 +94,23 @@ void ComponentInspector<core::CollisionData>::update() {
 	ImGui::Columns(2, "collision-columns");
 	ImGui::Separator();
 	
-	if (ui::editBool("Is Projectile", &data.is_projectile)) {
-		if (!data.is_projectile) {
-			data.radius = 0.f;
+	ui::editBool("Is Projectile", data.is_projectile);
+	ui::editBool("Is AABB", data.shape.is_aabb);
+	if (data.shape.is_aabb) {
+		// AABB --> only allow size to be changed and update radius
+		ui::showPair("Collision Radius", std::to_string(data.shape.radius));
+		auto change_x = ui::editFloat("Collision Width", data.shape.size.x, 0.f, core::MAX_COLLISION_RADIUS);
+		auto change_y = ui::editFloat("Collision Height", data.shape.size.y, 0.f, core::MAX_COLLISION_RADIUS);
+		if (change_x || change_y) {
+			data.shape.updateRadiusAABB();
 		}
-	}
-	if (data.is_projectile) {
-		ui::editFloat("Collision Radius", data.radius, 0.f, core::collision_impl::MAX_PROJECTILE_RADIUS);
 	} else {
-		ui::showPair("Collision Radius", std::to_string(data.radius));
+		// Circle --> only allow radius to be changed and update size
+		if (ui::editFloat("Collision Radius", data.shape.radius, 0.f, core::MAX_COLLISION_RADIUS)) {
+			data.shape.size.x = data.shape.radius * 2;
+			data.shape.size.y = data.shape.radius * 2;
+		}
+		ui::showPair("Collision Size", thor::toString(data.shape.size));
 	}
 	ui::showPair("Ignored Objects", concat(data.ignore));
 	
@@ -125,9 +135,6 @@ void ComponentInspector<core::AnimationData>::update() {
 			data.current = core::from_string<core::AnimationAction>(actions[action_index]);
 			data.torso.index = 0u;
 		}
-	}
-	if (ui::editBool("Move Animation", &data.is_moving)) {
-		data.legs.index = 0u;
 	}
 	ui::showPair("Torso Animation Index", std::to_string(data.torso.index));
 	ui::showPair("Leg Animation Index", std::to_string(data.legs.index));
@@ -234,7 +241,6 @@ void ComponentInspector<rpg::ActionData>::update() {
 	ImGui::Separator();
 	
 	ui::showPair("Idle", data.idle ? "true" : "false");
-	ui::showPair("Moving", data.moving ? "true" : "false");
 	ui::showPair("Dead", data.dead ? "true" : "false");
 	
 	ImGui::Columns();
@@ -435,7 +441,7 @@ void ComponentInspector<rpg::StatsData>::update() {
 	ImGui::Separator();
 	
 	ui::showPair("Level", std::to_string(data.level));
-	ui::editBool("God Mode", &data.godmode);
+	ui::editBool("God Mode", data.godmode);
 	
 	// show stat ui
 	ImGui::Text("Attributes");
@@ -685,7 +691,6 @@ void ComponentInspector<rpg::InteractData>::update() {
 	ui::showPair("Interact Type", rpg::to_string(data.type));
 	switch (data.type) {
 		case rpg::InteractType::Barrier:
-			ui::showPair("Moving", data.moving ? "true" : "false");
 			break;
 			
 		case rpg::InteractType::Corpse:

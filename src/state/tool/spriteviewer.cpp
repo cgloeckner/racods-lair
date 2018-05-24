@@ -29,7 +29,7 @@ SpriteViewerState::SpriteViewerState(state::App& app)
 	, lighting{{128u, 128u}, dummy}
 	, movement{log, 10u, dungeon}
 	, focus{log, 10u, dungeon, movement}
-	, animation{log, 10u}
+	, animation{log, 10u, movement}
 	, render{log, 10u, animation, movement, focus, dungeon, camera, lighting} {
 	// setup dummy dungeon
 	auto scene = dungeon.create(dummy, sf::Vector2u{3u, 3u}, sf::Vector2f{32.f, 32.f});
@@ -129,11 +129,8 @@ void SpriteViewerState::onSetMove() {
 		return;
 	}
 	
-	core::AnimationEvent event;
-	event.actor = 1u;
-	event.type = core::AnimationEvent::Move;
-	event.move = moving;
-	animation.handle(event);
+	auto& move = movement.query(1u);
+	move.move = {0, 1};
 }
 
 void SpriteViewerState::onClearClick() {
