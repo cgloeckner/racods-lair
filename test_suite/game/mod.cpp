@@ -728,7 +728,7 @@ BOOST_AUTO_TEST_CASE(bullet_with_too_large_radius_is_invalid) {
 
 	rpg::BulletTemplate resource;
 	resource.entity_name = "foo";
-	resource.radius = core::collision_impl::MAX_PROJECTILE_RADIUS + 0.1f;
+	resource.radius = core::MAX_COLLISION_RADIUS + 0.1f;
 	resource.entity = &fix.entity;
 	BOOST_CHECK(!game::mod_impl::verify(fix.log.debug, "", resource));
 }

@@ -83,7 +83,7 @@ std::ostream& operator<<(std::ostream& lhs, core::FocusEvent const & event) {
 std::ostream& operator<<(std::ostream& lhs, core::CollisionEvent const & event) {
 	return lhs << "actor=" << event.actor << ", collider="
 		<< event.collider << ", pos=" << event.pos << ", reset_to="
-		<< event.reset_to << ", reset=" << event.reset;
+		<< event.reset_to << ", interrupt=" << event.interrupt;
 }
 
 std::ostream& operator<<(std::ostream& lhs, core::AnimationEvent const & event) {
@@ -91,10 +91,6 @@ std::ostream& operator<<(std::ostream& lhs, core::AnimationEvent const & event) 
 	switch (event.type) {
 		case core::AnimationEvent::Action:
 			lhs << "Action, action=" << event.action;
-			break;
-			
-		case core::AnimationEvent::Move:
-			lhs << "Move, move=" << event.move;
 			break;
 			
 		case core::AnimationEvent::Brightness:

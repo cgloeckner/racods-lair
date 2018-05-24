@@ -45,8 +45,10 @@ bool verify<rpg::SpriteTemplate>(utils::Logger& log,
 	verify(
 		resource.torso[core::AnimationAction::Idle].duration > sf::Time::Zero,
 		"            torso idle duration > 0 required");
-	verify(!resource.frameset_name.empty(), "            frameset required");
-	verify(resource.frameset != nullptr, "            frameset cannot be loaded");
+	verify(!resource.frameset_name.empty(),
+		"            frameset required");
+	verify(resource.frameset != nullptr,
+		"            frameset cannot be loaded");
 	if (!resource.edges.empty()) {
 		verify(resource.edges.size() >= 3u,
 		"            at least 3 edges required (or none)");
@@ -59,35 +61,46 @@ bool verify<rpg::EntityTemplate>(utils::Logger& log,
 	std::string const& key, rpg::EntityTemplate const& resource) {
 	utils::Verifier verify{log};
 	if (resource.is_projectile) {
-		verify(resource.collide, "            collide required if projectile");
+		verify(resource.collide,
+			"            collide required if projectile");
 	}
-	verify(resource.max_sight >= 0.f, "            max sight >= 0.f required");
+	verify(resource.max_sight >= 0.f,
+		"            max sight >= 0.f required");
 	verify(resource.max_sight <= core::MAX_SIGHT,
-		"            max sight <= " + std::to_string(core::MAX_SIGHT) +
-			" required");
+		"            max sight <= " + std::to_string(core::MAX_SIGHT) + " required");
 	if (resource.max_sight > 0.f) {
-		verify(!resource.display_name.empty(), "            display name required to be focusable");
+		verify(!resource.display_name.empty(),
+		"            display name required to be focusable");
 	}
-	verify(resource.max_speed >= 0, "            max speed >= 0.f required");
-	verify(resource.max_speed <= core::movement_impl::MAX_SPEED,
-		"            max speed <= " +
-			std::to_string(core::movement_impl::MAX_SPEED) + " required");
-	verify(resource.fov >= 0.f, "            fov >= 0.f required");
-	verify(resource.fov <= 180.f, "            fov <= 180.f required");
-	verify(!resource.sprite_name.empty(), "            sprite name required");
-	verify(resource.sprite != nullptr, "            sprite cannot be loaded");
+	verify(resource.max_speed >= 0,
+		"            max speed >= 0.f required");
+	verify(resource.max_speed <= core::MAX_SPEED,
+		"            max speed <= " + std::to_string(core::MAX_SPEED) + " required");
+	verify(resource.fov >= 0.f,
+		"            fov >= 0.f required");
+	verify(resource.fov <= 180.f,
+		"            fov <= 180.f required");
+	verify(!resource.sprite_name.empty(),
+		"            sprite name required");
+	verify(resource.sprite != nullptr,
+		"            sprite cannot be loaded");
 	for (auto const& pair : resource.sounds) {
 		for (auto const & node: pair.second) {
-			verify(!node.first.empty(),  "            sound needs filename");
-			verify(node.second != nullptr,  "            sound needs buffer");
+			verify(!node.first.empty(),
+				"            sound needs filename");
+			verify(node.second != nullptr,
+				"            sound needs buffer");
 		}
 	}
 	if (resource.interact != nullptr) {
 		if (*resource.interact == rpg::InteractType::Barrier) {
-			verify(resource.max_speed > 0.f, "            max speed > 0.f required by barrier");
+			verify(resource.max_speed > 0.f,
+				"            max speed > 0.f required by barrier");
 		}
-		verify(resource.max_sight == 0.f, "            max sight == 0.f required by interactable");
-		verify(!resource.display_name.empty(), "            display name required by interactable");
+		verify(resource.max_sight == 0.f,
+			"            max sight == 0.f required by interactable");
+		verify(!resource.display_name.empty(),
+			"            display name required by interactable");
 	}
 	return verify.result;
 }
@@ -96,7 +109,8 @@ template <>
 bool verify<rpg::EffectTemplate>(utils::Logger& log,
 	std::string const& key, rpg::EffectTemplate const& resource) {
 	utils::Verifier verify{log};
-	verify(!resource.display_name.empty(), "            display name required");
+	verify(!resource.display_name.empty(),
+		"            display name required");
 	if (!resource.inflict_sound.empty()) {
 		verify(resource.sound != nullptr,
 			"            inflict sound cannot be loaded");
@@ -107,14 +121,17 @@ bool verify<rpg::EffectTemplate>(utils::Logger& log,
 template <>
 bool verify<rpg::BulletTemplate>(utils::Logger& log,
 	std::string const& key, rpg::BulletTemplate const& resource) {
-	auto max_radius = core::collision_impl::MAX_COLLISION_RADIUS;
+	auto max_radius = core::MAX_COLLISION_RADIUS;
 
 	utils::Verifier verify{log};
-	verify(!resource.entity_name.empty(), "            entity name required");
-	verify(resource.radius >= 0.f, "            radius >= 0.f required");
+	verify(!resource.entity_name.empty(),
+		"            entity name required");
+	verify(resource.radius >= 0.f,
+		"            radius >= 0.f required");
 	verify(resource.radius <= max_radius,
 		"            radius <= " + std::to_string(max_radius) + " required");
-	verify(resource.entity != nullptr, "            entity cannot be loaded");
+	verify(resource.entity != nullptr,
+		"            entity cannot be loaded");
 	return verify.result;
 }
 
@@ -122,10 +139,13 @@ template <>
 bool verify<rpg::ItemTemplate>(utils::Logger& log,
 	std::string const& key, rpg::ItemTemplate const& resource) {
 	utils::Verifier verify{log};
-	verify(!resource.display_name.empty(), "            display name required");
-	verify(!resource.icon_name.empty(), "            icon name required");
+	verify(!resource.display_name.empty(),
+		"            display name required");
+	verify(!resource.icon_name.empty(),
+		"            icon name required");
 	if (resource.type == rpg::ItemType::Weapon && !resource.melee) {
-		verify(!resource.bullet.name.empty(), "            bullet required for range weapon");
+		verify(!resource.bullet.name.empty(),
+			"            bullet required for range weapon");
 	}
 	if (!resource.bullet.name.empty()) {
 		verify(resource.bullet.bullet != nullptr,
@@ -139,10 +159,12 @@ bool verify<rpg::ItemTemplate>(utils::Logger& log,
 		verify(resource.effect.ratio <= 1.f,
 			"            effect ratio <= 1.0 required");
 	}
-	verify(resource.icon != nullptr, "            icon cannot be loaded");
+	verify(resource.icon != nullptr,
+		"            icon cannot be loaded");
 	if (!resource.use_sound.empty()) {
 		verify(
-			resource.sound != nullptr, "            use sound cannot be loaded");
+			resource.sound != nullptr,
+				"            use sound cannot be loaded");
 	}
 	if (resource.type == rpg::ItemType::Weapon ||
 		resource.type == rpg::ItemType::Armor) {
@@ -159,7 +181,8 @@ bool verify<rpg::ItemTemplate>(utils::Logger& log,
 			"            revive item requires life recovery");
 	}
 	if (!resource.sprite_name.empty()) {
-		verify(resource.sprite != nullptr, "            sprite cannot be loaded");
+		verify(resource.sprite != nullptr,
+			"            sprite cannot be loaded");
 	}
 	return verify.result;
 }
@@ -168,9 +191,12 @@ template <>
 bool verify<rpg::PerkTemplate>(utils::Logger& log,
 	std::string const& key, rpg::PerkTemplate const& resource) {
 	utils::Verifier verify{log};
-	verify(!resource.display_name.empty(), "            display name required");
-	verify(!resource.icon_name.empty(), "            icon name required");
-	verify(resource.icon != nullptr, "            icon cannot be loaded");
+	verify(!resource.display_name.empty(),
+		"            display name required");
+	verify(!resource.icon_name.empty(),
+		"            icon name required");
+	verify(resource.icon != nullptr,
+		"            icon cannot be loaded");
 	if (resource.type == rpg::PerkType::Self) {
 		verify(resource.bullet.name.empty(),
 			"            bullet not allowed for defensive perk");
@@ -194,8 +220,8 @@ bool verify<rpg::PerkTemplate>(utils::Logger& log,
 			"            effect ratio <= 1.0 required");
 	}
 	if (!resource.use_sound.empty()) {
-		verify(
-			resource.sound != nullptr, "            use sound cannot be loaded");
+		verify(resource.sound != nullptr,
+			"            use sound cannot be loaded");
 	}
 	return verify.result;
 }
@@ -204,9 +230,10 @@ template <>
 bool verify<rpg::TrapTemplate>(utils::Logger& log,
 	std::string const& key, rpg::TrapTemplate const& resource) {
 	utils::Verifier verify{log};
-	verify(!resource.bullet.name.empty(), "            bullet name required");
-	verify(
-		resource.bullet.bullet != nullptr, "            bullet cannot be loaded");
+	verify(!resource.bullet.name.empty(),
+		"            bullet name required");
+	verify(resource.bullet.bullet != nullptr,
+		"            bullet cannot be loaded");
 	if (!resource.effect.name.empty()) {
 		verify(resource.effect.effect != nullptr,
 			"            effect cannot be loaded");
@@ -226,9 +253,12 @@ template <>
 bool verify<game::BotTemplate>(utils::Logger& log,
 	std::string const& key, game::BotTemplate const& resource) {
 	utils::Verifier verify{log};
-	verify(!resource.display_name.empty(), "            display name required");
-	verify(!resource.entity_name.empty(), "            entity name required");
-	verify(resource.entity != nullptr, "            entity cannot be loaded");
+	verify(!resource.display_name.empty(),
+		"            display name required");
+	verify(!resource.entity_name.empty(),
+		"            entity name required");
+	verify(resource.entity != nullptr,
+		"            entity cannot be loaded");
 	for (auto const& node : resource.items) {
 		verify(std::get<1>(node) > 0.f,
 			"            relative item quantity > 0.0 required");
@@ -243,22 +273,21 @@ bool verify<game::BotTemplate>(utils::Logger& log,
 	}
 	float attrib_sum{0.f};
 	for (auto const& pair : resource.attributes) {
-		verify(pair.second >= 0.f, "            relative attribute '" +
-									   to_string(pair.first) +
-									   "' >= 0.0 required");
-		verify(pair.second <= 1.f, "            relative attribute '" +
-									   to_string(pair.first) +
-									   "' <= 1.0 required");
+		verify(pair.second >= 0.f,
+			"            relative attribute '" + to_string(pair.first) + "' >= 0.0 required");
+		verify(pair.second <= 1.f,
+			"            relative attribute '" + to_string(pair.first) + "' <= 1.0 required");
 		attrib_sum += pair.second;
 	}
-	verify(attrib_sum == 1.f, "            sum of attributes required == 1.0");
+	verify(attrib_sum == 1.f,
+		"            sum of attributes required == 1.0");
 	for (auto const & pair: resource.properties) {
-		verify(pair.second >= 0.f, "            property '"
-			+ to_string(pair.first) + "' bonus >= 0.0 required");
+		verify(pair.second >= 0.f,
+			"            property '" + to_string(pair.first) + "' bonus >= 0.0 required");
 	}
 	for (auto const & pair: resource.defense) {
-		verify(pair.second >= 0.f, "            defense '"
-			+ to_string(pair.first) + "' bonus >= 0.0 required");
+		verify(pair.second >= 0.f,
+			"            defense '" + to_string(pair.first) + "' bonus >= 0.0 required");
 	}
 	return verify.result;
 }
@@ -267,16 +296,16 @@ template <>
 bool verify<game::EncounterTemplate>(utils::Logger& log,
 	std::string const& key, game::EncounterTemplate const& resource) {
 	utils::Verifier verify{log};
-	verify(!resource.bots.empty(), "            bots required");
+	verify(!resource.bots.empty(),		"            bots required");
 	float total{0.f};
 	for (auto const & bot: resource.bots) {
-		verify(!bot.filename.empty(), "            bot name required");
-		verify(bot.ratio > 0.f, "            bot ratio > 0.0 required");
-		verify(bot.ratio <= 1.f, "            bot ratio <= 1.0 required");
-		verify(bot.ptr != nullptr, "            bot cannot be loaded");
+		verify(!bot.filename.empty(),	"            bot name required");
+		verify(bot.ratio > 0.f,			"            bot ratio > 0.0 required");
+		verify(bot.ratio <= 1.f,		"            bot ratio <= 1.0 required");
+		verify(bot.ptr != nullptr,		"            bot cannot be loaded");
 		total += bot.ratio;
 	}
-	verify(total == 1.f, "            total ratio must match 1.0");
+	verify(total == 1.f,				"            total ratio must match 1.0");
 	return verify.result;
 }
 
@@ -287,11 +316,11 @@ bool verify<game::RoomTemplate>(utils::Logger& log,
 	for (auto const & pair: resource.cells) {
 		auto const & entity = pair.second.entity;
 		if (!entity.name.empty()) {
-			verify(entity.ptr != nullptr, "            entity cannot be loaded");
-			verify(entity.direction.x >= -1, "            invalid entity direction");
-			verify(entity.direction.x <= 1, "            invalid entity direction");
-			verify(entity.direction.y >= -1, "            invalid entity direction");
-			verify(entity.direction.y <= 1, "            invalid entity direction");
+			verify(entity.ptr != nullptr,		"            entity cannot be loaded");
+			verify(entity.direction.x >= -1,	"            invalid entity direction");
+			verify(entity.direction.x <= 1,		"            invalid entity direction");
+			verify(entity.direction.y >= -1,	"            invalid entity direction");
+			verify(entity.direction.y <= 1,		"            invalid entity direction");
 		}
 	}
 	return verify.result;

@@ -225,7 +225,8 @@ struct NavigationScene {
 struct Navigator {
 	DungeonGraph graph;
 	NavigationScene scene;
-	utils::Pathfinder<DungeonGraph, core::ObjectID> broadphase;
+	/// @note broadphase not fully implemented (c
+	//utils::Pathfinder<DungeonGraph, core::ObjectID> broadphase;
 	utils::Pathfinder<NavigationScene, core::ObjectID> narrowphase;
 
 	/// Create navigator based on a specific grid and scene

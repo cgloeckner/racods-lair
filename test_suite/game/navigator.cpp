@@ -44,6 +44,8 @@ BOOST_AUTO_TEST_CASE(node_can_have_multiple_path) {
 
 // ---------------------------------------------------------------------------
 
+/// @note broadphase not implemented yet, hence no testing
+/*
 BOOST_AUTO_TEST_CASE(can_navigate_at_broadphase) {
 	sf::Texture dummy;
 	game::DungeonGraph grid{{3u, 3u}};
@@ -65,6 +67,7 @@ BOOST_AUTO_TEST_CASE(can_navigate_at_broadphase) {
 	BOOST_CHECK_VECTOR_EQUAL(path[1], sf::Vector2u(1u, 1u));
 	BOOST_CHECK_VECTOR_EQUAL(path[2], sf::Vector2u(1u, 2u));
 }
+*/
 
 BOOST_AUTO_TEST_CASE(can_navigate_at_narrowphase) {
 	sf::Texture dummy;
@@ -75,7 +78,9 @@ BOOST_AUTO_TEST_CASE(can_navigate_at_narrowphase) {
 	game::NavigationScene scene{movement, collision, dungeon};
 	game::Navigator navigator{std::move(grid), std::move(scene)};
 
-	collision.acquire(17u);
+	core::ObjectID actor{17u};
+	movement.acquire(actor);
+	collision.acquire(actor);
 	//	.
 	//	... .
 	//	.   .
@@ -97,8 +102,10 @@ BOOST_AUTO_TEST_CASE(can_navigate_at_narrowphase) {
 	dungeon.getCell({3u, 5u}).terrain = core::Terrain::Floor;
 
 	auto& astar = navigator.narrowphase;
-	auto path = astar(17u, {2u, 3u}, {2u, 5u}, 20u);
+	auto path = astar(actor, {2u, 3u}, {2u, 5u}, 20u);
+	// expect right path without (impossible) shortcut tile
 	BOOST_REQUIRE_EQUAL(path.size(), 9u);
+	BOOST_CHECK(!utils::contains(path, sf::Vector2u(2u, 4u)));
 }
 
 BOOST_AUTO_TEST_CASE(teleport_triggers_are_avoided_at_narrowphase) {
@@ -114,7 +121,10 @@ BOOST_AUTO_TEST_CASE(teleport_triggers_are_avoided_at_narrowphase) {
 	core::TeleportSender teleport_sender;
 	core::DungeonSystem dungeonsystem;
 	
-	collision.acquire(17u);
+	core::ObjectID actor{17u};
+	movement.acquire(actor);
+	collision.acquire(actor);
+
 	//	.
 	//	...T.	[T]eleport
 	//	.   .
@@ -142,7 +152,7 @@ BOOST_AUTO_TEST_CASE(teleport_triggers_are_avoided_at_narrowphase) {
 	dungeon.getCell({3u, 5u}).terrain = core::Terrain::Floor;
 
 	auto& astar = navigator.narrowphase;
-	auto path = astar(17u, {2u, 3u}, {2u, 5u}, 20u);
+	auto path = astar(actor, {2u, 3u}, {2u, 5u}, 20u);
 	BOOST_REQUIRE_EQUAL(path.size(), 9u);
 }
 
@@ -155,7 +165,9 @@ BOOST_AUTO_TEST_CASE(diagonal_movements_have_higher_priority_for_going_south_eas
 	game::NavigationScene scene{movement, collision, dungeon};
 	game::Navigator navigator{std::move(grid), std::move(scene)};
 	
-	collision.acquire(1u);
+	core::ObjectID actor{17u};
+	movement.acquire(actor);
+	collision.acquire(actor);
 	//	S.	[S]ource
 	//	..
 	//	..
@@ -169,7 +181,7 @@ BOOST_AUTO_TEST_CASE(diagonal_movements_have_higher_priority_for_going_south_eas
 	}
 
 	auto& astar = navigator.narrowphase;
-	auto path = astar(1u, {2u, 2u}, {3u, 6u}, 20u);
+	auto path = astar(actor, {2u, 2u}, {3u, 6u}, 20u);
 	BOOST_REQUIRE_EQUAL(path.size(), 5u);
 	BOOST_CHECK_VECTOR_EQUAL(path[4], sf::Vector2u(2u, 2u));
 	BOOST_CHECK_VECTOR_EQUAL(path[3], sf::Vector2u(3u, 3u));
@@ -185,7 +197,9 @@ BOOST_AUTO_TEST_CASE(diagonal_movements_have_higher_priority_for_going_south_wes
 	game::NavigationScene scene{movement, collision, dungeon};
 	game::Navigator navigator{std::move(grid), std::move(scene)};
 	
-	collision.acquire(1u);
+	core::ObjectID actor{17u};
+	movement.acquire(actor);
+	collision.acquire(actor);
 	//	.S	[S]ource
 	//	..
 	//	..
@@ -199,7 +213,7 @@ BOOST_AUTO_TEST_CASE(diagonal_movements_have_higher_priority_for_going_south_wes
 	}
 
 	auto& astar = navigator.narrowphase;
-	auto path = astar(1u, {3u, 2u}, {2u, 6u}, 20u);
+	auto path = astar(actor, {3u, 2u}, {2u, 6u}, 20u);
 	BOOST_REQUIRE_EQUAL(path.size(), 5u);
 	BOOST_CHECK_VECTOR_EQUAL(path[4], sf::Vector2u(3u, 2u));
 	BOOST_CHECK_VECTOR_EQUAL(path[3], sf::Vector2u(2u, 3u));
@@ -215,7 +229,9 @@ BOOST_AUTO_TEST_CASE(diagonal_movements_have_higher_priority_for_going_north_eas
 	game::NavigationScene scene{movement, collision, dungeon};
 	game::Navigator navigator{std::move(grid), std::move(scene)};
 	
-	collision.acquire(1u);
+	core::ObjectID actor{17u};
+	movement.acquire(actor);
+	collision.acquire(actor);
 	//	....D	[S]ource
 	//	S....	[D]estination
 	sf::Vector2u pos;
@@ -226,7 +242,7 @@ BOOST_AUTO_TEST_CASE(diagonal_movements_have_higher_priority_for_going_north_eas
 	}
 
 	auto& astar = navigator.narrowphase;
-	auto path = astar(1u, {2u, 3u}, {6u, 2u}, 20u);
+	auto path = astar(actor, {2u, 3u}, {6u, 2u}, 20u);
 	BOOST_REQUIRE_EQUAL(path.size(), 5u);
 	BOOST_CHECK_VECTOR_EQUAL(path[4], sf::Vector2u(2u, 3u));
 	BOOST_CHECK_VECTOR_EQUAL(path[3], sf::Vector2u(3u, 2u));
@@ -242,7 +258,9 @@ BOOST_AUTO_TEST_CASE(diagonal_movements_have_higher_priority_north_west) {
 	game::NavigationScene scene{movement, collision, dungeon};
 	game::Navigator navigator{std::move(grid), std::move(scene)};
 	
-	collision.acquire(1u);
+	core::ObjectID actor{17u};
+	movement.acquire(actor);
+	collision.acquire(actor);
 	//	D....	[S]ource
 	//	....S	[D]estination
 	sf::Vector2u pos;
@@ -253,7 +271,7 @@ BOOST_AUTO_TEST_CASE(diagonal_movements_have_higher_priority_north_west) {
 	}
 
 	auto& astar = navigator.narrowphase;
-	auto path = astar(1u, {6u, 3u}, {2u, 2u}, 20u);
+	auto path = astar(actor, {6u, 3u}, {2u, 2u}, 20u);
 	BOOST_REQUIRE_EQUAL(path.size(), 5u);
 	BOOST_CHECK_VECTOR_EQUAL(path[4], sf::Vector2u(6u, 3u));
 	BOOST_CHECK_VECTOR_EQUAL(path[3], sf::Vector2u(5u, 2u));

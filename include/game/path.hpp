@@ -66,6 +66,9 @@ class PathSystem {
 	 *	automatically populated with the resulting path. If no path
 	 *	was found, the path only
 	 *	contains the source position.
+	 *	@note Because the `navigator` is currently not implementing
+	 *	a broadphase pathfinding, the signature of `schedule`
+	 *	is that simple.
 	 *
 	 *	@param actor Actor's object ID
 	 *	@param scene Dungeon's scene ID

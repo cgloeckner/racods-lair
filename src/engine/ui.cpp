@@ -17,7 +17,7 @@ UiSystem::UiSystem(core::LogContext& log, std::size_t max_objects, sf::Vector2u 
 	, sf::Drawable{}
 	, lighting{screen_size, lightmap}
 	, camera{screen_size, zoom}
-	, animation{log, max_objects}
+	, animation{log, max_objects, movement}
 	, render{log, max_objects, animation, movement, focus, dungeon, camera, lighting}
 	, sound{log, audio_poolsize}
 	, music{log, music_base, music_ext}

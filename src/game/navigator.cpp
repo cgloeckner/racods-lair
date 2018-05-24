@@ -128,8 +128,7 @@ std::vector<sf::Vector2u> NavigationScene::getNeighbors(
 		// actor seems to be dead
 		return neighbors;
 	}
-	auto const& coll_data = collision.query(actor);
-
+	
 	sf::Vector2i delta;
 	for (delta.y = -1; delta.y <= 1; ++delta.y) {
 		for (delta.x = -1; delta.x <= 1; ++delta.x) {
@@ -151,6 +150,10 @@ std::vector<sf::Vector2u> NavigationScene::getNeighbors(
 			core::MovementData cpy{movement.query(actor)};
 			cpy.pos = sf::Vector2f{next};
 			core::checkAnyCollision(movement, collision, dungeon, cpy, coll_result);
+			if (coll_result.tile) {
+				// ignore: tile collision
+				continue;
+			}
 			bool hit{false};
 			for (auto id: coll_result.objects) {
 				if (!utils::contains(ignore, id)) {
@@ -206,7 +209,7 @@ bool NavigationScene::canAccess(core::ObjectID actor,
 Navigator::Navigator(DungeonGraph&& graph, NavigationScene&& scene)
 	: graph{std::move(graph)}
 	, scene{std::move(scene)}
-	, broadphase{this->graph}
+	//, broadphase{this->graph}
 	, narrowphase{this->scene} {
 }
 

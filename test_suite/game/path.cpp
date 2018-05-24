@@ -10,6 +10,7 @@
 struct PathFixture {
 	sf::Texture dummy;
 	core::LogContext log;
+	core::MovementManager movement;
 	core::CollisionManager collision;
 	core::Dungeon dungeon;
 	std::unique_ptr<game::Navigator> navi;
@@ -21,6 +22,7 @@ struct PathFixture {
 	PathFixture()
 		: dummy{}
 		, log{}
+		, movement{}
 		, collision{}
 		, dungeon{1u, dummy, {20u, 15u}, {16.f, 16.f}}
 		, navi{nullptr}
@@ -28,7 +30,7 @@ struct PathFixture {
 		, objects{} {
 
 		game::DungeonGraph graph{{4u, 3u}};
-		game::NavigationScene scene{collision, dungeon};
+		game::NavigationScene scene{movement, collision, dungeon};
 		//	X	X---X	X
 		//	|	|	 	|
 		//	X---X---X---X
@@ -77,6 +79,7 @@ struct PathFixture {
 	core::ObjectID addActor(sf::Vector2u const& pos) {
 		auto id = ids.acquire();
 		objects.push_back(id);
+		movement.acquire(id);
 		collision.acquire(id);
 		dungeon.getCell(pos).entities.push_back(id);
 		return id;
@@ -89,12 +92,14 @@ struct PathFixture {
 				dungeon.getCell({x, y}).entities.clear();
 			}
 		}
-		// remove components
+		// remove 
 		for (auto id : objects) {
+			movement.release(id);
 			collision.release(id);
 		}
 		objects.clear();
 		ids.reset();
+		movement.cleanup();
 		collision.cleanup();
 	}
 };
@@ -110,13 +115,13 @@ BOOST_AUTO_TEST_CASE(incomplete_pathfind_results_in_not_ready_future) {
 	game::PathSystem system{fix.log};
 	system.addScene(1u, *fix.navi);
 	auto id = fix.addActor({2u, 3u});
-	auto future =
-		system.schedule(id, 1u, {0u, 0u}, {3, 0});
+	auto future = system.schedule(id, 1u, {0u, 0u}, {3, 0});
 	// expect: (0,0) --> (0,1) --> (1,1) --> (2,1) --> (3,1) --> (3,0)
 	auto status = future.wait_for(std::chrono::milliseconds(0));
 	BOOST_CHECK(status != std::future_status::ready);
 }
 
+/// @note broadphase not implemented yet, hence no testing
 /*
 BOOST_AUTO_TEST_CASE(can_perform_broadphase_searching) {
 	auto& fix = Singleton<PathFixture>::get();
@@ -125,8 +130,7 @@ BOOST_AUTO_TEST_CASE(can_perform_broadphase_searching) {
 	game::PathSystem system{fix.log};
 	system.addScene(1u, *fix.navi);
 	auto id = fix.addActor({2u, 3u});
-	auto future =
-		system.schedule(id, 1u, {0u, 0u}, {3, 0});
+	auto future = system.schedule(id, 1u, {0u, 0u}, {3, 0});
 	// expect: (0,0) --> (0,1) --> (1,1) --> (2,1) --> (3,1) --> (3,0)
 	auto n = system.calculate(sf::milliseconds(1000u));
 	BOOST_REQUIRE(future.valid());
@@ -149,8 +153,7 @@ BOOST_AUTO_TEST_CASE(can_perform_narrowphase_searching) {
 	game::PathSystem system{fix.log};
 	system.addScene(1u, *fix.navi);
 	auto id = fix.addActor({2u, 3u});
-	auto future =
-		system.schedule(id, 1u, {1u, 3u}, {2, 7});
+	auto future = system.schedule(id, 1u, {1u, 3u}, {2, 7});
 	// expect: (1,3) --> (1,4) --> (1,5) --> (2,6) --> (2,7)
 	auto n = system.calculate(sf::milliseconds(1000u));
 	BOOST_REQUIRE(future.valid());
@@ -164,6 +167,7 @@ BOOST_AUTO_TEST_CASE(can_perform_narrowphase_searching) {
 	BOOST_CHECK_VECTOR_EQUAL(path.at(0), sf::Vector2u(2u, 7u));
 }
 
+/// @note broadphase not implemented yet, hence no testing
 /*
 BOOST_AUTO_TEST_CASE(impossible_path_contains_only_source_position) {
 	auto& fix = Singleton<PathFixture>::get();
@@ -172,8 +176,7 @@ BOOST_AUTO_TEST_CASE(impossible_path_contains_only_source_position) {
 	game::PathSystem system{fix.log};
 	system.addScene(1u, *fix.navi);
 	auto id = fix.addActor({2u, 3u});
-	auto future =
-		system.schedule(game::PathPhase::Broad, id, 1u, {0u, 1u}, {3, 2});
+	auto future = system.schedule(game::PathPhase::Broad, id, 1u, {0u, 1u}, {3, 2});
 	auto n = system.calculate(sf::milliseconds(1000u));
 	BOOST_REQUIRE(future.valid());
 	auto path = future.get();
@@ -182,7 +185,7 @@ BOOST_AUTO_TEST_CASE(impossible_path_contains_only_source_position) {
 	BOOST_CHECK_VECTOR_EQUAL(path.at(0), sf::Vector2u(0u, 1u));
 }
 */
-
+/// @note broadphase not implemented yet, hence no testing
 /*
 BOOST_AUTO_TEST_CASE(can_calculate_two_paths) {
 	auto& fix = Singleton<PathFixture>::get();
@@ -191,10 +194,8 @@ BOOST_AUTO_TEST_CASE(can_calculate_two_paths) {
 	game::PathSystem system{fix.log};
 	system.addScene(1u, *fix.navi);
 	auto id = fix.addActor({2u, 3u});
-	auto future =
-		system.schedule(game::PathPhase::Broad, id, 1u, {0u, 0u}, {3, 0});
-	auto future2 =
-		system.schedule(game::PathPhase::Broad, id, 1u, {2u, 0u}, {0u, 2u});
+	auto future = system.schedule(game::PathPhase::Broad, id, 1u, {0u, 0u}, {3, 0});
+	auto future2 = system.schedule(game::PathPhase::Broad, id, 1u, {2u, 0u}, {0u, 2u});
 	auto n = system.calculate(sf::milliseconds(1000u));
 	BOOST_REQUIRE(future.valid());
 	BOOST_REQUIRE(future2.valid());

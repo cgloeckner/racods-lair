@@ -428,11 +428,13 @@ BOOST_AUTO_TEST_CASE(flying_object_is_spawned_moving) {
 
 	auto id = fix.factory.createObject(fix.entity, spawn);
 	fix.objects.push_back(id);
+	
+	auto const & move = fix.movement.query(id);
+	BOOST_CHECK_VECTOR_EQUAL(move.move, sf::Vector2i())
 
 	BOOST_REQUIRE(fix.animation.has(id));
 	auto const & data = fix.animation.query(id);
 	BOOST_CHECK(data.flying);
-	BOOST_CHECK(data.is_moving);
 }
 
 BOOST_AUTO_TEST_CASE(object_with_sight_has_focus_component) {
@@ -891,7 +893,7 @@ BOOST_AUTO_TEST_CASE(bullet_has_suitable_component_Data) {
 	{
 		auto const& data = fix.collision.query(id);
 		BOOST_CHECK(data.is_projectile);
-		BOOST_CHECK_CLOSE(data.radius, fix.bullet.radius, 0.0001f);
+		BOOST_CHECK_CLOSE(data.shape.radius, fix.bullet.radius, 0.0001f);
 	}
 
 	BOOST_REQUIRE(fix.projectile.has(id));
