@@ -69,21 +69,12 @@ std::ostream& operator<<(std::ostream& lhs, core::InputEvent const & event) {
 }
 
 std::ostream& operator<<(std::ostream& lhs, core::MoveEvent const & event) {
-	return lhs << "actor=" << event.actor << ", source=" << event.source
-		<< ", target=" << event.target << ", type="
-		<< (event.type == core::MoveEvent::Left ? "Left" : "Reached");
-}
-
-std::ostream& operator<<(std::ostream& lhs, core::FocusEvent const & event) {
-	return lhs << "observer=" << event.observer << ", observed="
-		<< event.observed << ", type="
-		<< (event.type == core::FocusEvent::Lost ? "Lost" : "Gained");
+	return lhs << "actor=" << event.actor << ", type=" << to_string(event.type);
 }
 
 std::ostream& operator<<(std::ostream& lhs, core::CollisionEvent const & event) {
 	return lhs << "actor=" << event.actor << ", collider="
-		<< event.collider << ", pos=" << event.pos << ", reset_to="
-		<< event.reset_to << ", interrupt=" << event.interrupt;
+		<< event.collider << ", interrupt=" << event.interrupt;
 }
 
 std::ostream& operator<<(std::ostream& lhs, core::AnimationEvent const & event) {

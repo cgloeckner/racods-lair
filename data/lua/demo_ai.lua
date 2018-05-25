@@ -229,22 +229,10 @@ end
 onIdle = function(api)
 end
 
-onTileLeft = function(api, pos)
+onStart = function(api)
 end
 
-onTileReached = function(api, pos)
-end
-
-onGotFocus = function(api, target)
-end
-
-onLostFocus = function(api, target)
-end
-
-onWasFocused = function(api, actor)
-end
-
-onWasUnfocused = function(api, actor)
+onStop = function(api)
 end
 
 onEffectReceived = function(api, effect, actor)

@@ -25,11 +25,6 @@ struct MoveEvent {
 	enum { Start, Stop } type;
 };
 
-struct FocusEvent {
-	ObjectID observer, observed;
-	enum { Lost, Gained } type;
-};
-
 struct CollisionEvent {
 	ObjectID actor, collider;
 	bool interrupt;
@@ -100,7 +95,6 @@ struct TeleportEvent {
 
 using InputSender = utils::SingleEventSender<InputEvent>;
 using MoveSender = utils::SingleEventSender<MoveEvent>;
-using FocusSender = utils::SingleEventSender<FocusEvent>;
 using CollisionSender = utils::SingleEventSender<CollisionEvent>;
 using AnimationSender = utils::SingleEventSender<AnimationEvent>;
 using SpriteSender = utils::SingleEventSender<SpriteEvent>;
@@ -110,7 +104,6 @@ using TeleportSender = utils::SingleEventSender<TeleportEvent>;
 
 using InputListener = utils::SingleEventListener<InputEvent>;
 using MoveListener = utils::SingleEventListener<MoveEvent>;
-using FocusListener = utils::SingleEventListener<FocusEvent>;
 using CollisionListener = utils::SingleEventListener<CollisionEvent>;
 using AnimationListener = utils::SingleEventListener<AnimationEvent>;
 using SpriteListener = utils::SingleEventListener<SpriteEvent>;

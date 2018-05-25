@@ -52,7 +52,6 @@ namespace utils {
 
 template class SingleEventSender<core::InputEvent>;
 template class SingleEventSender<core::MoveEvent>;
-template class SingleEventSender<core::FocusEvent>;
 template class SingleEventSender<core::CollisionEvent>;
 template class SingleEventSender<core::AnimationEvent>;
 template class SingleEventSender<core::SpriteEvent>;
@@ -61,7 +60,6 @@ template class SingleEventSender<core::MusicEvent>;
 
 template class SingleEventListener<core::InputEvent>;
 template class SingleEventListener<core::MoveEvent>;
-template class SingleEventListener<core::FocusEvent>;
 template class SingleEventListener<core::CollisionEvent>;
 template class SingleEventListener<core::AnimationEvent>;
 template class SingleEventListener<core::SpriteEvent>;

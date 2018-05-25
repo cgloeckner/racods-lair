@@ -12,7 +12,6 @@ struct FocusFixture {
 	std::vector<core::ObjectID> ids;
 
 	core::LogContext log;
-	core::FocusSender focus_sender;
 	core::FocusManager focus_manager;
 	core::DungeonSystem dungeon_system;
 	core::MovementManager movement_manager;
@@ -21,7 +20,6 @@ struct FocusFixture {
 		: dummy_tileset{}
 		, id_manager{}
 		, log{}
-		, focus_sender{}
 		, focus_manager{}
 		, dungeon_system{}
 		, movement_manager{} {
@@ -59,8 +57,6 @@ struct FocusFixture {
 		id_manager.reset();
 		focus_manager.cleanup();
 		movement_manager.cleanup();
-		// reset event senders
-		focus_sender.clear();
 		
 		// clear logs
 		log.debug.clear();

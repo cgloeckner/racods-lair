@@ -13,8 +13,7 @@
 #include <core/teleport.hpp>
 
 struct PhysicsFixture
-	: utils::EventListener<core::CollisionEvent, core::MoveEvent,
-		core::FocusEvent, core::TeleportEvent> {
+	: utils::EventListener<core::CollisionEvent, core::MoveEvent, core::TeleportEvent> {
 	sf::Texture dummy_tileset;
 	core::IdManager id_manager;
 	core::LogContext log;
@@ -31,8 +30,7 @@ struct PhysicsFixture
 	utils::SceneID scene;
 
 	PhysicsFixture()
-		: utils::EventListener<core::CollisionEvent, core::MoveEvent,
-			  core::FocusEvent, core::TeleportEvent>{}
+		: utils::EventListener<core::CollisionEvent, core::MoveEvent, core::TeleportEvent>{}
 		, dummy_tileset{}
 		, id_manager{}
 		, log{}

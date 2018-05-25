@@ -118,45 +118,15 @@ struct ScriptFixture {
 			"	args = {};\n"
 			"end\n"
 			"\n"
-			"onTileLeft = function(self, pos)\n"
+			"onStart = function(self)\n"
 			"	called = 'onTileLeft';\n"
 			"	args = {\n"
-			"		pos = pos\n"
 			"	};\n"
 			"end\n"
 			"\n"
-			"onTileReached = function(self, pos)\n"
+			"onStopd = function(self)\n"
 			"	called = 'onTileReached';\n"
 			"	args = {\n"
-			"		pos = pos\n"
-			"	};\n"
-			"end\n"
-			"\n"
-			"onGotFocus = function(self, target)\n"
-			"	called = 'onGotFocus';\n"
-			"	args = {\n"
-			"		target = target\n"
-			"	};\n"
-			"end\n"
-			"\n"
-			"onLostFocus = function(self, target)\n"
-			"	called = 'onLostFocus';\n"
-			"	args = {\n"
-			"		target = target\n"
-			"	}\n"
-			"end\n"
-			"\n"
-			"onWasFocused = function(self, observer)\n"
-			"	called = 'onWasFocused';\n"
-			"	args = {\n"
-			"		observer = observer\n"
-			"	};\n"
-			"end\n"
-			"\n"
-			"onWasUnfocused = function(self, observer)\n"
-			"	called = 'onWasUnfocused';\n"
-			"	args = {\n"
-			"		observer = observer\n"
 			"	};\n"
 			"end\n"
 			"\n"
@@ -303,12 +273,10 @@ BOOST_AUTO_TEST_CASE(object_collision_triggers_onObjectCollision) {
 	core::CollisionEvent event;
 	event.actor = fix.data.id;
 	event.collider = 2u;
-	event.pos = {3u, 2u};
 	game::script_impl::onCollision(fix.context, event);
 	auto args = fix.script.get("args");
 	BOOST_REQUIRE_EQUAL(fix.script.get<std::string>("called"), "onObjectCollision");
 	BOOST_CHECK_EQUAL(args["other"].get<int>(), event.collider);
-	BOOST_CHECK_VECTOR_EQUAL(args["pos"].get<sf::Vector2u>(), event.pos);
 }
 
 BOOST_AUTO_TEST_CASE(tile_collision_triggers_onTileCollision) {
@@ -318,11 +286,9 @@ BOOST_AUTO_TEST_CASE(tile_collision_triggers_onTileCollision) {
 	core::CollisionEvent event;
 	event.actor = fix.data.id;
 	event.collider = 0u;
-	event.pos = {2u, 4u};
 	game::script_impl::onCollision(fix.context, event);
 	auto args = fix.script.get("args");
 	BOOST_REQUIRE_EQUAL(fix.script.get<std::string>("called"), "onTileCollision");
-	BOOST_CHECK_VECTOR_EQUAL(args["pos"].get<sf::Vector2u>(), event.pos);
 }
 
 BOOST_AUTO_TEST_CASE(idle_animation_triggers_onIdle) {
@@ -333,88 +299,28 @@ BOOST_AUTO_TEST_CASE(idle_animation_triggers_onIdle) {
 	BOOST_REQUIRE_EQUAL(fix.script.get<std::string>("called"), "onIdle");
 }
 
-BOOST_AUTO_TEST_CASE(leaving_a_tile_triggers_onTileLeft) {
+BOOST_AUTO_TEST_CASE(leaving_a_tile_triggers_onMove) {
 	auto& fix = Singleton<ScriptFixture>::get();
 	fix.reset();
 
 	core::MoveEvent event;
 	event.actor = fix.data.id;
-	event.type = core::MoveEvent::Left;
-	event.source = {2, 3};
+	event.type = core::MoveEvent::Start;
 	game::script_impl::onMove(fix.context, event);
 	auto args = fix.script.get("args");
-	BOOST_REQUIRE_EQUAL(fix.script.get<std::string>("called"), "onTileLeft");
-	BOOST_CHECK_VECTOR_EQUAL(args["pos"].get<sf::Vector2u>(), event.source);
+	BOOST_REQUIRE_EQUAL(fix.script.get<std::string>("called"), "onMove");
 }
 
-BOOST_AUTO_TEST_CASE(reaching_a_tile_triggers_onTileReached) {
+BOOST_AUTO_TEST_CASE(reaching_a_tile_triggers_onStop) {
 	auto& fix = Singleton<ScriptFixture>::get();
 	fix.reset();
 
 	core::MoveEvent event;
 	event.actor = fix.data.id;
-	event.type = core::MoveEvent::Reached;
-	event.target = {1, 2};
+	event.type = core::MoveEvent::Stop;
 	game::script_impl::onMove(fix.context, event);
 	auto args = fix.script.get("args");
-	BOOST_REQUIRE_EQUAL(fix.script.get<std::string>("called"), "onTileReached");
-	BOOST_CHECK_VECTOR_EQUAL(args["pos"].get<sf::Vector2u>(), event.target);
-}
-
-BOOST_AUTO_TEST_CASE(focusing_triggers_onGotFocus) {
-	auto& fix = Singleton<ScriptFixture>::get();
-	fix.reset();
-
-	core::FocusEvent event;
-	event.observer = fix.data.id;
-	event.observed = 2u;
-	event.type = core::FocusEvent::Gained;
-	game::script_impl::onFocus(fix.context, event);
-	auto args = fix.script.get("args");
-	BOOST_REQUIRE_EQUAL(fix.script.get<std::string>("called"), "onGotFocus");
-	BOOST_CHECK_EQUAL(args["target"].get<int>(), event.observed);
-}
-
-BOOST_AUTO_TEST_CASE(unfocusing_triggers_onLostFocus) {
-	auto& fix = Singleton<ScriptFixture>::get();
-	fix.reset();
-
-	core::FocusEvent event;
-	event.observer = fix.data.id;
-	event.observed = 2u;
-	event.type = core::FocusEvent::Lost;
-	game::script_impl::onFocus(fix.context, event);
-	auto args = fix.script.get("args");
-	BOOST_REQUIRE_EQUAL(fix.script.get<std::string>("called"), "onLostFocus");
-	BOOST_CHECK_EQUAL(args["target"].get<int>(), event.observed);
-}
-
-BOOST_AUTO_TEST_CASE(being_focused_triggers_onGotFocus) {
-	auto& fix = Singleton<ScriptFixture>::get();
-	fix.reset();
-
-	core::FocusEvent event;
-	event.observer = 2u;
-	event.observed = fix.data.id;
-	event.type = core::FocusEvent::Gained;
-	game::script_impl::onFocus(fix.context, event);
-	auto args = fix.script.get("args");
-	BOOST_REQUIRE_EQUAL(fix.script.get<std::string>("called"), "onWasFocused");
-	BOOST_CHECK_EQUAL(args["observer"].get<int>(), event.observer);
-}
-
-BOOST_AUTO_TEST_CASE(being_unfocused_triggers_onLostFocus) {
-	auto& fix = Singleton<ScriptFixture>::get();
-	fix.reset();
-
-	core::FocusEvent event;
-	event.observer = 2u;
-	event.observed = fix.data.id;
-	event.type = core::FocusEvent::Lost;
-	game::script_impl::onFocus(fix.context, event);
-	auto args = fix.script.get("args");
-	BOOST_REQUIRE_EQUAL(fix.script.get<std::string>("called"), "onWasUnfocused");
-	BOOST_CHECK_EQUAL(args["observer"].get<int>(), event.observer);
+	BOOST_REQUIRE_EQUAL(fix.script.get<std::string>("called"), "onStop");
 }
 
 // ---------------------------------------------------------------------------
