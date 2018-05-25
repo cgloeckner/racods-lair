@@ -102,8 +102,6 @@ void OrthoTile::refresh(sf::Vector2u const& tile_pos,
 	delta.y += offset.y * 2;
 	
 	for (std::size_t i = 0u; i < 4u; ++i) {
-		// center tiles
-		vertices[i].position -= sf::Vector2f{scale / 2u};
 		// fix tex coords to suit the modified atlas
 		vertices[i].texCoords += delta;
 	}
