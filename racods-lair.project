@@ -128,6 +128,7 @@
       <File Name="src/state/camera_editor.cpp"/>
       <File Name="src/state/app_launcher.cpp"/>
       <VirtualDirectory Name="tool">
+        <File Name="src/state/tool/testmode.cpp"/>
         <File Name="src/state/tool/toolmenu.cpp"/>
         <File Name="src/state/tool/spriteviewer.cpp"/>
         <File Name="src/state/tool/spritepacker.cpp"/>
@@ -439,7 +440,6 @@
       <File Name="include/testsuite/common.hpp"/>
     </VirtualDirectory>
     <VirtualDirectory Name="state">
-      <File Name="src/state/tool/testmode.cpp"/>
       <File Name="include/state/title.hpp"/>
       <File Name="include/state/story.hpp"/>
       <File Name="include/state/settings.hpp"/>
@@ -1765,7 +1765,6 @@
     <VirtualDirectory Name="game">
       <File Name="test_suite/game/visuals.cpp"/>
       <File Name="test_suite/game/tracer.cpp"/>
-      <File Name="test_suite/game/script.cpp"/>
       <File Name="test_suite/game/resources.cpp"/>
       <File Name="test_suite/game/powerup.cpp"/>
       <File Name="test_suite/game/path.cpp"/>
@@ -1783,6 +1782,7 @@
       <File Name="test_suite/engine/trigger.cpp"/>
     </VirtualDirectory>
     <VirtualDirectory Name="core">
+      <File Name="test_suite/game/script.cpp"/>
       <File Name="test_suite/core/teleport.cpp"/>
       <File Name="test_suite/core/sound.cpp"/>
       <File Name="test_suite/core/render.cpp"/>

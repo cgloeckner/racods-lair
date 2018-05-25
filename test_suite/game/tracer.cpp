@@ -5,6 +5,7 @@
 #include <utils/assert.hpp>
 #include <game/tracer.hpp>
 
+/// @note out of order, needs reimplementation
 /*
 struct TracerPathDummy : game::PathSystem {
 	TracerPathDummy()

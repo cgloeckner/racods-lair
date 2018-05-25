@@ -5,7 +5,7 @@ namespace game {
 HudData::HudData() : core::ComponentData{}, hud{nullptr} {}
 
 ScriptData::ScriptData()
-	: core::ComponentData{}, is_active{true}, api{nullptr}, script{nullptr} {}
+	: core::ComponentData{}, is_active{true}, /*api{nullptr},*/ script{nullptr} {}
 
 }  // ::rage
 

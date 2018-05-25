@@ -136,7 +136,7 @@ BOOST_AUTO_TEST_CASE(teleport_triggers_are_avoided_at_narrowphase) {
 		cell.terrain = core::Terrain::Floor;
 		cell.trigger = std::make_unique<core::TeleportTrigger>(
 			teleport_sender, movement, collision, dungeonsystem, dungeon.id,
-			sf::Vector2u{3u, 3u});
+			sf::Vector2f{3.f, 3.f});
 	}
 	dungeon.getCell({2u, 5u}).terrain = core::Terrain::Floor;
 	dungeon.getCell({2u, 6u}).terrain = core::Terrain::Floor;

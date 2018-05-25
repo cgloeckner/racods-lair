@@ -10,7 +10,7 @@ Session::Session(core::IdManager& id_manager, core::DungeonSystem& dungeon,
 	rpg::PerkManager& perk, rpg::PlayerManager& player, rpg::ProjectileManager& projectile,
 	rpg::ActionManager& action, rpg::InputManager& input, rpg::InteractManager& interact,
 	rpg::QuickslotManager& quickslot, AudioSystem& audio, DungeonGenerator& generator,
-	NavigationSystem& navigation, ScriptManager& script, HudManager& hud,
+	NavigationSystem& navigation, /*ScriptManager& script,*/ HudManager& hud,
 	PathSystem& path)
 	: rpg::Session{id_manager, dungeon, camera, movement, collision, focus,
 		  animation, render, audio, stats, effect, item, perk, player,
@@ -19,7 +19,7 @@ Session::Session(core::IdManager& id_manager, core::DungeonSystem& dungeon,
 	, audio{audio}
 	, generator{generator}
 	, navigation{navigation}
-	, script{script}
+	//, script{script}
 	, hud{hud}
 	, path{path} {
 	systems.push_back(&movement);
@@ -38,7 +38,7 @@ Session::Session(core::IdManager& id_manager, core::DungeonSystem& dungeon,
 	systems.push_back(&input);
 	systems.push_back(&interact);
 	systems.push_back(&quickslot);
-	systems.push_back(&script);
+	//systems.push_back(&script);
 	systems.push_back(&hud);
 }
 

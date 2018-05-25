@@ -16,7 +16,7 @@ struct Session : rpg::Session {
 	AudioSystem& audio;
 	DungeonGenerator& generator;
 	NavigationSystem& navigation;
-	ScriptManager& script;
+	//ScriptManager& script;
 	HudManager& hud;
 	PathSystem& path;
 
@@ -30,7 +30,7 @@ struct Session : rpg::Session {
 		rpg::InputManager& input, rpg::InteractManager& interact,
 		rpg::QuickslotManager& quickslot, AudioSystem& audio,
 		DungeonGenerator& generator, NavigationSystem& navigation,
-		ScriptManager& script, HudManager& hud, PathSystem& path);
+		/*ScriptManager& script,*/ HudManager& hud, PathSystem& path);
 };
 
 }  // ::rage

@@ -105,9 +105,9 @@ struct PhysicsFixture
 		teleports.push_back(event);
 	}
 
-	void addTeleport(utils::SceneID from, sf::Vector2u const& at,
-		utils::SceneID to, sf::Vector2u const& dst) {
-		auto& trigger = dungeon[from].getCell(at).trigger;
+	void addTeleport(utils::SceneID from, sf::Vector2f const& at,
+		utils::SceneID to, sf::Vector2f const& dst) {
+		auto& trigger = dungeon[from].getCell(sf::Vector2u{at}).trigger;
 		trigger = std::make_unique<core::TeleportTrigger>(
 			dynamic_cast<core::TeleportSender&>(collision), movement,
 			collision, dungeon, to, dst);

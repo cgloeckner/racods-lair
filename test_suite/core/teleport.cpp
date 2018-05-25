@@ -162,7 +162,7 @@ BOOST_AUTO_TEST_CASE(given_position_can_be_detected_as_free_position) {
 	auto& data = fix.add_object();
 	auto& coll = fix.collision.query(data.id);
 	auto& dungeon = fix.dungeon[1u];
-	sf::Vector2u pos{1, 1};
+	sf::Vector2f pos{1, 1};
 	core::SpawnHelper helper{fix.collision, fix.movement, dungeon, data.id};
 	auto success = core::getFreePosition(helper, pos);
 	BOOST_CHECK(success);
@@ -176,8 +176,8 @@ BOOST_AUTO_TEST_CASE(wall_tile_is_avoided) {
 	auto& data = fix.add_object();
 	auto& coll = fix.collision.query(data.id);
 	auto& dungeon = fix.dungeon[1u];
-	sf::Vector2u pos{3, 3};
-	dungeon.getCell(pos).terrain = core::Terrain::Wall;
+	sf::Vector2f pos{3, 3};
+	dungeon.getCell(sf::Vector2u{pos}).terrain = core::Terrain::Wall;
 	core::SpawnHelper helper{fix.collision, fix.movement, dungeon, data.id};	
 	BOOST_CHECK(!core::getFreePosition(helper, pos));
 	BOOST_CHECK(core::getFreePosition(helper, pos, 1));
@@ -191,8 +191,8 @@ BOOST_AUTO_TEST_CASE(void_tile_is_avoided) {
 	auto& data = fix.add_object();
 	auto& coll = fix.collision.query(data.id);
 	auto& dungeon = fix.dungeon[1u];
-	sf::Vector2u pos{3, 3};
-	dungeon.getCell(pos).terrain = core::Terrain::Void;
+	sf::Vector2f pos{3, 3};
+	dungeon.getCell(sf::Vector2u{pos}).terrain = core::Terrain::Void;
 	core::SpawnHelper helper{fix.collision, fix.movement, dungeon, data.id};	
 	BOOST_CHECK(!core::getFreePosition(helper, pos));
 	BOOST_CHECK(core::getFreePosition(helper, pos, 1));
@@ -208,7 +208,7 @@ BOOST_AUTO_TEST_CASE(object_is_avoided) {
 	auto& dungeon = fix.dungeon[1u];
 	auto& block = fix.add_object();
 	core::spawn(dungeon, block, {1u, 1u});
-	sf::Vector2u pos{1, 1};
+	sf::Vector2f pos{1, 1};
 	core::SpawnHelper helper{fix.collision, fix.movement, dungeon, data.id};
 	BOOST_CHECK(!core::getFreePosition(helper, pos));
 	BOOST_CHECK(core::getFreePosition(helper, pos, 1));
@@ -229,7 +229,7 @@ BOOST_AUTO_TEST_CASE(finding_free_pos_can_fail) {
 
 	auto& data = fix.add_object();
 	auto& coll = fix.collision.query(data.id);
-	sf::Vector2u pos{1, 1};
+	sf::Vector2f pos{1, 1};
 	core::SpawnHelper helper{fix.collision, fix.movement, dungeon, data.id};	
 	BOOST_CHECK(!core::getFreePosition(helper, pos, 5));
 }
@@ -251,7 +251,7 @@ BOOST_AUTO_TEST_CASE(finding_free_pos_can_find_rare_spots) {
 
 	auto& data = fix.add_object();
 	auto& coll = fix.collision.query(data.id);
-	sf::Vector2u pos{3, 3};
+	sf::Vector2f pos{3, 3};
 	core::spawn(dungeon, data, sf::Vector2f{pos});
 
 	core::SpawnHelper helper{fix.collision, fix.movement, dungeon, data.id};

@@ -9,11 +9,11 @@ namespace engine {
 
 struct AiSystem
 	: utils::EventListener<core::CollisionEvent, core::TeleportEvent,
-		core::AnimationEvent, core::MoveEvent, core::FocusEvent,
+		core::AnimationEvent, core::MoveEvent,
 		rpg::EffectEvent, rpg::StatsEvent, rpg::DeathEvent,
 		rpg::SpawnEvent, rpg::FeedbackEvent> {
 
-	game::ScriptSystem script;
+	//game::ScriptSystem script;
 	game::PathSystem path;
 	game::NavigationSystem navigation;
 
@@ -27,7 +27,6 @@ struct AiSystem
 	void handle(core::TeleportEvent const& event);
 	void handle(core::AnimationEvent const& event);
 	void handle(core::MoveEvent const& event);
-	void handle(core::FocusEvent const& event);
 	void handle(rpg::EffectEvent const& event);
 	void handle(rpg::StatsEvent const& event);
 	void handle(rpg::DeathEvent const& event);

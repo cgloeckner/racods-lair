@@ -32,7 +32,7 @@ using BuilderModifier = std::function<void(DungeonBuilder& builder)>;
 
 namespace factory_impl {
 
-bool canHoldPowerup(Session const & session, utils::SceneID scene, sf::Vector2u const & pos, core::ObjectID ignore=0u);
+bool canHoldPowerup(Session const & session, utils::SceneID scene, sf::Vector2f const & pos, core::ObjectID ignore=0u);
 
 } // ::factory_impl
 
@@ -162,7 +162,7 @@ class Factory
 	 */
 	core::ObjectID createBot(BotTemplate const& bot,
 		rpg::SpawnMetaData const& data, std::size_t level,
-		utils::Script const& script, bool hostile, float difficulty=1.f);
+		/*utils::Script const& script,*/ bool hostile, float difficulty=1.f);
 
 	/// Create a new player object
 	/// This creates a new player object. A corresponding base object is
@@ -204,8 +204,8 @@ class Factory
 	/// @param src Cell position to trigger at
 	/// @param target SceneID of the target scene
 	/// @param dst Cell position to teleport to
-	void addTeleport(utils::SceneID source, sf::Vector2u const & src,
-		utils::SceneID target, sf::Vector2u const & dst);
+	void addTeleport(utils::SceneID source, sf::Vector2f const & src,
+		utils::SceneID target, sf::Vector2f const & dst);
 	
 	/// Handle an incomming projectile event
 	/**

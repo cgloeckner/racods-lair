@@ -64,7 +64,7 @@ void ComponentInspector<core::MovementData>::update() {
 	ImGui::Columns(2, "movement-columns");
 		ImGui::Separator();
 		ui::showPair("World Position", thor::toString(data.pos));
-		ui::showPair("Movement Target", thor::toString(data.target));
+		ui::showPair("Previous World Position", thor::toString(data.last_pos));
 		ui::editFloat("Max Speed", data.max_speed, 0.f, core::MAX_SPEED);
 		ui::showPair("Scene ID", std::to_string(data.scene));
 		ui::showPair("Move Vector", thor::toString(data.move));
@@ -708,6 +708,7 @@ void ComponentInspector<rpg::InteractData>::update() {
 	ImGui::Columns();
 }
 
+/*
 template <>
 void ComponentInspector<game::ScriptData>::update() {
 	auto& data = engine.session.script.query(id);
@@ -722,5 +723,6 @@ void ComponentInspector<game::ScriptData>::update() {
 	
 	ImGui::Columns();
 }
+*/
 
 } // ::tool

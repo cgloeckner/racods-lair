@@ -47,18 +47,18 @@ struct SpawnHelper {
 
 	SpawnHelper(CollisionManager const& collision, MovementManager const & movement,
 		Dungeon const& dungeon, ObjectID actor);
-	bool operator()(sf::Vector2u const& pos);
+	bool operator()(sf::Vector2f const& pos);
 };
 
 struct TriggerHelper {
 	Dungeon const& dungeon;
 
 	TriggerHelper(Dungeon const& dungeon);
-	bool operator()(sf::Vector2u const& pos);
+	bool operator()(sf::Vector2f const& pos);
 };
 
 template <typename Pred>
-bool getFreePosition(Pred pred, sf::Vector2u& pos, std::size_t max_drift = 0u);
+bool getFreePosition(Pred pred, sf::Vector2f& pos, std::size_t max_drift = 0u);
 
 // ---------------------------------------------------------------------------
 
@@ -81,7 +81,7 @@ class TeleportTrigger : public BaseTrigger {
 
   protected:
 	utils::SceneID const target;
-	sf::Vector2u const pos;
+	sf::Vector2f const pos;
 
   public:
 	/// Create a new teleport trigger
@@ -101,7 +101,7 @@ class TeleportTrigger : public BaseTrigger {
 	 */
 	TeleportTrigger(TeleportSender& teleport_sender, MovementManager& movement,
 		CollisionManager const& collision, DungeonSystem& dungeon,
-		utils::SceneID target, sf::Vector2u pos);
+		utils::SceneID target, sf::Vector2f pos);
 
 	/// Execute the actual teleport
 	/**

@@ -6,7 +6,7 @@
 
 namespace state {
 
-void searchPosition(std::vector<sf::Vector2u> const & tiles, sf::Vector2u& pos, core::Dungeon const & dungeon, unsigned int max_step=20u);
+void searchPosition(std::vector<sf::Vector2u> const & tiles, sf::Vector2f& pos, core::Dungeon const & dungeon, unsigned int max_step=20u);
 
 // --------------------------------------------------------------------
 

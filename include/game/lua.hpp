@@ -16,6 +16,8 @@
 
 namespace game {
 
+/// @note out of order, needs reimplementation
+/*
 extern float const ENEMY_SPOT_SIGHT_RADIO;
 
 struct ScriptData;
@@ -41,19 +43,19 @@ struct LuaApi {
 	std::vector<sf::Vector2u> path;
 
 	/// Create an instance of the LuaApi
-	/**
-	 *	The instance deals with a specific entity, which is identified by
-	 *	the given actor id.
-	 *
-	 *	@param log Reference to the logging context
-	 *	@param actor Object id of the actor
-	 *	@param hostile Determines whether enemy or player's minion
-	 *	@param session Session reference to access additional data
-	 *	@param script ScriptManager reference to query for other AIs
-	 *	@param input_sender InputEvent sender that is bound
-	 *	@param action_sender ActionEvent sender that is bound
-	 *	@param path Reference to PathSystem that will be used
-	 */
+	/// 
+	/// 	The instance deals with a specific entity, which is identified by
+	/// 	the given actor id.
+	/// 
+	/// 	@param log Reference to the logging context
+	/// 	@param actor Object id of the actor
+	/// 	@param hostile Determines whether enemy or player's minion
+	/// 	@param session Session reference to access additional data
+	/// 	@param script ScriptManager reference to query for other AIs
+	/// 	@param input_sender InputEvent sender that is bound
+	/// 	@param action_sender ActionEvent sender that is bound
+	/// 	@param path Reference to PathSystem that will be used
+	/// 
 	LuaApi(core::LogContext& log, core::ObjectID actor, bool hostile,
 		rpg::Session const& session, ScriptManager const& script,
 		core::InputSender& input_sender, rpg::ActionSender& action_sender,
@@ -63,233 +65,233 @@ struct LuaApi {
 	bool isHostile(core::ObjectID target) const;
 
 	/// Returns the moving vector of the given object
-	sf::Vector2i getMove(core::ObjectID target) const;
+	sf::Vector2f getMove(core::ObjectID target) const;
 
 	/// Query whether actor has a path
-	/**
-	 *	@return true if the actor as either a pending or a tracing path
-	 */
+	/// 
+	/// 	@return true if the actor as either a pending or a tracing path
+	/// 
 	bool hasPath() const;
 
 	/// Query whether path leads to the given position
-	/**
-	 *	@param pos Position that is checked for being the path's target
-	 *	@return true if the path leads to this position
-	 */
+	/// 
+	/// 	@param pos Position that is checked for being the path's target
+	/// 	@return true if the path leads to this position
+	/// 
 	bool isPathTarget(sf::Vector2u const & pos) const;
 
 	/// Query tile position of the specified object
-	/**
-	 *	The object's current tile position is returned.
-	 *
-	 *	@param id Object id to query for
-	 *	@return tile position
-	 */
-	sf::Vector2u getPosition(core::ObjectID id) const;
+	/// 
+	/// 	The object's current tile position is returned.
+	/// 
+	/// 	@param id Object id to query for
+	/// 	@return tile position
+	/// 
+	sf::Vector2f getPosition(core::ObjectID id) const;
 
 	/// Query scene id of the object
 	utils::SceneID getScene(core::ObjectID id) const;
 
 	/// Calculate looking direction to given object
-	sf::Vector2i getDirection(core::ObjectID id) const;
+	sf::Vector2f getDirection(core::ObjectID id) const;
 
 	/// Query actor's focus
-	/**
-	 *	Returns the id of the object which is currently focused by the actor.
-	 *	If zero is returned, no object is currently focused.
-	 *
-	 *	@return object if of focused object
-	 */
+	/// 
+	/// 	Returns the id of the object which is currently focused by the actor.
+	/// 	If zero is returned, no object is currently focused.
+	/// 
+	/// 	@return object if of focused object
+	/// 
 	core::ObjectID getFocus() const;
 
 	/// Calculate tile distance between actor and given object
-	/**
-	 *	The tile distance is calculated and returned. This distance
-	 *	is close to the Euclidian distance, but not referring to the
-	 *	beeline.
-	 *
-	 *	@param other Another object's id
-	 *	@return distance between actor and `other`
-	 */
+	/// 
+	/// 	The tile distance is calculated and returned. This distance
+	/// 	is close to the Euclidian distance, but not referring to the
+	/// 	beeline.
+	/// 
+	/// 	@param other Another object's id
+	/// 	@return distance between actor and `other`
+	/// 
 	float getDistance(core::ObjectID other) const;
 	
 	/// Return maximum sight distance
 	float getSight() const;
 
 	/// Query all available enmies
-	/**
-	 *	This will query all enemies that are located inside the actor's sight.
-	 *	All enemies object ids are returned. Keep in mind that this operation
-	 *	is more expensive for players' minions than for hostile enemies.
-	 *
-	 *	@return array of object ids
-	 */
+	/// 
+	/// 	This will query all enemies that are located inside the actor's sight.
+	/// 	All enemies object ids are returned. Keep in mind that this operation
+	/// 	is more expensive for players' minions than for hostile enemies.
+	/// 
+	/// 	@return array of object ids
+	/// 
 	std::vector<core::ObjectID> getEnemies() const;
 
 	/// Query all available allies
-	/**
-	 *
-	 *	This will query all allies that are located inside the actor's sight.
-	 *	All allied objects' ids are returned. Keep in mind that this operation
-	 *	is more expensive for hostile bots than for players' minions
-	 *
-	 *	@return array of object ids
-	 */
+	/// 
+	/// 
+	/// 	This will query all allies that are located inside the actor's sight.
+	/// 	All allied objects' ids are returned. Keep in mind that this operation
+	/// 	is more expensive for hostile bots than for players' minions
+	/// 
+	/// 	@return array of object ids
+	/// 
 	std::vector<core::ObjectID> getAllies() const;
 
 	/// Query the actor's stats
-	/**
-	 *	This returns a const reference to the actor's stats data.
-	 *
-	 *	@return const reference to stats data
-	 */
+	/// 
+	/// 	This returns a const reference to the actor's stats data.
+	/// 
+	/// 	@return const reference to stats data
+	/// 
 	rpg::StatsData const& getStats() const;
 	
 	/// Query whether object is alive
 	bool isAlive(core::ObjectID id) const;
 
 	/// Query the given weapon's damage
-	/**
-	 *	This returns the given weapon's damage if it would be used by the
-	 *	actor. It can be calculated despite the actor owns such an item or
-	 *	not.
-	 *
-	 *	@param item Item template of the weapon
-	 *	@return calculated damage map
-	 */
+	/// 
+	/// 	This returns the given weapon's damage if it would be used by the
+	/// 	actor. It can be calculated despite the actor owns such an item or
+	/// 	not.
+	/// 
+	/// 	@param item Item template of the weapon
+	/// 	@return calculated damage map
+	/// 
 	utils::EnumMap<rpg::DamageType, unsigned int> getWeaponDamage(rpg::ItemTemplate const & item) const;
 
 	/// Query the given perk's damage
-	/**
-	 *	This returns the given perk's damage if it would be used by the
-	 *	actor. It can be calculated despite the actor learned the perk or not.
-	 *
-	 *	@param perk Perk template to calculate for
-	 *	@return calculated damage map
-	 */
+	/// 
+	/// 	This returns the given perk's damage if it would be used by the
+	/// 	actor. It can be calculated despite the actor learned the perk or not.
+	/// 
+	/// 	@param perk Perk template to calculate for
+	/// 	@return calculated damage map
+	/// 
 	utils::EnumMap<rpg::DamageType, unsigned int> getPerkDamage(rpg::PerkTemplate const & perk) const;
 
 	/// Query the given perk's recovery
-	/**
-	 *	This returns the given perk's recovery if it would be used by the
-	 *	actor. It can be calculated despite the actor learned the perk or not.
-	 *
-	 *	@param perk Perk template to calculate for
-	 *	@return calculated recovery map
-	 */
+	/// 
+	/// 	This returns the given perk's recovery if it would be used by the
+	/// 	actor. It can be calculated despite the actor learned the perk or not.
+	/// 
+	/// 	@param perk Perk template to calculate for
+	/// 	@return calculated recovery map
+	/// 
 	utils::EnumMap<rpg::Stat, int> getPerkRecovery(rpg::PerkTemplate const & perk) const;
 
 	/// Query item within equipment slot
-	/**
-	 *	This returns a pointer to the item template, which is located at the
-	 *	specified equipment slot. If not item is found, a nullptr is returned.
-	 *
-	 *	@param slot Equipment slot to query at
-	 *	@return pointer to item template or nullptr
-	 */
+	/// 
+	/// 	This returns a pointer to the item template, which is located at the
+	/// 	specified equipment slot. If not item is found, a nullptr is returned.
+	/// 
+	/// 	@param slot Equipment slot to query at
+	/// 	@return pointer to item template or nullptr
+	/// 
 	rpg::ItemTemplate const* getEquipment(rpg::EquipmentSlot slot) const;
 
 	/// Query all weapons from inventory
-	/**
-	 *	This returns all weapons from the actor's inventory, including each
-	 *	items' quantity.
-	 *
-	 *	@return all weapons from the inventory
-	 */
+	/// 
+	/// 	This returns all weapons from the actor's inventory, including each
+	/// 	items' quantity.
+	/// 
+	/// 	@return all weapons from the inventory
+	/// 
 	std::vector<rpg::Item> getWeapons() const;
 
 	/// Query all armors from inventory
-	/**
-	 *	This returns all armors from the actor's inventory, including each
-	 *	items' quantity.
-	 *
-	 *	@return all armors from the inventory
-	 */
+	/// 
+	/// 	This returns all armors from the actor's inventory, including each
+	/// 	items' quantity.
+	/// 
+	/// 	@return all armors from the inventory
+	/// 
 	std::vector<rpg::Item> getArmors() const;
 
 	/// Query all potions from inventory
-	/**
-	 *	This returns all potions from the actor's inventory, including each
-	 *	items' quantity.
-	 *
-	 *	@return all potions from the inventory
-	 */
+	/// 
+	/// 	This returns all potions from the actor's inventory, including each
+	/// 	items' quantity.
+	/// 
+	/// 	@return all potions from the inventory
+	/// 
 	std::vector<rpg::Item> getPotions() const;
 
 	/// Query all perks that were learned
-	/**
-	 *	This returns all perks that were learned by the actor, including each
-	 *	perks' level.
-	 *
-	 *	@return all perks learned by the actor
-	 */
+	/// 
+	/// 	This returns all perks that were learned by the actor, including each
+	/// 	perks' level.
+	/// 
+	/// 	@return all perks learned by the actor
+	/// 
 	std::vector<rpg::Perk> getPerks() const;
 
 	/// Move the actor to the given position
-	/**
-	 *	This triggers pathfinding towards the specified target position. The
-	 *	actual movement will start automatically once the calculated path is
-	 *	received and traversed using `update()`.
-	 *	Once another navigation move has been triggered but not performed yet,
-	 *	the previous request is replaced.
-	 *
-	 *	@param target Target tile position to go to
-	 */
-	void navigate(sf::Vector2u const & target);
+	/// 
+	/// 	This triggers pathfinding towards the specified target position. The
+	/// 	actual movement will start automatically once the calculated path is
+	/// 	received and traversed using `update()`.
+	/// 	Once another navigation move has been triggered but not performed yet,
+	/// 	the previous request is replaced.
+	/// 
+	/// 	@param target Target tile position to go to
+	/// 
+	void navigate(sf::Vector2f const & target);
 
 	/// Move the actor to the given direction
 	/// The actor is triggered to move into the given direction. Once a
 	/// navigation move has been triggered but not performed yet, each
 	/// movement request is dropped.
 	/// @param dir Movement direction to go to
-	void move(sf::Vector2i dir);
-	void moveTowards(sf::Vector2u pos);
+	void move(sf::Vector2f dir);
+	void moveTowards(sf::Vector2f pos);
 
 	/// Turn the actor to look into the given direction
 	/// This will make the actor face the given direction.
 	/// @param dir Face direction to look to
-	void look(sf::Vector2i dir);
-	void lookTowards(sf::Vector2u pos);
+	void look(sf::Vector2f dir);
+	void lookTowards(sf::Vector2f pos);
 
 	/// Stop current movement
-	/**
-	 *	This will stop the current movement and reset the path.
-	 */
+	/// 
+	/// 	This will stop the current movement and reset the path.
+	/// 
 	void stop();
 
 	/// Start a single attack
-	/**
-	 *	This will trigger a single attack. The current weapon is used for
-	 *	this. No target is specified, because the target is implicitly
-	 *	selected by moving and facing.
-	 */
+	/// 
+	/// 	This will trigger a single attack. The current weapon is used for
+	/// 	this. No target is specified, because the target is implicitly
+	/// 	selected by moving and facing.
+	/// 
 	void attack();
 
 	/// Use an item
-	/**
-	 *	This will create an event for item usage. Whether the item can be
-	 *	used is not checked here; this is up to the item system.
-	 *
-	 *	@param item Item templat to use
-	 */
+	/// 
+	/// 	This will create an event for item usage. Whether the item can be
+	/// 	used is not checked here; this is up to the item system.
+	/// 
+	/// 	@param item Item templat to use
+	/// 
 	void useItem(rpg::ItemTemplate const & item);
 
 	/// Use a perk
-	/**
-	 *	This will create an event for perk usage. Whether the perk can be
-	 *	used is not checked here; this is up to the perk system.
-	 *
-	 *	@param perk Perk templat to use
-	 */
+	/// 
+	/// 	This will create an event for perk usage. Whether the perk can be
+	/// 	used is not checked here; this is up to the perk system.
+	/// 
+	/// 	@param perk Perk templat to use
+	/// 
 	void usePerk(rpg::PerkTemplate const & perk);
 
 	/// Update the bot's internal data
-	/**
-	 *	Its main purpose is to handle movement traversal.
-	 *
-	 *	@param elapsed Elapsed time since last frame
-	 *	@return PathFailedEvent or boost::none
-	 */
+	/// 
+	/// 	Its main purpose is to handle movement traversal.
+	/// 
+	/// 	@param elapsed Elapsed time since last frame
+	/// 	@return PathFailedEvent or boost::none
+	/// 
 	boost::optional<PathFailedEvent> update(sf::Time const& elapsed);
 };
 
@@ -520,5 +522,7 @@ struct Binder<game::LuaApi> {
 /// @see game/resources.cpp
 void bindAll(Script& script);
 
-} // ::utils
+*/
+
+} // ::game
 

@@ -15,12 +15,10 @@ PhysicsSystem::PhysicsSystem(core::LogContext& log, std::size_t max_objects,
 }
 
 void PhysicsSystem::connect(MultiEventListener& listener) {
-	collision.bind<core::MoveEvent>(listener);
 	collision.bind<core::CollisionEvent>(listener);
 }
 
 void PhysicsSystem::disconnect(MultiEventListener& listener) {
-	collision.unbind<core::MoveEvent>(listener);
 	collision.unbind<core::CollisionEvent>(listener);
 }
 
@@ -30,7 +28,7 @@ template <>
 void PhysicsSystem::bind(
 	utils::SingleEventListener<core::MoveEvent>& listener) {
 	// to various
-	move.bind(listener);
+	movement.bind(listener);
 }
 
 template <>
@@ -67,7 +65,7 @@ template <>
 void PhysicsSystem::unbind(
 	utils::SingleEventListener<core::MoveEvent> const & listener) {
 	// to various
-	move.unbind(listener);
+	movement.unbind(listener);
 }
 
 template <>
@@ -103,7 +101,6 @@ void PhysicsSystem::unbind(
 void PhysicsSystem::handle(core::InputEvent const& event) {
 	// from behavior
 	movement.receive(event);
-	focus.receive(event);
 }
 
 // ---------------------------------------------------------------------------

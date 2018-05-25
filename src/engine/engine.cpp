@@ -114,7 +114,7 @@ Engine::Engine(core::LogContext& log, std::size_t max_objects,
 		  avatar.stats, avatar.effect, avatar.item, avatar.perk, avatar.player,
 		  physics.projectile, behavior.action, behavior.input,
 		  behavior.interact, avatar.quickslot, ui.audio, generator,
-		  ai.navigation, ai.script, ui.hud, ai.path}
+		  ai.navigation, /*ai.script,*/ ui.hud, ai.path}
 	, mod{mod}
 	, factory{log, session, mod} {
 	log.debug << "[Engine/Engine] Initialized with max_objects="
@@ -139,8 +139,6 @@ Engine::Engine(core::LogContext& log, std::size_t max_objects,
 	physics.bind<core::CollisionEvent>(ai);		   // collision response
 	physics.bind<core::TeleportEvent>(ai);		   // ai response
 	physics.bind<core::TeleportEvent>(ui);		   // ui response
-	physics.bind<core::FocusEvent>(ai);			   // focus response
-	physics.bind<core::FocusEvent>(ui);			   // focus response
 	physics.bind<rpg::CombatEvent>(combat);		   // combat request by projectiles
 	physics.bind<rpg::ProjectileEvent>(factory);   // projectile destruction
 	physics.bind<rpg::ProjectileEvent>(ui);		   // projectile destruction
@@ -199,7 +197,6 @@ void Engine::connect(MultiEventListener& listener) {
 	physics.bind<core::MoveEvent>(listener);
 	physics.bind<core::CollisionEvent>(listener);
 	physics.bind<core::TeleportEvent>(listener);
-	physics.bind<core::FocusEvent>(listener);
 	physics.bind<rpg::CombatEvent>(listener);
 	physics.bind<rpg::ProjectileEvent>(listener);
 	physics.connect(listener);
@@ -243,7 +240,6 @@ void Engine::disconnect(MultiEventListener& listener) {
 	physics.unbind<core::MoveEvent>(listener);
 	physics.unbind<core::CollisionEvent>(listener);
 	physics.unbind<core::TeleportEvent>(listener);
-	physics.unbind<core::FocusEvent>(listener);
 	physics.unbind<rpg::CombatEvent>(listener);
 	physics.unbind<rpg::ProjectileEvent>(listener);
 	physics.disconnect(listener);

@@ -308,7 +308,9 @@ bool operator!=(RoomTemplate const & lhs, RoomTemplate const & rhs) {
 
 // ---------------------------------------------------------------------------
 
-AiScript::AiScript() : utils::Script{} { bindAll(*this); }
+AiScript::AiScript() : utils::Script{} {
+	//bindAll(*this);
+}
 
 // ---------------------------------------------------------------------------
 
@@ -505,8 +507,8 @@ template class MultiResourceCache<
 	game::RoomTemplate>;
 
 void bindAll(Script& script) {
-	script.bind<sf::Vector2u>();
-	script.bind<sf::Vector2i>();
+	/*
+	script.bind<sf::Vector2f>();
 	
 	script.bind<rpg::EquipmentSlot>();
 	script.bind<rpg::ItemType>();
@@ -522,6 +524,7 @@ void bindAll(Script& script) {
 	script.bind<rpg::StatsData>();
 	
 	script.bind<game::LuaApi>();
+	*/
 }
 
 }  // ::utils

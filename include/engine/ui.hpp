@@ -18,7 +18,7 @@ namespace engine {
 
 struct UiSystem
 	: utils::EventListener<core::AnimationEvent, core::TeleportEvent,
-		core::FocusEvent, core::SpriteEvent, core::SoundEvent,
+		core::SpriteEvent, core::SoundEvent,
 		core::MusicEvent, core::MoveEvent, rpg::StatsEvent, rpg::DeathEvent,
 		rpg::SpawnEvent, rpg::ProjectileEvent, rpg::ExpEvent,
 		rpg::FeedbackEvent, rpg::ItemEvent, rpg::PerkEvent,
@@ -62,7 +62,6 @@ struct UiSystem
 	void handle(sf::Event const& event);
 	void handle(core::AnimationEvent const& event);
 	void handle(core::TeleportEvent const& event);
-	void handle(core::FocusEvent const& event);
 	void handle(core::SpriteEvent const& event);
 	void handle(core::SoundEvent const& event);
 	void handle(core::MusicEvent const& event);

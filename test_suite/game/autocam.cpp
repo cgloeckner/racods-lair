@@ -179,8 +179,8 @@ BOOST_AUTO_TEST_CASE(autocam_joins_two_players_if_close_enough) {
 	auto& fix = Singleton<AutoCamFixture>::get();
 	fix.reset();
 	
-	auto obj1 = fix.create({2u, 2u}, fix.scene1);
-	auto obj2 = fix.create({2.f + fix.context.distance, 2.f}, fix.scene1);
+	auto obj1 = fix.create({2.f, 2.f}, fix.scene1);
+	auto obj2 = fix.create({2.f + fix.context.distance - 1.f, 2.f}, fix.scene1);
 	auto& cam1 = fix.camera.acquire();
 	auto& cam2 = fix.camera.acquire();
 	cam1.objects.push_back(obj1);
@@ -202,10 +202,10 @@ BOOST_AUTO_TEST_CASE(autocam_splits_some_players_who_are_too_far_away) {
 	auto& fix = Singleton<AutoCamFixture>::get();
 	fix.reset();
 	
-	auto obj1 = fix.create({2u, 2u}, fix.scene1);
-	auto obj2 = fix.create({2u, 2.f + fix.context.distance}, fix.scene1);
-	auto obj3 = fix.create({2.f + fix.context.distance, 2.f}, fix.scene1);
-	auto obj4 = fix.create({2u + fix.context.distance, 2u + fix.context.distance - 1.f}, fix.scene1);
+	auto obj1 = fix.create({2.f, 2.f}, fix.scene1);
+	auto obj2 = fix.create({2.f, 2.f + fix.context.distance - 1.f}, fix.scene1);
+	auto obj3 = fix.create({2.f + fix.context.distance + 1.f, 2.f}, fix.scene1);
+	auto obj4 = fix.create({2.f + fix.context.distance + 1.f, 2.f + fix.context.distance - 1.f}, fix.scene1);
 	auto& cam = fix.camera.acquire();
 	cam.objects.push_back(obj1);
 	cam.objects.push_back(obj2);
@@ -215,6 +215,8 @@ BOOST_AUTO_TEST_CASE(autocam_splits_some_players_who_are_too_far_away) {
 	game::autocam_impl::onUpdate(fix.context);
 	BOOST_REQUIRE(fix.context.changed);
 	
+	// two cameras: first with obj1+obj2, second with obj3+obj4
+	BOOST_REQUIRE_EQUAL(fix.camera.size(), 2u);
 	auto& first = fix.camera.query(obj1);
 	auto& second = fix.camera.query(obj3);
 	BOOST_REQUIRE_EQUAL(fix.camera.size(), 2u);
@@ -226,14 +228,14 @@ BOOST_AUTO_TEST_CASE(autocam_splits_some_players_who_are_too_far_away) {
 	BOOST_CHECK_EQUAL(second.objects[1], obj4);
 }
 
-BOOST_AUTO_TEST_CASE(autocam_joins_some_players_who_are_close_enougth) {
+BOOST_AUTO_TEST_CASE(autocam_joins_some_players_who_are_close_enough) {
 	auto& fix = Singleton<AutoCamFixture>::get();
 	fix.reset();
 	
-	auto obj1 = fix.create({2u, 2u}, fix.scene1);
-	auto obj2 = fix.create({2u, 2.f + fix.context.distance}, fix.scene1);
-	auto obj3 = fix.create({2.f + fix.context.distance, 2.f}, fix.scene1);
-	auto obj4 = fix.create({2u + fix.context.distance, 2u + fix.context.distance - 1.f}, fix.scene1);
+	auto obj1 = fix.create({2.f, 2.f}, fix.scene1);
+	auto obj2 = fix.create({2.f, 2.f + fix.context.distance - 1.f}, fix.scene1);
+	auto obj3 = fix.create({2.f + fix.context.distance + 1.f, 2.f}, fix.scene1);
+	auto obj4 = fix.create({2.f + fix.context.distance + 1.f, 2.f + fix.context.distance - 1.f}, fix.scene1);
 	auto& cam1 = fix.camera.acquire();
 	auto& cam2 = fix.camera.acquire();
 	auto& cam3 = fix.camera.acquire();
@@ -246,6 +248,7 @@ BOOST_AUTO_TEST_CASE(autocam_joins_some_players_who_are_close_enougth) {
 	game::autocam_impl::onUpdate(fix.context);
 	BOOST_REQUIRE(fix.context.changed);
 	
+	// two cameras: first with obj1+obj2, second with obj3+obj4
 	BOOST_REQUIRE_EQUAL(fix.camera.size(), 2u);
 	auto& first = fix.camera.query(obj1);
 	auto& second = fix.camera.query(obj3);

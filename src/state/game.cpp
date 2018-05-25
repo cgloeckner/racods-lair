@@ -8,12 +8,12 @@
 
 namespace state {
 
-void searchPosition(std::vector<sf::Vector2u> const & tiles, sf::Vector2u& pos, core::Dungeon const & dungeon, unsigned int max_step) {
+void searchPosition(std::vector<sf::Vector2u> const & tiles, sf::Vector2f& pos, core::Dungeon const & dungeon, unsigned int max_step) {
 	do {
-		pos = utils::randomAt(tiles);
-	} while (!core::getFreePosition([&](sf::Vector2u const & p) {
-		if (dungeon.has(p)) {
-			auto const & cell = dungeon.getCell(p);
+		pos = sf::Vector2f{utils::randomAt(tiles)};
+	} while (!core::getFreePosition([&](sf::Vector2f const & p) {
+		if (dungeon.has(sf::Vector2u{p})) {
+			auto const & cell = dungeon.getCell(sf::Vector2u{p});
 			return cell.terrain == core::Terrain::Floor
 				&& cell.entities.empty();
 		}
@@ -138,7 +138,7 @@ GameState::GameState(App& app)
 			for (auto const & pos: v) {
 				// generator setting!!
 				if (thor::random(0.f, 1.f) < settings.ambience_density) {
-					spawn.pos = pos;
+					spawn.pos = sf::Vector2f{pos};
 					auto const & tex = *all_ambiences[thor::random(0u, all_ambiences.size()-1u)];
 					game.engine.factory.createAmbience(tex, spawn);
 				}
@@ -210,21 +210,21 @@ GameState::GameState(App& app)
 				searchPosition(room, spawn.pos, dungeon);
 				for (auto i = 0; i < thor::random(min_num_bots, max_num_bots); ++i) {
 					// spawn near position
-					core::getFreePosition([&](sf::Vector2u const & p) {
-						if (dungeon.has(p)) {
-							auto const & cell = dungeon.getCell(p);
+					core::getFreePosition([&](sf::Vector2f const & p) {
+						if (dungeon.has(sf::Vector2u{p})) {
+							auto const & cell = dungeon.getCell(sf::Vector2u{p});
 							return cell.terrain == core::Terrain::Floor
 								&& cell.entities.empty();
 						}
 						return false;
 					}, spawn.pos, 100u);
 					auto const & bot = encounter.pick(thor::random(0.f, 1.f));
-					game.engine.factory.createBot(bot, spawn, lvl, script, true, diff);
+					game.engine.factory.createBot(bot, spawn, lvl, /*script,*/ true, diff);
 				}
 			} else {
 				// place racod in last dungeon's last room
 				searchPosition(room, spawn.pos, dungeon);
-				game.engine.factory.createBot(boss, spawn, lvl + lvl / 10, script, true, 3.f * diff * game.lobby.players.size());
+				game.engine.factory.createBot(boss, spawn, lvl + lvl / 10, /*script,*/ true, 3.f * diff * game.lobby.players.size());
 			}
 			++n;
 		}

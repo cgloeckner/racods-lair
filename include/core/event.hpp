@@ -87,7 +87,7 @@ struct MusicEvent {
 struct TeleportEvent {
 	ObjectID actor;
 	utils::SceneID src_scene, dst_scene;
-	sf::Vector2u src_pos, dst_pos;
+	sf::Vector2f src_pos, dst_pos;
 };
 
 // ---------------------------------------------------------------------------

@@ -47,7 +47,6 @@ void addCombatLabel(Context& context, core::ObjectID id, unsigned int value, sf:
 // --------------------------------------------------------------------
 
 void onTeleport(Context& context, core::TeleportEvent const& event);
-void onFocus(Context& context, core::FocusEvent const& event);
 void onStats(Context& context, rpg::StatsEvent const& event);
 void onDeath(Context& context, rpg::DeathEvent const& event);
 void onSpawn(Context& context, rpg::SpawnEvent const& event);
@@ -66,7 +65,7 @@ void drawDecoration(Context const & context, sf::RenderTarget& target, sf::Rende
 
 class HudSystem
 	// Event API
-	: public utils::EventListener<core::TeleportEvent, core::FocusEvent, rpg::StatsEvent,
+	: public utils::EventListener<core::TeleportEvent, rpg::StatsEvent,
 		  rpg::DeathEvent, rpg::SpawnEvent, rpg::ExpEvent, rpg::FeedbackEvent,
 		  PowerupEvent>
 	// Component API
@@ -88,7 +87,6 @@ class HudSystem
 		sf::Texture const & border_tex);
 	
 	void handle(core::TeleportEvent const& event);
-	void handle(core::FocusEvent const& event);
 	void handle(rpg::StatsEvent const& event);
 	void handle(rpg::DeathEvent const& event);
 	void handle(rpg::SpawnEvent const& event);

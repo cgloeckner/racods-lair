@@ -12,7 +12,7 @@ namespace engine {
 
 using MultiEventListener = utils::EventListener<
 	// core events
-	core::InputEvent, core::MoveEvent, core::FocusEvent,
+	core::InputEvent, core::MoveEvent,
 	core::CollisionEvent, core::AnimationEvent, core::SpriteEvent,
 	core::SoundEvent, core::MusicEvent, core::TeleportEvent,
 	// rpg events
@@ -66,7 +66,6 @@ class EventLogger
 
 std::ostream& operator<<(std::ostream& lhs, core::InputEvent const & event);
 std::ostream& operator<<(std::ostream& lhs, core::MoveEvent const & event);
-std::ostream& operator<<(std::ostream& lhs, core::FocusEvent const & event);
 std::ostream& operator<<(std::ostream& lhs, core::CollisionEvent const & event);
 std::ostream& operator<<(std::ostream& lhs, core::AnimationEvent const & event);
 std::ostream& operator<<(std::ostream& lhs, core::SpriteEvent const & event);

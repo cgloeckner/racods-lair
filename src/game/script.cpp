@@ -2,6 +2,8 @@
 
 namespace game {
 
+/// @note out of order, needs reimplementation
+/*
 namespace script_impl {
 
 unsigned int const UPDATE_DELAY = 200; // ms
@@ -386,10 +388,6 @@ void ScriptSystem::handle(core::MoveEvent const& event) {
 	script_impl::onMove(context, event);
 }
 
-void ScriptSystem::handle(core::FocusEvent const& event) {
-	script_impl::onFocus(context, event);
-}
-
 void ScriptSystem::handle(rpg::EffectEvent const& event) {
 	script_impl::onEffect(context, event);
 }
@@ -419,7 +417,6 @@ void ScriptSystem::update(sf::Time const& elapsed) {
 	dispatch<core::TeleportEvent>(*this);
 	dispatch<core::AnimationEvent>(*this);
 	dispatch<core::MoveEvent>(*this);
-	dispatch<core::FocusEvent>(*this);
 	dispatch<rpg::EffectEvent>(*this);
 	dispatch<rpg::StatsEvent>(*this);
 	dispatch<rpg::DeathEvent>(*this);
@@ -437,5 +434,6 @@ void ScriptSystem::update(sf::Time const& elapsed) {
 	}
 	script_impl::update(context, elapsed);
 }
+*/
 
-}  // ::rage
+}  // ::game

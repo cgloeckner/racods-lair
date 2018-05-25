@@ -69,7 +69,7 @@ class TestMode
 	utils::SceneID scene;
 	
 	// object inspector / spawner / teleporter
-	sf::Vector2u tile_pos, target_pos;
+	sf::Vector2f tile_pos, target_pos;
 	
 	// object spawner / teleporter
 	int scenes_index, cell_entities_index;

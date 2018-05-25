@@ -42,8 +42,8 @@ SpawnHelper::SpawnHelper(CollisionManager const& collision, MovementManager cons
 	, result{} {
 }
 
-bool SpawnHelper::operator()(sf::Vector2u const& pos) {
-	if (!dungeon.has(pos)) {
+bool SpawnHelper::operator()(sf::Vector2f const& pos) {
+	if (!dungeon.has(sf::Vector2u{pos})) {
 		// invalid pos
 		return false;
 	}
@@ -51,7 +51,7 @@ bool SpawnHelper::operator()(sf::Vector2u const& pos) {
 	// fake movement to target
 	MovementData data{movement.query(actor)};
 	data.scene = dungeon.id;
-	data.pos = sf::Vector2f{pos};
+	data.pos = pos;
 	
 	// check collision
 	checkAnyCollision(movement, collision, dungeon, data, result);
@@ -60,8 +60,8 @@ bool SpawnHelper::operator()(sf::Vector2u const& pos) {
 
 TriggerHelper::TriggerHelper(Dungeon const& dungeon) : dungeon{dungeon} {}
 
-bool TriggerHelper::operator()(sf::Vector2u const& pos) {
-	auto& cell = dungeon.getCell(pos);
+bool TriggerHelper::operator()(sf::Vector2f const& pos) {
+	auto& cell = dungeon.getCell(sf::Vector2u{pos});
 	if (checkTileCollision(cell)) {
 		// ignore unaccessable position
 		return false;
@@ -74,7 +74,7 @@ bool TriggerHelper::operator()(sf::Vector2u const& pos) {
 
 TeleportTrigger::TeleportTrigger(TeleportSender& teleport_sender, MovementManager& movement,
 	CollisionManager const& collision, DungeonSystem& dungeon,
-	utils::SceneID target, sf::Vector2u pos)
+	utils::SceneID target, sf::Vector2f pos)
 	: BaseTrigger{}
 	, teleport_sender{teleport_sender}
 	, movement{movement}
@@ -100,10 +100,10 @@ void TeleportTrigger::execute(core::ObjectID actor) {
 
 	// teleport
 	auto& move_data = movement.query(actor);
-	auto from = sf::Vector2u{move_data.pos};
+	auto from = move_data.pos;
 	auto& src = dungeon[move_data.scene];
 	vanish(src, move_data);
-	spawn(dst, move_data, sf::Vector2f{p});
+	spawn(dst, move_data, p);
 
 	// propagate teleport
 	TeleportEvent tele;

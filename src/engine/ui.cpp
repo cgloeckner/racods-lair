@@ -9,7 +9,7 @@ UiSystem::UiSystem(core::LogContext& log, std::size_t max_objects, sf::Vector2u 
 	rpg::ItemManager const & item, rpg::PlayerManager const & player,
 	game::Localization& locale, std::string const & music_base, std::string const & music_ext)
 	: utils::EventListener<core::AnimationEvent, core::TeleportEvent,
-		core::FocusEvent, core::SpriteEvent, core::SoundEvent, core::MusicEvent,
+		core::SpriteEvent, core::SoundEvent, core::MusicEvent,
 		core::MoveEvent, rpg::StatsEvent, rpg::DeathEvent, rpg::SpawnEvent,
 		rpg::ProjectileEvent, rpg::ExpEvent, rpg::FeedbackEvent,
 		rpg::ItemEvent, rpg::PerkEvent, rpg::CombatEvent, rpg::ActionEvent,
@@ -117,10 +117,6 @@ void UiSystem::handle(core::TeleportEvent const& event) {
 	}
 }
 
-void UiSystem::handle(core::FocusEvent const& event) {
-	hud.receive(event);
-}
-
 void UiSystem::handle(core::SpriteEvent const& event) {
 	render.receive(event);
 }
@@ -198,7 +194,6 @@ sf::Time UiSystem::update(sf::Time const& elapsed, bool use_autocam) {
 
 	dispatch<core::AnimationEvent>(*this);
 	dispatch<core::TeleportEvent>(*this);
-	dispatch<core::FocusEvent>(*this);
 	dispatch<core::SpriteEvent>(*this);
 	dispatch<core::SoundEvent>(*this);
 	dispatch<core::MusicEvent>(*this);

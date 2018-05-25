@@ -138,13 +138,11 @@ void BehaviorSystem::handle(core::AnimationEvent const& event) {
 
 void BehaviorSystem::handle(core::MoveEvent const& event) {
 	// from physics
-	action.receive(event);
 	interact.receive(event);
 }
 
 void BehaviorSystem::handle(core::CollisionEvent const& event) {
 	// from physics
-	action.receive(event);
 	interact.receive(event);
 }
 

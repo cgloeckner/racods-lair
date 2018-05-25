@@ -46,7 +46,7 @@ struct FactoryFixture : utils::EventListener<core::InputEvent,
 	game::AudioSystem audio;
 	game::DungeonGenerator generator;
 	game::NavigationSystem navigation;
-	game::ScriptManager script;
+	//game::ScriptManager script;
 	game::HudManager hud;
 
 	game::Session session;
@@ -70,7 +70,7 @@ struct FactoryFixture : utils::EventListener<core::InputEvent,
 	game::BotTemplate bot;
 	game::RoomTemplate room;
 	game::PlayerTemplate player_res;
-	game::AiScript ai_script;
+	//game::AiScript ai_script;
 
 	FactoryFixture()
 		: utils::EventListener<core::InputEvent, rpg::ActionEvent,
@@ -104,12 +104,12 @@ struct FactoryFixture : utils::EventListener<core::InputEvent,
 		, audio{log, movement.capacity(), item, player}
 		, generator{log}
 		, navigation{}
-		, script{}
+		//, script{}
 		, hud{}
 		, session{id_manager, dungeon, camera, movement, collision, focus,
 			  animation, render, stats, effect, item, perk, player,
 			  projectile, action, input, interact, quickslot, audio,
-			  generator, navigation, script, hud, pathfinder}
+			  generator, navigation, /*script,*/ hud, pathfinder}
 		, pathfinder{log}
 		, input_events{}
 		, action_events{}
@@ -129,7 +129,8 @@ struct FactoryFixture : utils::EventListener<core::InputEvent,
 		, bot{}
 		, room{}
 		, player_res{}
-		, ai_script{} {
+		//, ai_script{}
+		{
 		//log.debug.add(std::cout);
 		factory.bind<core::InputEvent>(*this);
 		factory.bind<rpg::ActionEvent>(*this);
@@ -143,7 +144,7 @@ struct FactoryFixture : utils::EventListener<core::InputEvent,
 			"end\n"
 			"onSpawn = function(self, hostile)\n"
 			"end";
-		ai_script.loadFromMemory(code);
+		//ai_script.loadFromMemory(code);
 		// create demos scene
 		rpg::TilesetTemplate tileset;
 		tileset.tileset_name = "demo";
@@ -218,7 +219,7 @@ struct FactoryFixture : utils::EventListener<core::InputEvent,
 
 	void reset() {
 		// reset script
-		ai_script.set("called", false);
+		//ai_script.set("called", false);
 		// reset resources
 		sprite = rpg::SpriteTemplate{};
 		bullet = rpg::BulletTemplate{};
@@ -1016,7 +1017,7 @@ BOOST_AUTO_TEST_CASE(bullet_moves_automatically_after_spawn) {
 }
 
 // ---------------------------------------------------------------------------
-
+/*
 BOOST_AUTO_TEST_CASE(bot_requires_to_be_collideable) {
 	auto& fix = Singleton<FactoryFixture>::get();
 	fix.reset();
@@ -1029,8 +1030,7 @@ BOOST_AUTO_TEST_CASE(bot_requires_to_be_collideable) {
 	spawn.pos = {5u, 5u};
 	spawn.direction = {1, 0};
 
-	BOOST_CHECK_ASSERT(
-		fix.factory.createBot(fix.bot, spawn, 10u, fix.ai_script, true));
+	BOOST_CHECK_ASSERT(fix.factory.createBot(fix.bot, spawn, 10u, fix.ai_script, true));
 }
 
 BOOST_AUTO_TEST_CASE(bot_requires_to_be_focusable) {
@@ -1222,6 +1222,7 @@ BOOST_AUTO_TEST_CASE(bot_has_script_component) {
 	BOOST_CHECK_EQUAL(data.script, &fix.ai_script);
 	BOOST_CHECK(fix.ai_script.get<bool>("called") == true);
 }
+*/
 
 // ---------------------------------------------------------------------------
 
@@ -1665,7 +1666,7 @@ BOOST_AUTO_TEST_CASE(destroyed_object_is_released_from_scene) {
 	fix.factory.destroyObject(id);
 
 	auto const& dungeon = fix.dungeon[spawn.scene];
-	auto const& cell = dungeon.getCell(spawn.pos);
+	auto const& cell = dungeon.getCell(sf::Vector2u{spawn.pos});
 	BOOST_CHECK(!utils::contains(cell.entities, id));
 }
 
@@ -1787,7 +1788,7 @@ BOOST_AUTO_TEST_CASE(character_is_moved_to_bottom_layer_on_death) {
 	spawn.pos = {5u, 5u};
 	spawn.direction = {1, 0};
 
-	auto id = fix.factory.createBot(fix.bot, spawn, 10u, fix.ai_script, true);
+	auto id = fix.factory.createBot(fix.bot, spawn, 10u, /*fix.ai_script,*/ true);
 	fix.objects.push_back(id);
 	auto& data = fix.render.query(id);
 	data.layer = core::ObjectLayer::Top;
@@ -1808,7 +1809,7 @@ BOOST_AUTO_TEST_CASE(character_loses_collision_component_on_death) {
 	spawn.pos = {5u, 5u};
 	spawn.direction = {1, 0};
 
-	auto id = fix.factory.createBot(fix.bot, spawn, 10u, fix.ai_script, true);
+	auto id = fix.factory.createBot(fix.bot, spawn, 10u, /*fix.ai_script,*/ true);
 	fix.objects.push_back(id);
 	fix.onCharacterDied(id);
 	fix.cleanup();
@@ -1828,7 +1829,7 @@ BOOST_AUTO_TEST_CASE(character_cannot_be_focused_after_death) {
 	spawn.pos = {5u, 5u};
 	spawn.direction = {1, 0};
 
-	auto id = fix.factory.createBot(fix.bot, spawn, 10u, fix.ai_script, true);
+	auto id = fix.factory.createBot(fix.bot, spawn, 10u, /*fix.ai_script,*/ true);
 	fix.focus.query(id).has_changed = false;
 	fix.objects.push_back(id);
 	fix.onCharacterDied(id);
@@ -1850,7 +1851,7 @@ BOOST_AUTO_TEST_CASE(character_fov_is_disabled_after_death) {
 	spawn.pos = {5u, 5u};
 	spawn.direction = {1, 0};
 
-	auto id = fix.factory.createBot(fix.bot, spawn, 10u, fix.ai_script, true);
+	auto id = fix.factory.createBot(fix.bot, spawn, 10u, /*fix.ai_script,*/ true);
 	fix.focus.query(id).has_changed = false;
 	fix.objects.push_back(id);
 	fix.onCharacterDied(id);
@@ -1872,7 +1873,7 @@ BOOST_AUTO_TEST_CASE(character_is_stopped_on_death) {
 	spawn.pos = {5u, 5u};
 	spawn.direction = {1, 0};
 
-	auto id = fix.factory.createBot(fix.bot, spawn, 10u, fix.ai_script, true);
+	auto id = fix.factory.createBot(fix.bot, spawn, 10u, /*fix.ai_script,*/ true);
 	fix.objects.push_back(id);
 	auto& body = fix.movement.query(id);
 	body.pos.x += 0.3f;
@@ -1900,7 +1901,7 @@ BOOST_AUTO_TEST_CASE(character_death_causes_blood_if_entity_if_textures_and_colo
 	spawn.pos = {5u, 5u};
 	spawn.direction = {1, 0};
 
-	auto id = fix.factory.createBot(fix.bot, spawn, 10u, fix.ai_script, true);
+	auto id = fix.factory.createBot(fix.bot, spawn, 10u, /*fix.ai_script,*/ true);
 	fix.objects.push_back(id);
 	auto& data = fix.render.query(id);
 	data.layer = core::ObjectLayer::Top;
@@ -1923,7 +1924,7 @@ BOOST_AUTO_TEST_CASE(character_death_does_not_cause_blood_if_no_textures_are_pro
 	spawn.pos = {5u, 5u};
 	spawn.direction = {1, 0};
 
-	auto id = fix.factory.createBot(fix.bot, spawn, 10u, fix.ai_script, true);
+	auto id = fix.factory.createBot(fix.bot, spawn, 10u, /*fix.ai_script,*/ true);
 	fix.objects.push_back(id);
 	auto& data = fix.render.query(id);
 	data.layer = core::ObjectLayer::Top;
@@ -1945,7 +1946,7 @@ BOOST_AUTO_TEST_CASE(powerup_can_be_created_on_character_death) {
 	spawn.pos = {5u, 5u};
 	spawn.direction = {1, 0};
 
-	auto id = fix.factory.createBot(fix.bot, spawn, 10u, fix.ai_script, true);
+	auto id = fix.factory.createBot(fix.bot, spawn, 10u, /*fix.ai_script,*/ true);
 	fix.objects.push_back(id);
 	fix.onCharacterDied(id);
 	thor::setRandomSeed(536304u); // manipulate RNG to generate a powerup :3
@@ -2004,7 +2005,7 @@ BOOST_AUTO_TEST_CASE(powerup_cannot_be_spawned_outside_dungeon) {
 
 	rpg::SpawnMetaData spawn;
 	spawn.scene = 1u;
-	spawn.pos = sf::Vector2u(-1, -1);
+	spawn.pos = {-1.f, -1.f};
 	spawn.direction = {1, 0};
 	
 	BOOST_REQUIRE(!fix.dungeon[spawn.scene].has(sf::Vector2u{spawn.pos}));
@@ -2026,7 +2027,7 @@ BOOST_AUTO_TEST_CASE(powerup_cannot_be_spawned_if_a_collideable_non_bullet_is_pl
 	spawn.direction = {1, 0};
 	
 	// create another trigger to block
-	fix.factory.createBot(fix.bot, spawn, 10u, fix.ai_script, true);
+	fix.factory.createBot(fix.bot, spawn, 10u, /*fix.ai_script,*/ true);
 	
 	auto result = game::factory_impl::canHoldPowerup(fix.session, spawn.scene, spawn.pos);
 	BOOST_CHECK(!result);
@@ -2066,7 +2067,7 @@ BOOST_AUTO_TEST_CASE(respawn_event_is_forwarded_after_handled_at_factory) {
 	spawn.pos = {5u, 5u};
 	spawn.direction = {1, 0};
 
-	auto id = fix.factory.createBot(fix.bot, spawn, 10u, fix.ai_script, true);
+	auto id = fix.factory.createBot(fix.bot, spawn, 10u, /*fix.ai_script,*/ true);
 	fix.objects.push_back(id);
 	auto& data = fix.render.query(id);
 	data.layer = core::ObjectLayer::Top;
@@ -2096,7 +2097,7 @@ BOOST_AUTO_TEST_CASE(respawn_does_not_reset_sprite_layers) {
 	spawn.pos = {5u, 5u};
 	spawn.direction = {1, 0};
 
-	auto id = fix.factory.createBot(fix.bot, spawn, 10u, fix.ai_script, true);
+	auto id = fix.factory.createBot(fix.bot, spawn, 10u, /*fix.ai_script,*/ true);
 	fix.objects.push_back(id);
 	auto& data = fix.render.query(id);
 	data.torso[core::SpriteTorsoLayer::Armor].setTexture(dummy);
@@ -2121,7 +2122,7 @@ BOOST_AUTO_TEST_CASE(character_is_moved_to_top_layer_on_respawn) {
 	spawn.pos = {5u, 5u};
 	spawn.direction = {1, 0};
 
-	auto id = fix.factory.createBot(fix.bot, spawn, 10u, fix.ai_script, true);
+	auto id = fix.factory.createBot(fix.bot, spawn, 10u, /*fix.ai_script,*/ true);
 	fix.objects.push_back(id);
 	auto& data = fix.render.query(id);
 	data.layer = core::ObjectLayer::Top;
@@ -2147,7 +2148,7 @@ BOOST_AUTO_TEST_CASE(character_regains_lighting_on_respawn) {
 	spawn.pos = {5u, 5u};
 	spawn.direction = {1, 0};
 
-	auto id = fix.factory.createBot(fix.bot, spawn, 10u, fix.ai_script, true);
+	auto id = fix.factory.createBot(fix.bot, spawn, 10u, /*fix.ai_script,*/ true);
 	fix.objects.push_back(id);
 	fix.onCharacterDied(id);
 	fix.cleanup();
@@ -2172,7 +2173,7 @@ BOOST_AUTO_TEST_CASE(character_regains_collision_component_on_respawn) {
 	spawn.pos = {5u, 5u};
 	spawn.direction = {1, 0};
 
-	auto id = fix.factory.createBot(fix.bot, spawn, 10u, fix.ai_script, true);
+	auto id = fix.factory.createBot(fix.bot, spawn, 10u, /*fix.ai_script,*/ true);
 	fix.objects.push_back(id);
 	fix.onCharacterDied(id);
 	fix.cleanup();
@@ -2193,7 +2194,7 @@ BOOST_AUTO_TEST_CASE(character_can_be_focused_after_respawn) {
 	spawn.pos = {5u, 5u};
 	spawn.direction = {1, 0};
 
-	auto id = fix.factory.createBot(fix.bot, spawn, 10u, fix.ai_script, true);
+	auto id = fix.factory.createBot(fix.bot, spawn, 10u, /*fix.ai_script,*/ true);
 	fix.focus.query(id).has_changed = false;
 	fix.objects.push_back(id);
 	fix.onCharacterDied(id);
@@ -2217,7 +2218,7 @@ BOOST_AUTO_TEST_CASE(character_fov_is_enabled_after_respawn) {
 	spawn.pos = {5u, 5u};
 	spawn.direction = {1, 0};
 
-	auto id = fix.factory.createBot(fix.bot, spawn, 10u, fix.ai_script, true);
+	auto id = fix.factory.createBot(fix.bot, spawn, 10u, /*fix.ai_script,*/ true);
 	fix.focus.query(id).has_changed = false;
 	fix.objects.push_back(id);
 	fix.onCharacterDied(id);
@@ -2229,6 +2230,7 @@ BOOST_AUTO_TEST_CASE(character_fov_is_enabled_after_respawn) {
 	BOOST_CHECK_GT(data.fov.getRadius(), 0.f);
 }
 
+/*
 BOOST_AUTO_TEST_CASE(bot_is_hostile_if_respawned_by_hostile_bot) {
 	auto& fix = Singleton<FactoryFixture>::get();
 	fix.reset();
@@ -2369,5 +2371,6 @@ BOOST_AUTO_TEST_CASE(bot_is_not_hostile_if_respawned_by_allied_bot) {
 	auto& script = fix.script.query(id);
 	BOOST_CHECK(!script.api->hostile);
 }
+*/
 
 BOOST_AUTO_TEST_SUITE_END()

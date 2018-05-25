@@ -28,7 +28,7 @@ SpriteViewerState::SpriteViewerState(state::App& app)
 	, camera{{128u, 128u}, 1.f}
 	, lighting{{128u, 128u}, dummy}
 	, movement{log, 10u, dungeon}
-	, focus{log, 10u, dungeon, movement}
+	, focus{log, 10u}
 	, animation{log, 10u, movement}
 	, render{log, 10u, animation, movement, focus, dungeon, camera, lighting} {
 	// setup dummy dungeon

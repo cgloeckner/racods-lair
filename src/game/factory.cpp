@@ -24,12 +24,12 @@ std::size_t const MAX_POWERUP_SPAWN_DRIFT = 20u;
 
 namespace factory_impl {
 
-bool canHoldPowerup(Session const & session, utils::SceneID scene, sf::Vector2u const & pos, core::ObjectID ignore) {
+bool canHoldPowerup(Session const & session, utils::SceneID scene, sf::Vector2f const & pos, core::ObjectID ignore) {
 	auto const & dungeon = session.dungeon[scene];
-	if (!dungeon.has(pos)) {
+	if (!dungeon.has(sf::Vector2u{pos})) {
 		return false;
 	} 
-	auto const & cell = dungeon.getCell(pos);
+	auto const & cell = dungeon.getCell(sf::Vector2u{pos});
 	if (cell.terrain != core::Terrain::Floor || cell.trigger != nullptr) {
 		return false;
 	}
@@ -111,8 +111,7 @@ void Factory::onBulletExploded(core::ObjectID id) {
 
 	// stop movement
 	auto& mv = session.movement.query(id);
-	mv.move = sf::Vector2i{};
-	mv.next_move = sf::Vector2i{};
+	mv.move = sf::Vector2f{};
 
 	// release collision component
 	session.collision.release(id);
@@ -161,14 +160,14 @@ utils::SceneID Factory::createDungeon(rpg::TilesetTemplate const& tileset,
 			if (entity.ptr == nullptr) {
 				continue;
 			}
-			// determine position
-			spawn.pos = pair.first;
-			dungeon_impl::transform(spawn.pos, settings.cell_size, room.angle, room.flip_x, room.flip_y);
-			spawn.pos += room.offset;
-			// determine direction
-			spawn.direction = entity.direction;
-			dungeon_impl::transform(spawn.direction, room.angle, room.flip_x, room.flip_y);
+			// determine position and direction
+			sf::Vector2u pos{pair.first};
+			sf::Vector2i dir{entity.direction};
+			dungeon_impl::transform(pos, settings.cell_size, room.angle, room.flip_x, room.flip_y);
+			dungeon_impl::transform(dir, room.angle, room.flip_x, room.flip_y);
 			// spawn
+			spawn.pos       = sf::Vector2f{pos + room.offset};
+			spawn.direction = sf::Vector2f{dir};
 			createObject(*entity.ptr, spawn);
 		}
 	}
@@ -182,7 +181,7 @@ void Factory::createAmbience(sf::Texture const & texture, rpg::SpawnMetaData con
 	
 	// query target cell
 	auto& dungeon = session.dungeon[data.scene];
-	auto& target = dungeon.getCell(data.pos).ambiences;
+	auto& target = dungeon.getCell(sf::Vector2u{data.pos}).ambiences;
 	
 	// create sprite
 	target.emplace_back(texture);
@@ -327,7 +326,7 @@ core::ObjectID Factory::createBullet(rpg::CombatMetaData const& meta,
 		auto pos = m.pos;
 		pos.x = std::round(pos.x);
 		pos.y = std::round(pos.y);
-		spwn.pos = sf::Vector2u{pos};
+		spwn.pos = pos;
 		spwn.direction = m.look;
 	}
 
@@ -364,7 +363,7 @@ core::ObjectID Factory::createBullet(rpg::CombatMetaData const& meta,
 
 core::ObjectID Factory::createBot(BotTemplate const& bot,
 	rpg::SpawnMetaData const& data, std::size_t level,
-	utils::Script const& script, bool hostile, float difficulty) {
+	/*utils::Script const& script,*/ bool hostile, float difficulty) {
 	ASSERT(bot.entity != nullptr);
 	ASSERT(bot.entity->collide);
 	ASSERT(bot.entity->max_sight > 0.f);
@@ -416,12 +415,14 @@ core::ObjectID Factory::createBot(BotTemplate const& bot,
 	// note: equipment is chosen by AI later
 
 	// setup ai
+	/*
 	auto& a = session.script.acquire(id);
 	a.api = std::make_unique<LuaApi>(log, id, hostile, session,
 		session.script, *this, *this, *this, session.path);
 	a.script = &script;
 	script("onInit", a.api.get());
-
+	*/
+	
 	entity_cache[id].hostile = hostile;
 
 	return id;
@@ -569,7 +570,7 @@ core::ObjectID Factory::createPowerup(rpg::EntityTemplate const & entity,
 	}
 	
 	// create trigger
-	auto& trigger = session.dungeon[spawn.scene].getCell(spawn.pos).trigger;
+	auto& trigger = session.dungeon[spawn.scene].getCell(sf::Vector2u{spawn.pos}).trigger;
 	auto& stats_sender = dynamic_cast<rpg::StatsSender&>(*this);
 	auto& powerup_sender = dynamic_cast<PowerupSender&>(*this);
 	auto& release_listener = dynamic_cast<ReleaseListener&>(*this);
@@ -605,12 +606,11 @@ void Factory::destroyObject(core::ObjectID id) {
 	session.id_manager.release(id);
 }
 
-void Factory::addTeleport(utils::SceneID source, sf::Vector2u const & src,
-	utils::SceneID target, sf::Vector2u const & dst) {
-	auto& trigger = session.dungeon[source].getCell(src).trigger;
-	auto& move_sender = dynamic_cast<core::MoveSender&>(session.collision);
+void Factory::addTeleport(utils::SceneID source, sf::Vector2f const & src,
+	utils::SceneID target, sf::Vector2f const & dst) {
+	auto& trigger = session.dungeon[source].getCell(sf::Vector2u{src}).trigger;
 	auto& teleport_sender = dynamic_cast<core::TeleportSender&>(session.collision);
-	trigger = std::make_unique<core::TeleportTrigger>(move_sender, teleport_sender, session.movement, session.collision, session.dungeon, target, dst);
+	trigger = std::make_unique<core::TeleportTrigger>(teleport_sender, session.movement, session.collision, session.dungeon, target, dst);
 }
 
 void Factory::handle(rpg::ProjectileEvent const& event) {
@@ -652,15 +652,17 @@ void Factory::handle(rpg::DeathEvent const& event) {
 	f.has_changed = true;
 
 	// disable script component
+	/*
 	if (session.script.has(id)) {
 		auto& s = session.script.query(id);
 		s.is_active = false;
 	}
+	*/
 
 	auto const & m = session.movement.query(id);
 	rpg::SpawnMetaData spawn;
 	spawn.scene = m.scene;
-	spawn.pos = m.target;
+	spawn.pos = m.pos;
 	spawn.direction = {0, 1};
 
 	// add blood layer
@@ -688,7 +690,7 @@ void Factory::handle(rpg::DeathEvent const& event) {
 	} else {
 		type = PowerupType::Rejuvenation;
 	}
-	if (!core::getFreePosition([&](sf::Vector2u const & tmp) {
+	if (!core::getFreePosition([&](sf::Vector2f const & tmp) {
 		return factory_impl::canHoldPowerup(session, spawn.scene, tmp, id);
 	}, spawn.pos, MAX_POWERUP_SPAWN_DRIFT)) {
 		log.warning << "[Game/Factory] " << "Cannot add more powerups at this area\n";
@@ -731,6 +733,7 @@ void Factory::handle(rpg::SpawnEvent const& event) {
 	r.layer = core::ObjectLayer::Top;
 	
 	// reinitialize script comonent
+	/*
 	if (session.script.has(id)) {
 		// enable component
 		auto& s = session.script.query(id);
@@ -741,7 +744,9 @@ void Factory::handle(rpg::SpawnEvent const& event) {
 			if (session.script.has(event.causer)) {
 				// an AI object revived another object
 				auto& a = session.script.query(event.causer);
-				hostile = a.api->hostile;
+				//hostile = a.api->hostile;
+				hostile = false;
+				
 			} else if (session.player.has(event.causer)) {
 				// a player revives another object
 				hostile = false;
@@ -753,6 +758,7 @@ void Factory::handle(rpg::SpawnEvent const& event) {
 		//script("onSpawn", s.api.get());
 		s.api->hostile = hostile;
 	}
+	*/
 	
 	// forward respawn
 	send(event);

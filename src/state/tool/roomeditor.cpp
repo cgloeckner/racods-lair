@@ -74,12 +74,12 @@ void EngineState::rebuild() {
 	
 	// detect previous zoom and center
 	float zoom{1.f};
-	boost::optional<sf::Vector2u> center{boost::none};
+	boost::optional<sf::Vector2f> center{boost::none};
 	auto first_cam = engine.ui.camera.begin();
 	if (first_cam != engine.ui.camera.end()) {
 		auto const & cam = *first_cam->get();
 		zoom = cam.zoom;
-		center = engine.physics.movement.query(viewer).target;
+		center = engine.physics.movement.query(viewer).pos;
 	}
 	
 	// reset engine state
@@ -126,7 +126,7 @@ void EngineState::rebuild() {
 	spawn.scene = scene;
 	if (center == boost::none) {
 		// spawn camera at center
-		spawn.pos = engine.session.dungeon[scene].getSize() / 2u;
+		spawn.pos = sf::Vector2f{engine.session.dungeon[scene].getSize()} / 2.f;
 	} else {
 		// reuse previous position
 		spawn.pos = *center;
@@ -249,11 +249,11 @@ void EngineState::setShowGrid(bool show) {
 
 void EngineState::updateMouseLight() {
 	auto world_pos = getWorldPos();
-	auto tile_pos = sf::Vector2u{world_pos};
+	auto tile_pos = world_pos;
 	auto& dungeon = engine.dungeon[scene];
-	if (dungeon.has(tile_pos)) {
+	if (dungeon.has(sf::Vector2u{tile_pos})) {
 		auto& move = engine.session.movement.query(mouse);
-		if (move.target != tile_pos) {
+		if (move.pos != tile_pos) {
 			core::vanish(dungeon, move);
 			core::spawn(dungeon, move, tile_pos);
 		}
@@ -276,8 +276,8 @@ void EngineState::scroll(sf::Vector2i const & delta) {
 	auto id = cam.objects.front();
 	auto& m = engine.session.movement.query(id);
 	auto& d = engine.dungeon[scene];
-	auto pos = sf::Vector2u{sf::Vector2i{m.target} + delta};
-	if (!d.has(pos)) {
+	auto pos = m.pos + sf::Vector2f{delta};
+	if (!d.has(sf::Vector2u{pos})) {
 		context.log.debug << "[State/RoomEditor] "
 			<< "Cannot scroll to " << pos << "\n";
 		return;

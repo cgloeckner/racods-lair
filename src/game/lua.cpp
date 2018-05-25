@@ -10,6 +10,8 @@
 
 namespace game {
 
+/// @note out of order, needs reimplementation
+/*
 float const ENEMY_SPOT_SIGHT_RADIO = 0.75f;
 
 // --------------------------------------------------------------------
@@ -38,7 +40,7 @@ bool LuaApi::isHostile(core::ObjectID target) const {
 	return script.query(target).api->hostile;
 }
 
-sf::Vector2i LuaApi::getMove(core::ObjectID target) const {
+sf::Vector2f LuaApi::getMove(core::ObjectID target) const {
 	return session.movement.query(target).move;
 }
 
@@ -55,22 +57,18 @@ bool LuaApi::isPathTarget(sf::Vector2u const & pos) const {
 	return path.front() == pos;
 }
 
-sf::Vector2u LuaApi::getPosition(core::ObjectID other) const {
-	auto p = session.movement.query(other).pos;
-	// return rounded position
-	return sf::Vector2u(std::round(p.x), std::round(p.y));
+sf::Vector2f LuaApi::getPosition(core::ObjectID other) const {
+	return session.movement.query(other).pos;
 }
 
 utils::SceneID LuaApi::getScene(core::ObjectID other) const {
 	return session.movement.query(other).scene;
 }
 
-sf::Vector2i LuaApi::getDirection(core::ObjectID id) const {
+sf::Vector2f LuaApi::getDirection(core::ObjectID id) const {
 	auto src = session.movement.query(this->id);
 	auto dst = session.movement.query(id);
-	auto dir = sf::Vector2i{dst.target} - sf::Vector2i{src.target};
-	core::fixDirection(dir);
-	return dir;
+	return dst.pos - src.pos;
 }
 
 core::ObjectID LuaApi::getFocus() const {
@@ -131,7 +129,7 @@ std::vector<core::ObjectID> LuaApi::getEnemies() const {
 		sf::Vector2i d;
 		for (d.y = -max_dist; d.y <= max_dist; ++d.y) {
 			for (d.x = -max_dist; d.x <= max_dist; ++d.x) {
-				auto pos = sf::Vector2u{sf::Vector2i{move.target} + d};
+				auto pos = move.pos + sf::Vector2f{d};
 				if (!dungeon.has(pos)) {
 					continue;
 				}
@@ -174,7 +172,7 @@ std::vector<core::ObjectID> LuaApi::getAllies() const {
 		sf::Vector2i d;
 		for (d.y = -max_dist; d.y <= max_dist; ++d.y) {
 			for (d.x = -max_dist; d.x <= max_dist; ++d.x) {
-				auto pos = sf::Vector2u{sf::Vector2i{move.target} + d};
+				auto pos = move.pos + sf::Vector2f{d};
 				if (!dungeon.has(pos)) {
 					continue;
 				}
@@ -292,7 +290,7 @@ std::vector<rpg::Perk> LuaApi::getPerks() const {
 	return data.perks;
 }
 
-void LuaApi::navigate(sf::Vector2u const & target) {
+void LuaApi::navigate(sf::Vector2f const & pos) {
 	ASSERT(session.movement.has(id));
 	// stop previous current movement
 	stop();
@@ -302,42 +300,41 @@ void LuaApi::navigate(sf::Vector2u const & target) {
 	}
 	
 	auto const& data = session.movement.query(id);
-	if (navigator_impl::distance(data.target, target) >= 2.f) {
+	if (navigator_impl::distance(data.pos, pos) >= 2.f) {
 		tracer.pathfind(target);
 	}
 }
 
-void LuaApi::move(sf::Vector2i dir) {
+void LuaApi::move(sf::Vector2f const & dir) {
 	if (hasPath()) {
 		tracer.reset();
 	}
-	core::fixDirection(dir);
 	core::InputEvent event;
 	event.actor = id;
-	event.move = dir;
+	event.move = utils::normalize(dir);
+	event.look = session.movement.query(id).look;
 	input_sender.send(event);
 }
 
-void LuaApi::moveTowards(sf::Vector2u pos) {
+void LuaApi::moveTowards(sf::Vector2f const & pos) {
 	auto origin = getPosition(id);
-	auto dir = sf::Vector2i{pos} - sf::Vector2i{origin};
+	auto dir = pos - origin;
 	move(dir);
 }
 
-void LuaApi::look(sf::Vector2i dir) {
+void LuaApi::look(sf::Vector2f const & dir) {
 	if (hasPath()) {
 		tracer.reset();
 	}
-	core::fixDirection(dir);
 	core::InputEvent event;
 	event.actor = id;
-	event.look = dir;
+	event.look = utils::normalize(dir);
 	input_sender.send(event);
 }
 
-void LuaApi::lookTowards(sf::Vector2u pos) {
+void LuaApi::lookTowards(sf::Vector2f const & pos) {
 	auto origin = getPosition(id);
-	auto dir = sf::Vector2i{pos} - sf::Vector2i{origin};
+	auto dir = pos - origin;
 	look(dir);
 }
 
@@ -391,5 +388,6 @@ boost::optional<PathFailedEvent> LuaApi::update(sf::Time const& elapsed) {
 	// update path tracer
 	return tracer.update();
 }
+*/
 
-}  // ::rage
+}  // ::game

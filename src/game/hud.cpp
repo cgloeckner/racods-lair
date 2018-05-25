@@ -80,9 +80,6 @@ void onTeleport(Context& context, core::TeleportEvent const & event) {
 	}
 }
 
-void onFocus(Context& context, core::FocusEvent const & event) {
-}
-
 void onStats(Context& context, rpg::StatsEvent const & event) {
 	bool towards_player = context.huds.has(event.actor);
 	bool from_player = event.actor > 0u && context.huds.has(event.actor);
@@ -241,7 +238,7 @@ HudSystem::HudSystem(core::LogContext& log, std::size_t max_objects, core::Camer
 	core::MovementManager const & movement_manager, core::FocusManager const & focus_manager,
 	core::DungeonSystem& dungeon_system, rpg::StatsManager const & stats_manager,
 	rpg::PlayerManager const & player_manager, Localization& locale)
-	: utils::EventListener<core::TeleportEvent, core::FocusEvent,
+	: utils::EventListener<core::TeleportEvent,
 		rpg::StatsEvent, rpg::DeathEvent, rpg::SpawnEvent, rpg::ExpEvent,
 		rpg::FeedbackEvent, PowerupEvent>{}
 	, HudManager{max_objects}
@@ -299,14 +296,6 @@ void HudSystem::handle(core::TeleportEvent const & event) {
 	onTeleport(context, event);
 }
 
-void HudSystem::handle(core::FocusEvent const & event) {
-	if (!has(event.observer) && !has(event.observed)) {
-		return;
-	}
-	
-	onFocus(context, event);
-}
-
 void HudSystem::handle(rpg::StatsEvent const & event) {
 	onStats(context, event);
 }
@@ -353,7 +342,6 @@ void HudSystem::handle(PowerupEvent const & event) {
 
 void HudSystem::update(sf::Time const & elapsed) {
 	dispatch<core::TeleportEvent>(*this);
-	dispatch<core::FocusEvent>(*this);
 	dispatch<rpg::StatsEvent>(*this);
 	dispatch<rpg::DeathEvent>(*this);
 	dispatch<rpg::ExpEvent>(*this);

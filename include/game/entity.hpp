@@ -18,7 +18,7 @@ struct HudData : core::ComponentData {
 
 struct ScriptData : core::ComponentData {
 	bool is_active;
-	std::unique_ptr<LuaApi> api;
+	//std::unique_ptr<LuaApi> api;
 	utils::Script const* script;
 
 	ScriptData();

@@ -69,7 +69,8 @@ std::ostream& operator<<(std::ostream& lhs, core::InputEvent const & event) {
 }
 
 std::ostream& operator<<(std::ostream& lhs, core::MoveEvent const & event) {
-	return lhs << "actor=" << event.actor << ", type=" << to_string(event.type);
+	return lhs << "actor=" << event.actor << ", type="
+		<< (event.type == core::MoveEvent::Start ? "Start" : "Stop");
 }
 
 std::ostream& operator<<(std::ostream& lhs, core::CollisionEvent const & event) {

@@ -5,6 +5,8 @@
 
 namespace game {
 
+/// @note out of order, needs reimplementation
+/*
 PathTracer::PathTracer(core::LogContext& log, PathSystem& pathfinder,
 	core::MovementManager const& movement_manager,
 	core::InputSender& input_sender, core::ObjectID actor)
@@ -140,5 +142,6 @@ boost::optional<PathFailedEvent> PathTracer::update() {
 bool PathTracer::isRunning() const { return state != PathTracer::Idle; }
 
 std::vector<sf::Vector2u> const& PathTracer::getPath() const { return path; }
+*/
 
-}  // ::rage
+}  // ::game

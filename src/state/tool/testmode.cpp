@@ -67,11 +67,12 @@ Memory get(engine::BehaviorSystem const & system) {
 	return mem;
 }
 
+
 Memory get(engine::AiSystem const & system) {
 	Memory mem;
-	mem.used += system.script.size() * sizeof(game::ScriptData);
+	//mem.used += system.script.size() * sizeof(game::ScriptData);
 	
-	mem.alloc += system.script.capacity() * sizeof(game::ScriptData);
+	//mem.alloc += system.script.capacity() * sizeof(game::ScriptData);
 	
 	return mem;
 }
@@ -135,8 +136,8 @@ TestMode::TestMode(state::GameState& parent)
 	, render_debug{false}
 	, memory{parent.getContext().game->engine}
 	, scene{0u}
-	, tile_pos(-1, -1)
-	, target_pos(-1, -1)
+	, tile_pos{-1.f, -1.f}
+	, target_pos{-1.f, -1.f}
 	, scenes_index{-1}
 	, cell_entities_index{-1}
 	, scenes{}
@@ -254,7 +255,7 @@ void TestMode::updateMonitor() {
 void TestMode::updateInspector() {
 	auto& engine = parent.getContext().game->engine;
 	
-	if (scene == 0u || tile_pos == sf::Vector2u(-1, -1)) {
+	if (scene == 0u || tile_pos == sf::Vector2f{-1.f, -1.f}) {
 		ImGui::Text("Select cell position with left mouse click");
 		return;
 	}
@@ -358,8 +359,8 @@ void TestMode::updateSpawner() {
 	if (scenes_index >= 0) {
 		auto& dungeon = engine.dungeon[scenes_index+1u];
 		auto size = dungeon.getSize();
-		ui::InputNumber("x", target_pos.x, 0u, size.x-1u);
-		ui::InputNumber("y", target_pos.y, 0u, size.y-1u);
+		ui::InputNumber("x", target_pos.x, 0.f, size.x-1.f);
+		ui::InputNumber("y", target_pos.y, 0.f, size.y-1.f);
 		ImGui::Checkbox("Spawn near by", &spawn_near);
 		if (ImGui::Button("Spawn")) {
 			rpg::SpawnMetaData spawn;
@@ -367,9 +368,9 @@ void TestMode::updateSpawner() {
 			spawn.pos = target_pos;
 			if (spawn_near) {
 				// spawn at near position
-				core::getFreePosition([&](sf::Vector2u const & p) {
-					if (dungeon.has(p)) {
-						auto const & cell = dungeon.getCell(p);
+				core::getFreePosition([&](sf::Vector2f const & p) {
+					if (dungeon.has(sf::Vector2u{p})) {
+						auto const & cell = dungeon.getCell(sf::Vector2u{p});
 						return cell.terrain == core::Terrain::Floor
 							&& cell.entities.empty();
 					}
@@ -384,7 +385,7 @@ void TestMode::updateSpawner() {
 			} else if (spawn_mode == 1 && bot_tpls_index >= 0 && ai_scripts_index >= 0) {
 				auto const & bot = engine.mod.get<game::BotTemplate>(bot_tpls[bot_tpls_index]);
 				auto const & script = engine.mod.createScript(ai_scripts[ai_scripts_index]);
-				engine.factory.createBot(bot, spawn, level, script, hostile);
+				engine.factory.createBot(bot, spawn, level, /*script,*/ hostile);
 			}
 		}
 	}
@@ -393,7 +394,7 @@ void TestMode::updateSpawner() {
 void TestMode::updateTeleporter() {
 	auto& engine = parent.getContext().game->engine;
 	
-	if (scene == 0u || tile_pos == sf::Vector2u(-1, -1)) {
+	if (scene == 0u || tile_pos == sf::Vector2f{-1.f, -1.f}) {
 		ImGui::Text("Select cell position with left or right mouse click");
 		return;
 	}
@@ -424,8 +425,8 @@ void TestMode::updateTeleporter() {
 	if (scenes_index >= 0) {
 		auto& dungeon = engine.dungeon[scenes_index+1];
 		auto size = dungeon.getSize();
-		ui::InputNumber("x", target_pos.x, 0u, size.x-1u);
-		ui::InputNumber("y", target_pos.y, 0u, size.y-1u);
+		ui::InputNumber("x", target_pos.x, 0.f, size.x-1.f);
+		ui::InputNumber("y", target_pos.y, 0.f, size.y-1.f);
 		if (ImGui::Button("Teleport")) {
 			auto& data = engine.session.movement.query(object);
 			core::vanish(engine.dungeon[data.scene], data);
@@ -492,11 +493,13 @@ void TestMode::reloadScripts() {
 		++n;
 	}
 	// reinit AIs
+	/*
 	for (auto& data: engine.session.script) {
 		auto const & script = *data.script;
 		script("onInit", data.api.get());
 		++m;
 	}
+	*/
 	context.log.debug << "[State/TestMode] Reloaded " << n
 		<< " Scripts for " << m << " AI Components\n";
 }
@@ -527,12 +530,11 @@ void TestMode::onLeftClick() {
 	auto const & dungeon = engine.getDungeon(*cam_ptr);
 	ASSERT(dungeon.id > 0u);
 	scene = dungeon.id;
-	tile_pos = sf::Vector2u{engine.getWorldPos(mouse_pos)};
+	tile_pos = engine.getWorldPos(mouse_pos);
 	
-	if (tile_pos == sf::Vector2u(-1, -1)) {
+	if (tile_pos == sf::Vector2f{-1.f, -1.f}) {
 		return;
-	}
-	if (target_pos == sf::Vector2u(-1, -1)) {
+	} if (target_pos == sf::Vector2f{-1.f, -1.f}) {
 		target_pos = tile_pos;
 	}
 	
@@ -541,10 +543,10 @@ void TestMode::onLeftClick() {
 	// query entities
 	cell_entities.clear();
 	cell_entities_index = -1;
-	if (!dungeon.has(tile_pos)) {
+	if (!dungeon.has(sf::Vector2u{tile_pos})) {
 		return;
 	}
-	auto const & cell = dungeon.getCell(tile_pos);
+	auto const & cell = dungeon.getCell(sf::Vector2u{tile_pos});
 	object = 0u;
 	for (auto id: cell.entities) {
 		// create entry
@@ -576,7 +578,7 @@ void TestMode::onRightClick() {
 	auto const & dungeon = engine.getDungeon(*cam_ptr);
 	ASSERT(dungeon.id > 0u);
 	scenes_index = dungeon.id - 1u;
-	target_pos = sf::Vector2u{engine.getWorldPos(mouse_pos)};
+	target_pos = engine.getWorldPos(mouse_pos);
 }
 
 void TestMode::onSelectObject() {
@@ -600,7 +602,7 @@ void TestMode::onSelectObject() {
 	createInspector(inspectors, session.input, context.log, engine, object);
 	createInspector(inspectors, session.interact, context.log, engine, object);
 	createInspector(inspectors, session.quickslot, context.log, engine, object);
-	createInspector(inspectors, session.script, context.log, engine, object);
+	//createInspector(inspectors, session.script, context.log, engine, object);
 	
 	// note: hud is not inspected here
 }
