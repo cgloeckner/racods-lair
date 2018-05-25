@@ -81,18 +81,15 @@ void queryInput(Context const& context, InputData& data,
  */
 void updateInput(Context& context, InputData& data, sf::Time const& elapsed);
 
+/// @note this should be part of the collision system
 /// Modifies movement if necessary
-/**
- *	This modifies the movement vector if necessary and possible by rotating
- *	it either clockwise or counterclockwise using 45 degree. If no change is
- *	necessary, the vector is not changed. Only tile collision is checked here.
- *
- *	@param context Input context to deal with
- *	@param data InputData to fix for
- *	@param vector Movement vector to modify.
- */
-void adjustMovement(
-	Context const& context, InputData const& data, sf::Vector2f& vector);
+/// This modifies the movement vector if necessary and possible by rotating
+/// it either clockwise or counterclockwise using 45 degree. If no change is
+///	necessary, the vector is not changed. Only tile collision is checked here.
+/// @param context Input context to deal with
+/// @param data InputData to fix for
+/// @param vector Movement vector to modify.
+//void adjustMovement(Context const& context, InputData const& data, sf::Vector2f& vector);
 
 /// Handle actor's death
 /**

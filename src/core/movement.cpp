@@ -8,7 +8,7 @@ namespace core {
 
 namespace movement_impl {
 
-float const MOVEMENT_VELOCITY = 0.0001f;
+float const MOVEMENT_VELOCITY = 0.1f;
 float const MIN_SPEEDFACTOR = 0.25f;
 float const MAX_SPEEDFACTOR = 1.75f;
 float const DELTA_SPEEDFACTOR = 0.05f;
@@ -106,7 +106,7 @@ void interpolate(Context& context, MovementData& data, sf::Time const& elapsed) 
 	// interpolate movement
 	float delta{1.f};
 	if (data.move != sf::Vector2f{}) {
-		delta = data.max_speed * calcSpeedFactor(data) * elapsed.asSeconds();
+		delta = data.max_speed * calcSpeedFactor(data) * elapsed.asSeconds() * MOVEMENT_VELOCITY;
 	}
 	
 	// apply changes

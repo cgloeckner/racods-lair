@@ -474,10 +474,13 @@ BOOST_AUTO_TEST_CASE(object_with_sight_requires_display_name) {
 	BOOST_CHECK_ASSERT(fix.factory.createObject(fix.entity, spawn));
 }
 
-BOOST_AUTO_TEST_CASE(collideable_object_has_collision_component) {
+BOOST_AUTO_TEST_CASE(aabb_collideable_object_has_collision_component) {
 	auto& fix = Singleton<FactoryFixture>::get();
 	fix.reset();
 	fix.entity.collide = true;
+	fix.entity.shape.is_aabb = true;
+	fix.entity.shape.radius = 0.f;
+	fix.entity.size = {1.f, 2.f};
 	fix.entity.is_projectile = false;
 
 	rpg::SpawnMetaData spawn;
@@ -491,6 +494,32 @@ BOOST_AUTO_TEST_CASE(collideable_object_has_collision_component) {
 	BOOST_REQUIRE(fix.collision.has(id));
 	auto const& data = fix.collision.query(id);
 	BOOST_CHECK(!data.is_projectile);
+	BOOST_CHECK(data.shape.is_aabb);
+	BOOST_CHECK_GT(data.shape.radius, 0.f); // means it was updated
+	BOOST_CHECK_VECTOR_CLOSE(data.shape.size, fix.entity.size);
+}
+
+BOOST_AUTO_TEST_CASE(circle_collideable_object_has_collision_component) {
+	auto& fix = Singleton<FactoryFixture>::get();
+	fix.reset();
+	fix.entity.collide = true;
+	fix.entity.shape.is_aabb = false;
+	fix.entity.shape.radius = 3.f;
+	fix.entity.is_projectile = false;
+
+	rpg::SpawnMetaData spawn;
+	spawn.scene = 1u;
+	spawn.pos = {5u, 5u};
+	spawn.direction = {1, 0};
+
+	auto id = fix.factory.createObject(fix.entity, spawn);
+	fix.objects.push_back(id);
+
+	BOOST_REQUIRE(fix.collision.has(id));
+	auto const& data = fix.collision.query(id);
+	BOOST_CHECK(!data.is_projectile);
+	BOOST_CHECK(!data.shape.is_aabb);
+	BOOST_CHECK_CLOSE(data.shape.radius, 3.f, 0.0001f);
 }
 
 BOOST_AUTO_TEST_CASE(object_with_animated_legs_has_animation_component) {

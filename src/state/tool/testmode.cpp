@@ -512,9 +512,11 @@ void TestMode::toggleRenderDebug() {
 	if (render_debug) {
 		engine.ui.render.setGridColor(sf::Color::Yellow);
 		engine.ui.render.setShowFov(true);
+		engine.ui.render.setShowShape(true);
 	} else {
 		engine.ui.render.setGridColor(sf::Color::Transparent);
 		engine.ui.render.setShowFov(false);
+		engine.ui.render.setShowShape(false);
 	}
 }
 

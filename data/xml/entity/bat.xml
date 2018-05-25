@@ -1,5 +1,5 @@
-<!-- max_speed is used to be around 100, but currently reduced implementation-wise -->
-<general is_projectile="false" flying="true" collide="true" max_sight="20.0" fov="120.0" max_speed="57.0" sprite_name="bat" display_name="Bat" />
+<general is_projectile="false" flying="true" collide="true" max_sight="20.0" fov="120.0" max_speed="100.0" sprite_name="bat" display_name="Bat" />
+<collision is_aabb="false" radius="0.25" />
 <sounds>
 	<Death>
 		<sound name="bat-death-0" />

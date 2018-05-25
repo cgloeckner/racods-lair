@@ -29,14 +29,16 @@ SpriteViewerState::SpriteViewerState(state::App& app)
 	, lighting{{128u, 128u}, dummy}
 	, movement{log, 10u, dungeon}
 	, focus{log, 10u}
+	, collision{log, 10u, dungeon, movement}
 	, animation{log, 10u, movement}
-	, render{log, 10u, animation, movement, focus, dungeon, camera, lighting} {
+	, render{log, 10u, animation, movement, focus, collision, dungeon, camera, lighting} {
 	// setup dummy dungeon
 	auto scene = dungeon.create(dummy, sf::Vector2u{3u, 3u}, sf::Vector2f{32.f, 32.f});
 	ASSERT(scene == 1u);
 	// spawn object
 	camera.acquire().objects.push_back(1u);
 	core::spawn(dungeon[1u], movement.acquire(1u), {1u, 1u});
+	collision.acquire(1u);
 	animation.acquire(1u);
 	render.acquire(1u);
 	

@@ -8,15 +8,15 @@
 namespace core {
 
 RenderSystem::RenderSystem(LogContext& log, std::size_t max_objects,
-	AnimationManager const& animation_manager,
-	MovementManager const& movement_manager, FocusManager const& focus_manager,
+	AnimationManager const& animation_manager, MovementManager const& movement_manager,
+	FocusManager const& focus_manager, CollisionManager const & collision_manager, 
 	DungeonSystem& dungeon_system, CameraSystem& camera_system,
 	utils::LightingSystem& lighting_system)
 	: sf::Drawable{}					   // Event API
 	, utils::EventListener<SpriteEvent>{}  // Component API
 	, RenderManager{max_objects}
 	, context{log, *this, animation_manager, movement_manager, focus_manager,
-		dungeon_system, camera_system, lighting_system} {}
+		collision_manager, dungeon_system, camera_system, lighting_system} {}
 
 void RenderSystem::draw(
 	sf::RenderTarget& target, sf::RenderStates states) const {
@@ -33,6 +33,10 @@ void RenderSystem::setGridColor(sf::Color color) {
 
 void RenderSystem::setShowFov(bool show) {
 	context.show_fov = show;
+}
+
+void RenderSystem::setShowShape(bool show) {
+	context.show_shape = show;
 }
 
 void RenderSystem::handle(SpriteEvent const& event) {
@@ -59,7 +63,9 @@ void RenderSystem::update(sf::Time const& elapsed) {
 	render_impl::updateCameras(context, elapsed);
 }
 
-void RenderSystem::cull() { render_impl::cullScenes(context); }
+void RenderSystem::cull() {
+	render_impl::cullScenes(context);
+}
 
 // ---------------------------------------------------------------------------
 
@@ -79,21 +85,23 @@ CullingBuffer::CullingBuffer()
 }
 
 Context::Context(LogContext& log, RenderManager& render_manager,
-	AnimationManager const& animation_manager,
-	MovementManager const& movement_manager, FocusManager const& focus_manager,
-	DungeonSystem& dungeon_system,
-	CameraSystem& camera_system, utils::LightingSystem& lighting_system)
+	AnimationManager const& animation_manager, MovementManager const& movement_manager,
+	FocusManager const& focus_manager, CollisionManager const & collision_manager,
+	DungeonSystem& dungeon_system, CameraSystem& camera_system,
+	utils::LightingSystem& lighting_system)
 	: log{log}
 	, render_manager{render_manager}
 	, animation_manager{animation_manager}
 	, movement_manager{movement_manager}
 	, focus_manager{focus_manager}
+	, collision_manager{collision_manager}
 	, dungeon_system{dungeon_system}
 	, camera_system{camera_system}
 	, lighting_system{lighting_system}
 	, buffers{}
 	, grid_color{sf::Color::Transparent}
 	, show_fov{false}
+	, show_shape{false}
 	, cast_shadows{true}
 	, sprite_shader{} {
 	// setup sprite shader
@@ -201,7 +209,7 @@ void updateObject(Context& context, RenderData& data) {
 		// note: fov direction is skipped, because the sprite's transformation
 		// matrix (including its rotation) is used
 	}
-	// update fov shape if necessary
+	// update fov shapes if necessary
 	if (context.focus_manager.has(data.id)) {
 		auto const & focus_data = context.focus_manager.query(data.id);
 		if (focus_data.has_changed) {
@@ -215,6 +223,28 @@ void updateObject(Context& context, RenderData& data) {
 			data.fov.setRadius(radius);
 			data.fov.setAngle(focus_data.fov);
 			data.fov.setPointCount(static_cast<std::size_t>(focus_data.sight * 20));
+		}
+	}
+	// update collisoin shape if necessary
+	if (context.collision_manager.has(data.id)) {
+		auto const & coll_data = context.collision_manager.query(data.id);
+		if (coll_data.has_changed) {
+			coll_data.has_changed = false;
+			if (coll_data.shape.is_aabb) {
+				// update collision aabb shape
+				sf::Vector2f size;
+				size.x = coll_data.shape.size.x * dungeon.getTileSize().x;
+				size.y = coll_data.shape.size.y * dungeon.getTileSize().y;
+				auto& circle = *dynamic_cast<sf::RectangleShape*>(data.shape.get());
+				circle.setOrigin(size / 2.f);
+				circle.setSize(size);
+			} else {
+				// update collision circle shape
+				auto radius = coll_data.shape.radius * dungeon.getTileSize().x;
+				auto& circle = *dynamic_cast<sf::CircleShape*>(data.shape.get());
+				circle.setOrigin({radius, radius});
+				circle.setRadius(radius);
+			}
 		}
 	}
 	// update animation if necessary
@@ -383,8 +413,7 @@ void cullScenes(Context& context) {
 		auto& camera = *unique_ptr;
 		ASSERT(!camera.objects.empty());
 		// query one of the focused objects to grab the scene
-		auto const& move_data =
-			context.movement_manager.query(camera.objects.front());
+		auto const& move_data = context.movement_manager.query(camera.objects.front());
 		ASSERT(move_data.scene > 0u);
 		auto& dungeon = context.dungeon_system[move_data.scene];
 		// cull scene
@@ -408,6 +437,7 @@ void drawHighlightings(CullingBuffer const & buffer, sf::RenderTarget& target) {
 
 void drawSprites(Context const& context, Renderables const& objects,
 	sf::RenderTarget& target) {
+	
 	for (auto const& ptr : objects) {
 		ptr->legs.render(target, ptr->matrix, context.sprite_shader);
 		ptr->torso.render(target, ptr->matrix, context.sprite_shader);
@@ -418,6 +448,16 @@ void drawFovs(Context const& context, Renderables const& objects,
 	sf::RenderTarget& target) {
 	for (auto const & ptr: objects) {
 		target.draw(ptr->fov, ptr->matrix);
+	}
+}
+
+void drawShapes(Context const& context, Renderables const& objects,
+	sf::RenderTarget& target) {
+	for (auto const & ptr: objects) {
+		auto raw = ptr->shape.get();
+		if (raw != nullptr) {
+			target.draw(*raw, ptr->matrix);
+		}
 	}
 }
 
@@ -455,8 +495,15 @@ void drawScene(Context const& context, CullingBuffer& buffer,
 	// draw debug fov
 	if (context.show_fov) {
 		target.setView(cam.scene);
-		for (auto& pair: buffer. objects) {
+		for (auto& pair: buffer.objects) {
 			drawFovs(context, pair.second, target);
+		}
+	}
+	// draw debug shape
+	if (context.show_shape) {
+		target.setView(cam.scene);
+		for (auto& pair: buffer.objects) {
+			drawShapes(context, pair.second, target);
 		}
 	}
 }

@@ -101,7 +101,8 @@ void updateInput(Context& context, InputData& data, sf::Time const& elapsed) {
 	queryInput(context, data, input_event, action_event);
 
 	// adjust movement
-	adjustMovement(context, data, input_event.move);
+	/// @note this should be part of the collision system
+	//adjustMovement(context, data, input_event.move);
 
 	if (data.is_active) {
 		// propagate input event
@@ -114,8 +115,9 @@ void updateInput(Context& context, InputData& data, sf::Time const& elapsed) {
 	}
 }
 
-void adjustMovement(
-	Context const& context, InputData const& data, sf::Vector2f& vector) {
+/// @note this should be part of the collision system
+/*
+void adjustMovement(Context const& context, InputData const& data, sf::Vector2f& vector) {
 	if (vector == sf::Vector2f{}) {
 		return;
 	}
@@ -159,6 +161,7 @@ void adjustMovement(
 		vector = sf::Vector2f{};
 	}
 }
+*/
 
 void onDeath(InputData& data) { data.is_active = false; }
 

@@ -1,2 +1,3 @@
 <general is_projectile="false" collide="true" max_sight="0.0" max_speed="0.0" fov="0.0" sprite_name="empty-wood-table" display_name="" />
+<collision is_aabb="true" width="1.0" height="1.0" />
 <sounds />

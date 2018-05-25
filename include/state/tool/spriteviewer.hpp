@@ -5,6 +5,7 @@
 #include <core/dungeon.hpp>
 #include <core/movement.hpp>
 #include <core/focus.hpp>
+#include <core/collision.hpp>
 #include <core/animation.hpp>
 #include <core/render.hpp>
 
@@ -41,6 +42,7 @@ class SpriteViewerState
 	utils::LightingSystem lighting;
 	core::MovementSystem movement;
 	core::FocusSystem focus;
+	core::CollisionSystem collision;
 	core::AnimationSystem animation;
 	core::RenderSystem render;
 	

@@ -299,11 +299,115 @@ BOOST_AUTO_TEST_CASE(
 
 // ---------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE(loading_and_save_entity_iterates_all_existing_data) {
+BOOST_AUTO_TEST_CASE(loading_and_save_entity_with_circle_collision_iterates_all_existing_data) {
 	// prepare entity
 	rpg::EntityTemplate entity;
 	entity.is_projectile = true;
-	entity.collide = false;  // doesn't fit to `is_projectile` but wayne
+	entity.collide = true;
+	entity.flying = true;
+	entity.interact = std::make_unique<rpg::InteractType>(rpg::InteractType::Barrier); // doesn't fit neither
+	entity.max_sight = 7.5f;
+	entity.max_speed = 12.667f;
+	entity.fov = 120.f;
+	entity.display_name = "Goblin";
+	entity.sprite_name = "goblin";
+	entity.shape.is_aabb = false;
+	entity.shape.radius = 2.f;
+	entity.sounds[core::default_value<core::SoundAction>()].emplace_back("goblin-sfx", nullptr);
+	entity.light = std::make_unique<utils::Light>();
+	entity.light->color = sf::Color::Yellow;
+	entity.light->intensity = 200u;
+	entity.light->cast_shadow = true;
+	entity.light->lod = 3u;
+	entity.blood_color = sf::Color::Cyan;
+
+	// save
+	utils::ptree_type ptree;
+	BOOST_REQUIRE_NO_THROW(entity.saveToTree(ptree));
+
+	// load (twice!)
+	rpg::EntityTemplate data;
+	BOOST_REQUIRE_NO_THROW(data.loadFromTree(ptree));
+	BOOST_REQUIRE_NO_THROW(data.loadFromTree(ptree));
+
+	// test some data
+	BOOST_CHECK_EQUAL(data.is_projectile, true);
+	BOOST_CHECK_EQUAL(data.collide, false);
+	BOOST_CHECK(data.flying);
+	BOOST_REQUIRE(data.interact != nullptr);
+	BOOST_CHECK(*data.interact == rpg::InteractType::Barrier);
+	BOOST_CHECK_CLOSE(data.max_speed, 12.667f, 0.0001f);
+	BOOST_CHECK_CLOSE(data.fov, 120.f, 0.0001f);
+	BOOST_CHECK_EQUAL(data.display_name, "Goblin");
+	BOOST_CHECK_EQUAL(data.sprite_name, "goblin");
+	BOOST_CHECK(!data.shape.is_aabb);
+	BOOST_CHECK_CLOSE(data.shape.radius, 2.f, 0.0001f);
+	BOOST_CHECK_EQUAL(entity.sounds[core::default_value<core::SoundAction>()].front().first, "goblin-sfx");
+	BOOST_REQUIRE(data.light != nullptr);
+	BOOST_CHECK_COLOR_EQUAL(data.light->color, sf::Color::Yellow);
+	BOOST_CHECK_EQUAL(data.light->intensity, 200u);
+	BOOST_CHECK(data.light->cast_shadow);
+	BOOST_CHECK_EQUAL(data.light->lod, 3u);
+	BOOST_CHECK_COLOR_EQUAL(data.blood_color, sf::Color::Cyan);
+}
+
+BOOST_AUTO_TEST_CASE(loading_and_save_entity_with_aabb_collision_iterates_all_existing_data) {
+	// prepare entity
+	rpg::EntityTemplate entity;
+	entity.is_projectile = true;
+	entity.collide = true;
+	entity.flying = true;
+	entity.interact = std::make_unique<rpg::InteractType>(rpg::InteractType::Barrier); // doesn't fit neither
+	entity.max_sight = 7.5f;
+	entity.max_speed = 12.667f;
+	entity.fov = 120.f;
+	entity.display_name = "Goblin";
+	entity.sprite_name = "goblin";
+	entity.shape.is_aabb = true;
+	entity.shape.size = {1.5f, 2.3f};
+	entity.sounds[core::default_value<core::SoundAction>()].emplace_back("goblin-sfx", nullptr);
+	entity.light = std::make_unique<utils::Light>();
+	entity.light->color = sf::Color::Yellow;
+	entity.light->intensity = 200u;
+	entity.light->cast_shadow = true;
+	entity.light->lod = 3u;
+	entity.blood_color = sf::Color::Cyan;
+
+	// save
+	utils::ptree_type ptree;
+	BOOST_REQUIRE_NO_THROW(entity.saveToTree(ptree));
+
+	// load (twice!)
+	rpg::EntityTemplate data;
+	BOOST_REQUIRE_NO_THROW(data.loadFromTree(ptree));
+	BOOST_REQUIRE_NO_THROW(data.loadFromTree(ptree));
+
+	// test some data
+	BOOST_CHECK_EQUAL(data.is_projectile, true);
+	BOOST_CHECK_EQUAL(data.collide, false);
+	BOOST_CHECK(data.flying);
+	BOOST_REQUIRE(data.interact != nullptr);
+	BOOST_CHECK(*data.interact == rpg::InteractType::Barrier);
+	BOOST_CHECK_CLOSE(data.max_speed, 12.667f, 0.0001f);
+	BOOST_CHECK_CLOSE(data.fov, 120.f, 0.0001f);
+	BOOST_CHECK_EQUAL(data.display_name, "Goblin");
+	BOOST_CHECK_EQUAL(data.sprite_name, "goblin");
+	BOOST_CHECK(data.shape.is_aabb);
+	BOOST_CHECK_VECTOR_CLOSE(data.shape.size, sf::Vector2f(1.5f, 2.3f), 0.0001f);
+	BOOST_CHECK_EQUAL(entity.sounds[core::default_value<core::SoundAction>()].front().first, "goblin-sfx");
+	BOOST_REQUIRE(data.light != nullptr);
+	BOOST_CHECK_COLOR_EQUAL(data.light->color, sf::Color::Yellow);
+	BOOST_CHECK_EQUAL(data.light->intensity, 200u);
+	BOOST_CHECK(data.light->cast_shadow);
+	BOOST_CHECK_EQUAL(data.light->lod, 3u);
+	BOOST_CHECK_COLOR_EQUAL(data.blood_color, sf::Color::Cyan);
+}
+
+BOOST_AUTO_TEST_CASE(loading_and_save_entity_without_collider_iterates_all_existing_data) {
+	// prepare entity
+	rpg::EntityTemplate entity;
+	entity.is_projectile = true;
+	entity.collide = false;
 	entity.flying = true;
 	entity.interact = std::make_unique<rpg::InteractType>(rpg::InteractType::Barrier); // doesn't fit neither
 	entity.max_sight = 7.5f;

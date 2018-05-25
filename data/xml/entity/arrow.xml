@@ -1,5 +1,5 @@
-<!-- max_speed is used to be around 200, but currently reduced implementation-wise -->
-<general is_projectile="true" collide="true" max_sight="0.0" max_speed="57.0" fov="0.0" sprite_name="arrow" display_name="" />
+<general is_projectile="true" collide="true" max_sight="0.0" max_speed="200.0" fov="0.0" sprite_name="arrow" display_name="" />
+<collision is_aabb="false" radius="0.1" />
 <sounds>
 	<Spawn>
 		<sound name="arrow-spawn-0" />

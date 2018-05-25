@@ -53,8 +53,6 @@ bool updateCollisionMap(Context& context, MovementData const & actor) {
 		return false;
 	}
 	
-	context.log.debug << "[Core/Collision] Updating Position of #" << actor.id << " from " << src_pos << " to " << dst_pos << "\n";
-	
 	ASSERT(actor.scene > 0u);
 	auto& scene = context.dungeon_system[actor.scene];
 	
@@ -79,6 +77,18 @@ void checkAllCollisions(Context& context) {
 		}
 		
 		checkAnyCollision(context, move_data, result);
+		
+		if (result.tile) {
+			context.log.debug << "Tille collision at " << move_data.pos << "\n";
+		}
+		if (!result.objects.empty()) {
+			context.log.debug << "Object collision at " << move_data.pos << " with ";
+			for (auto id: result.objects) {
+				context.log.debug << id << " ";
+			}
+			context.log.debug << "\n";
+		}
+		
 		if (result.meansCollision()) {
 			ASSERT(context.collision_manager.has(move_data.id));
 			auto& actor_coll = context.collision_manager.query(move_data.id);
@@ -123,8 +133,10 @@ void checkAllCollisions(Context& context) {
 			///		but the collision system NEEDS to reset the position
 			///		immediately to avoid movement artifacts
 			///		Both attributes are mutable (to ignore the constness here)
+			/*
 			context.log.debug << "[Core/Collision] Reset Position of #" << move_data.id << " from "
 				<< move_data.pos << " to " << move_data.last_pos << "\n";
+			*/
 			move_data.pos         = move_data.last_pos;
 			move_data.has_changed = true;
 		}

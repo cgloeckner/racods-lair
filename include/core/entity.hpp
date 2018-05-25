@@ -25,6 +25,8 @@ struct CollisionData : ComponentData {
 	bool is_projectile;
 	utils::Collider shape;			// collision shape
 	std::vector<ObjectID> ignore;	// ignored during collision
+	
+	mutable bool has_changed; // dirty flag for shape sprite
 
 	CollisionData();
 };
@@ -83,6 +85,7 @@ struct RenderData : ComponentData {
 	std::vector<utils::Edge> edges;
 	sf::Color blood_color;
 	utils::ArcShape fov;
+	std::unique_ptr<sf::Shape> shape;
 
 	RenderData();
 };

@@ -1,4 +1,5 @@
 <general is_projectile="false" flying="true" collide="true" max_sight="20.0" max_speed="45.0" fov="120.0" sprite_name="dragon" display_name="Dragon" />
+<collision is_aabb="false" radius="1.0" />
 <sounds>
 	<Death>
 		<sound name="dragon-death-0" />

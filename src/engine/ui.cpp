@@ -5,6 +5,7 @@ namespace engine {
 UiSystem::UiSystem(core::LogContext& log, std::size_t max_objects, sf::Vector2u const& screen_size,
 	sf::Texture const& lightmap, float zoom, unsigned int audio_poolsize,
 	core::MovementManager const& movement, core::FocusManager const & focus,
+	core::CollisionManager const & collision, 
 	core::DungeonSystem& dungeon, rpg::StatsManager const& stats,
 	rpg::ItemManager const & item, rpg::PlayerManager const & player,
 	game::Localization& locale, std::string const & music_base, std::string const & music_ext)
@@ -18,7 +19,7 @@ UiSystem::UiSystem(core::LogContext& log, std::size_t max_objects, sf::Vector2u 
 	, lighting{screen_size, lightmap}
 	, camera{screen_size, zoom}
 	, animation{log, max_objects, movement}
-	, render{log, max_objects, animation, movement, focus, dungeon, camera, lighting}
+	, render{log, max_objects, animation, movement, focus, collision, dungeon, camera, lighting}
 	, sound{log, audio_poolsize}
 	, music{log, music_base, music_ext}
 	, audio{log, max_objects, item, player}

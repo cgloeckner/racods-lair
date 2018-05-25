@@ -223,7 +223,12 @@ core::ObjectID Factory::createObject(
 		auto& f = session.focus.acquire(id);
 	}
 	if (entity.collide) {
-		session.collision.acquire(id);
+		auto& c = session.collision.acquire(id);
+		c.shape = entity.shape;
+		if (c.shape.is_aabb) {
+			c.shape.updateRadiusAABB();
+		}
+		c.has_changed = true;
 	}
 	session.render.acquire(id);
 	session.animation.acquire(id);
@@ -237,8 +242,23 @@ core::ObjectID Factory::createObject(
 	// create object graphics
 	auto& r = session.render.query(id);
 	auto color = utils::ptrToColor(&r);
-	color.a = 64u;
+	color.a = 32u;
 	r.fov.setFillColor(color);
+	color.a = 127u;
+	r.fov.setOutlineColor(color);
+	r.fov.setOutlineThickness(1.f);
+	if (entity.collide) {
+		if (entity.shape.is_aabb) {
+			r.shape = std::make_unique<sf::RectangleShape>(entity.shape.size);
+		} else {
+			r.shape = std::make_unique<sf::CircleShape>(entity.shape.radius);
+		}
+		color.a = 64u;
+		r.shape->setFillColor(color);
+		color.a = 127u;
+		r.shape->setOutlineColor(color);
+		r.shape->setOutlineThickness(1.f);
+	}
 	r.edges = entity.sprite->edges;
 	auto const& frameset = *entity.sprite->frameset;
 	r.torso[core::SpriteTorsoLayer::Base].setTexture(frameset);

@@ -100,7 +100,7 @@ Engine::Engine(core::LogContext& log, std::size_t max_objects,
 	, physics{log, max_objects, dungeon}
 	, avatar{log, max_objects}
 	, ui{log, max_objects, screen_size, get_lightmap(log, cache), zoom, poolsize,
-		  physics.movement, physics.focus, dungeon, avatar.stats,
+		  physics.movement, physics.focus, physics.collision, dungeon, avatar.stats,
 		  avatar.item, avatar.player, locale, mod.get_path<sf::Music>(),
 		  mod.get_ext<sf::Music>()}
 	, behavior{log, max_objects, dungeon, physics.movement, physics.focus, ui.animation,

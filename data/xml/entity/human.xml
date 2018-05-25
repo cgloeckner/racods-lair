@@ -1,4 +1,5 @@
 <general is_projectile="false" collide="true" max_sight="15.0" max_speed="50.0" fov="120.0" sprite_name="human" display_name="Human" />
+<collision is_aabb="false" radius="0.45" />
 <sounds>
 	<Death>
 		<sound name="human-death-0" />

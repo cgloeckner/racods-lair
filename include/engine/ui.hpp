@@ -43,6 +43,7 @@ struct UiSystem
 	UiSystem(core::LogContext& log, std::size_t max_objects, sf::Vector2u const& screen_size,
 		sf::Texture const& lightmap, float zoom, unsigned int audio_poolsize,
 		core::MovementManager const& movement, core::FocusManager const & focus,
+		core::CollisionManager const & collision,
 		core::DungeonSystem& dungeon, rpg::StatsManager const& stats,
 		rpg::ItemManager const & item, rpg::PlayerManager const & player,
 		game::Localization& locale, std::string const & music_base,

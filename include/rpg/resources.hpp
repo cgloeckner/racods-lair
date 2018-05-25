@@ -198,6 +198,7 @@ struct EntityTemplate : BaseResource {
 	bool is_projectile, collide, flying;
 	float max_sight, radius, max_speed, fov;
 	std::string display_name, sprite_name;
+	utils::Collider shape;
 	SpriteTemplate const* sprite;
 	utils::EnumMap<core::SoundAction, std::vector<SoundNode>> sounds;
 	std::unique_ptr<utils::Light> light;

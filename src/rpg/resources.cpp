@@ -336,6 +336,7 @@ EntityTemplate::EntityTemplate()
 	, fov{0.f}
 	, display_name{}
 	, sprite_name{}
+	, shape{}
 	, sprite{nullptr}
 	, sounds{}
 	, light{nullptr}
@@ -353,6 +354,15 @@ void EntityTemplate::loadFromTree(utils::ptree_type const& ptree) {
 	fov = ptree.get<float>("general.<xmlattr>.fov");
 	display_name = ptree.get<std::string>("general.<xmlattr>.display_name", "");
 	sprite_name = ptree.get<std::string>("general.<xmlattr>.sprite_name");
+	if (collide) {
+		shape.is_aabb = ptree.get<bool>("collision.<xmlattr>.is_aabb");
+		if (shape.is_aabb) {
+			shape.size.x = ptree.get<float>("collision.<xmlattr>.width");
+			shape.size.y = ptree.get<float>("collision.<xmlattr>.height");
+		} else {
+			shape.radius = ptree.get<float>("collision.<xmlattr>.radius");
+		}
+	}
 	// parse interact data
 	auto buffer = ptree.get<std::string>("general.<xmlattr>.interact", "");
 	interact = nullptr;
@@ -402,6 +412,16 @@ void EntityTemplate::saveToTree(utils::ptree_type& ptree) const {
 	if (interact != nullptr) {
 		ptree.put("general.<xmlattr>.interact", rpg::to_string(*interact));
 	}
+	if (collide) {
+		ptree.put("collision.<xmlattr>.is_aabb", shape.is_aabb);
+		if (shape.is_aabb) {
+			ptree.put<float>("collision.<xmlattr>.width", shape.size.x);
+			ptree.put<float>("collision.<xmlattr>.height", shape.size.y);
+		} else {
+			ptree.put<float>("collision.<xmlattr>.radius", shape.radius);
+		}
+	}
+	
 	// dump sound data
 	dumpEnumMap(ptree, sounds, "sounds", [](utils::ptree_type& child, std::vector<SoundNode> const & array) {
 		utils::dump_vector(child, "sound", array, [](utils::ptree_type& p, SoundNode const & node) {
