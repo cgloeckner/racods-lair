@@ -1,3 +1,5 @@
+#include <Thor/Math.hpp>
+
 #include <core/algorithm.hpp>
 #include <core/teleport.hpp>
 #include <game/generator.hpp>
@@ -138,7 +140,10 @@ GameState::GameState(App& app)
 			for (auto const & pos: v) {
 				// generator setting!!
 				if (thor::random(0.f, 1.f) < settings.ambience_density) {
+					// spawn random on tile
 					spawn.pos = sf::Vector2f{pos};
+					spawn.pos.x += thor::random(0.33f, 0.67f);
+					spawn.pos.y += thor::random(0.33f, 0.67f);
 					auto const & tex = *all_ambiences[thor::random(0u, all_ambiences.size()-1u)];
 					game.engine.factory.createAmbience(tex, spawn);
 				}
@@ -161,6 +166,9 @@ GameState::GameState(App& app)
 					color = sf::Color::Transparent;
 				}
 				searchPosition(*player_start, spawn.pos, dungeon);
+				// spawn centered on tile
+				spawn.pos.x += 0.5f;
+				spawn.pos.y += 0.5f;
 				player.id = game.engine.factory.createPlayer(player.tpl, player.keys, spawn, color);
 				
 				// add regeneration effect (ALPHA ONLY!)

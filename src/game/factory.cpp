@@ -346,8 +346,8 @@ core::ObjectID Factory::createBullet(rpg::CombatMetaData const& meta,
 		auto const& m = session.movement.query(owner);
 
 		auto pos = m.pos;
-		pos.x = std::round(pos.x);
-		pos.y = std::round(pos.y);
+		pos.x = pos.x;
+		pos.y = pos.y;
 		spwn.pos = pos;
 		spwn.direction = m.look;
 	}
