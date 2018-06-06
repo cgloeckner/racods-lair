@@ -13,6 +13,7 @@ namespace input_impl {
 
 /// Cooldown in ms for toggling auto-look
 extern unsigned int const TOGGLE_COOLDOWN;
+extern unsigned int const SLIDE_COOLDOWN_MS;
 
 /// Context of the input handling
 struct Context {
@@ -22,13 +23,15 @@ struct Context {
 	utils::InputMapper mapper;
 	core::DungeonSystem const& dungeon;
 	core::MovementManager const& movement;
+	core::CollisionManager const& collision;
 	core::FocusManager const& focus;
 
 	std::vector<PlayerAction> gameplay_actions;
 
 	Context(core::LogContext& log, core::InputSender& input_sender,
 		ActionSender& action_sender, core::DungeonSystem const& dungeon,
-		core::MovementManager const& movement, core::FocusManager const& focus);
+		core::MovementManager const& movement, core::CollisionManager const& collision,
+		core::FocusManager const& focus);
 };
 
 // ---------------------------------------------------------------------------
@@ -89,7 +92,8 @@ void updateInput(Context& context, InputData& data, sf::Time const& elapsed);
 /// @param context Input context to deal with
 /// @param data InputData to fix for
 /// @param vector Movement vector to modify.
-//void adjustMovement(Context const& context, InputData const& data, sf::Vector2f& vector);
+/// @return true if vector changed
+bool adjustMovement(Context const& context, InputData const& data, sf::Vector2f& vector);
 
 /// Handle actor's death
 /**
@@ -135,8 +139,9 @@ class InputSystem
 	input_impl::Context context;
 
   public:
-	InputSystem(core::LogContext& log, std::size_t max_objects, core::DungeonSystem const& dungeon,
-		core::MovementManager const& movement, core::FocusManager const& focus);
+	InputSystem(core::LogContext& log, std::size_t max_objects,
+		core::DungeonSystem const& dungeon, core::MovementManager const& movement,
+		core::CollisionManager const & collision, core::FocusManager const& focus);
 
 	void reset();
 	

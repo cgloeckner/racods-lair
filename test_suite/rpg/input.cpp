@@ -12,6 +12,7 @@ struct InputFixture {
 
 	core::DungeonSystem dungeon;
 	core::MovementManager movement;
+	core::CollisionManager collision;
 	core::FocusManager focus;
 	rpg::InputManager input;
 
@@ -27,9 +28,10 @@ struct InputFixture {
 		, action_sender{}
 		, dungeon{}
 		, movement{}
+		, collision{}
 		, focus{}
 		, input{}
-		, context{log, input_sender, action_sender, dungeon, movement, focus}
+		, context{log, input_sender, action_sender, dungeon, movement, collision, focus}
 		, actor{1u}
 		, data{input.acquire(actor)} {
 		// setup scene
@@ -56,6 +58,7 @@ struct InputFixture {
 		move.scene = scene;
 		move.look = {1.f, 0.f};
 		d.getCell({1u, 1u}).entities.push_back(1u);
+		collision.acquire(1u);
 		auto& f = focus.acquire(1u);
 		// connect gamepad
 		sf::Event event;

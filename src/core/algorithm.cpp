@@ -4,11 +4,9 @@
 
 namespace core {
 
-sf::Vector2f rotate(sf::Vector2f const& vector, bool clockwise) {
-	ASSERT(vector != sf::Vector2f{});
-	float angle = 45.f;
-	if (!clockwise) {
-		angle *= -1.f;
+sf::Vector2f rotate(sf::Vector2f const& vector, float angle) {
+	if (vector == sf::Vector2f{}) {
+		return vector;
 	}
 	return utils::normalize(thor::rotatedVector(vector, angle));
 }

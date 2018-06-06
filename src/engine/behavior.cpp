@@ -4,13 +4,13 @@ namespace engine {
 
 BehaviorSystem::BehaviorSystem(core::LogContext& log, std::size_t max_objects,
 	core::DungeonSystem const& dungeon, core::MovementManager const& movement,
-	core::FocusManager const& focus, core::AnimationManager const& animation,
-	rpg::ItemManager const& item, rpg::StatsManager const& stats,
-	rpg::PlayerManager const& player)
+	core::CollisionManager const & collision, core::FocusManager const& focus,
+	core::AnimationManager const& animation, rpg::ItemManager const& item,
+	rpg::StatsManager const& stats, rpg::PlayerManager const& player)
 	: utils::EventListener<core::AnimationEvent, core::MoveEvent,
 		  core::CollisionEvent, rpg::ActionEvent, rpg::DeathEvent,
 		  rpg::SpawnEvent, rpg::PerkEvent, rpg::FeedbackEvent>{}
-	, input{log, max_objects, dungeon, movement, focus}
+	, input{log, max_objects, dungeon, movement, collision, focus}
 	, action{log, max_objects}
 	, interact{log, max_objects, movement, focus, player}
 	, delay{log, dungeon, movement, focus, animation, item, stats, interact,

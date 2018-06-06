@@ -103,8 +103,8 @@ Engine::Engine(core::LogContext& log, std::size_t max_objects,
 		  physics.movement, physics.focus, physics.collision, dungeon, avatar.stats,
 		  avatar.item, avatar.player, locale, mod.get_path<sf::Music>(),
 		  mod.get_ext<sf::Music>()}
-	, behavior{log, max_objects, dungeon, physics.movement, physics.focus, ui.animation,
-		  avatar.item, avatar.stats, avatar.player}
+	, behavior{log, max_objects, dungeon, physics.movement, physics.collision,
+		physics.focus, ui.animation, avatar.item, avatar.stats, avatar.player}
 	, ai{log, max_objects}
 	, combat{log, physics.movement, physics.projectile, avatar.perk,
 		  avatar.stats, behavior.interact, 0.f}

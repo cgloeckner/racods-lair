@@ -1,22 +1,26 @@
 #include <utils/enum_utils.hpp>
 #include <core/algorithm.hpp>
 #include <core/collision.hpp>
+#include <core/movement.hpp>
 #include <rpg/input.hpp>
 
 namespace rpg {
 
 namespace input_impl {
 
-unsigned int const TOGGLE_COOLDOWN = 250u;
+unsigned int const TOGGLE_COOLDOWN   = 250u;
+unsigned int const SLIDE_COOLDOWN_MS = 200u;
 
 Context::Context(core::LogContext& log, core::InputSender& input_sender,
 	ActionSender& action_sender, core::DungeonSystem const& dungeon,
-	core::MovementManager const& movement, core::FocusManager const& focus)
+	core::MovementManager const& movement, core::CollisionManager const & collision,
+	core::FocusManager const& focus)
 	: log{log}
 	, input_sender{input_sender}
 	, action_sender{action_sender}
 	, dungeon{dungeon}
 	, movement{movement}
+	, collision{collision}
 	, focus{focus} {
 	// register player actions as gameplay actions in priority order
 	gameplay_actions = {PlayerAction::Pause, PlayerAction::Attack,
@@ -92,6 +96,11 @@ void updateInput(Context& context, InputData& data, sf::Time const& elapsed) {
 	if (data.cooldown < sf::Time::Zero) {
 		data.cooldown = sf::Time::Zero;
 	}
+	// cool down sliding
+	data.slide_cd -= elapsed;
+	if (data.slide_cd < sf::Time::Zero) {
+		data.slide_cd = sf::Time::Zero;
+	}
 
 	// query actual gameplay action
 	core::InputEvent input_event;
@@ -99,10 +108,19 @@ void updateInput(Context& context, InputData& data, sf::Time const& elapsed) {
 	input_event.actor = data.id;
 	action_event.actor = data.id;
 	queryInput(context, data, input_event, action_event);
-
+	
+	if (data.slide_cd > sf::Time::Zero) {
+		// drop movement input
+		input_event.move = context.movement.query(data.id).move;
+	}
+	
 	// adjust movement
-	/// @note this should be part of the collision system
-	//adjustMovement(context, data, input_event.move);
+	/// @note This should be done here to force adjustment
+	/// of the next input vector by the player (which would
+	/// reset the adjustment after a couple of ms).
+	if (adjustMovement(context, data, input_event.move)) {
+		data.slide_cd = sf::milliseconds(SLIDE_COOLDOWN_MS);
+	}
 
 	if (data.is_active) {
 		// propagate input event
@@ -115,11 +133,9 @@ void updateInput(Context& context, InputData& data, sf::Time const& elapsed) {
 	}
 }
 
-/// @note this should be part of the collision system
-/*
-void adjustMovement(Context const& context, InputData const& data, sf::Vector2f& vector) {
+bool adjustMovement(Context const& context, InputData const& data, sf::Vector2f& vector) {
 	if (vector == sf::Vector2f{}) {
-		return;
+		return false;
 	}
 
 	auto const& move_data = context.movement.query(data.id);
@@ -127,21 +143,36 @@ void adjustMovement(Context const& context, InputData const& data, sf::Vector2f&
 	auto const& dungeon = context.dungeon[move_data.scene];
 
 	auto canAccess = [&](sf::Vector2f const& move) {
-		auto target = sf::Vector2u{move_data.pos + move};
+		// create fake movement data with predicted position
+		auto mv_cpy = move_data;
+		mv_cpy.move = move;
+		auto delta = core::movement_impl::getSpeedDelta(mv_cpy, sf::milliseconds(core::MAX_FRAMETIME_MS));
+		mv_cpy.pos += move * delta;
+		
+		/// @todo: add const & collision manager to input system
+		core::CollisionResult coll;
+		core::checkAnyCollision(context.movement, context.collision, dungeon, mv_cpy, coll);
+		return !coll.meansCollision();
+		
+		/*
+		// previous impl......................
+		auto target = sf::Vector2u{move_data.pos + move * delta};
 		if (!dungeon.has(target)) {
 			return false;
 		}
 		auto const& cell = dungeon.getCell(target);
 		return !core::checkTileCollision(cell);
+		*/
 	};
+	
 	// check given movement
 	if (canAccess(vector)) {
 		// everything is ok (at least no tile collision was detected!)
-		return;
+		return false;
 	}
 	// try alternative direction (randomly chosen)
-	auto right = core::rotate(vector, true);
-	auto left = core::rotate(vector, false);
+	auto right = core::rotate(vector, 45.f);
+	auto left = core::rotate(vector, -45.f);
 	sf::Vector2f decision, other;
 	if (thor::random(0u, 1u) == 0u) {
 		decision = right;
@@ -153,15 +184,17 @@ void adjustMovement(Context const& context, InputData const& data, sf::Vector2f&
 	if (canAccess(decision)) {
 		// use this movement vector
 		vector = decision;
+		return true;
 	} else if (canAccess(other)) {
 		// use other movement vector
 		vector = other;
+		return true;
 	} else {
 		// cannot move, clear vector!
 		vector = sf::Vector2f{};
+		return false;
 	}
 }
-*/
 
 void onDeath(InputData& data) { data.is_active = false; }
 
@@ -173,11 +206,11 @@ void onSpawn(InputData& data) { data.is_active = true; }
 
 InputSystem::InputSystem(core::LogContext& log, std::size_t max_objects,
 	core::DungeonSystem const& dungeon, core::MovementManager const& movement,
-	core::FocusManager const& focus)
+	core::CollisionManager const & collision, core::FocusManager const& focus)
 	: utils::EventListener<DeathEvent, SpawnEvent>{}
 	, utils::EventSender<core::InputEvent, ActionEvent>{}
 	, InputManager{max_objects}
-	, context{log, *this, *this, dungeon, movement, focus} {}
+	, context{log, *this, *this, dungeon, movement, collision, focus} {}
 
 void InputSystem::reset() { context.mapper = utils::InputMapper{}; }
 

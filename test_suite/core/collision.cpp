@@ -753,4 +753,41 @@ BOOST_AUTO_TEST_CASE(collision_system_can_handle_entity_without_collisiondata) {
 	BOOST_CHECK_NO_ASSERT(core::collision_impl::checkAllCollisions(fix.context));
 }
 
+// --------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE(
+	adjustMovement_will_rotate_movevector_clockwise_if_necessary_and_possible) {
+	auto& fix = Singleton<CollisionFixture>::get();
+	fix.reset();
+
+	auto actor = fix.add_object({1u, 1u}, nullptr);
+	auto const & data = fix.collision_manager.query(actor);
+	sf::Vector2f move{1.f, -0.f};
+	core::collision_impl::adjustMovement(fix.context, data, move);
+	BOOST_CHECK_VECTOR_CLOSE(move, sf::Vector2f(1.f, 0.f), 0.0001f);
+}
+
+BOOST_AUTO_TEST_CASE(
+	adjustMovement_will_rotate_movevector_counterclockwise_if_necessary_and_possible) {
+	auto& fix = Singleton<CollisionFixture>::get();
+	fix.reset();
+
+	auto actor = fix.add_object({1u, 1u}, nullptr);
+	auto const & data = fix.collision_manager.query(actor);
+	sf::Vector2f move{-1.f, 1.f};
+	core::collision_impl::adjustMovement(fix.context, data, move);
+	BOOST_CHECK_VECTOR_CLOSE(move, sf::Vector2f(0.f, 1.f), 0.0001f);
+}
+
+BOOST_AUTO_TEST_CASE(adjustMovement_will_drop_movevector_if_impossible) {
+	auto& fix = Singleton<CollisionFixture>::get();
+	fix.reset();
+
+	auto actor = fix.add_object({1u, 1u}, nullptr);
+	auto const & data = fix.collision_manager.query(actor);
+	sf::Vector2f move{0.f, -1.f};
+	core::collision_impl::adjustMovement(fix.context, data, move);
+	BOOST_CHECK_VECTOR_CLOSE(move, sf::Vector2f(), 0.0001f);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

@@ -14,7 +14,8 @@ namespace rpg {
 struct InputData : core::ComponentData {
 	utils::Keybinding<PlayerAction> keys;
 	bool is_active, auto_look;
-	sf::Time cooldown;  // about toggling auto-look
+	sf::Time cooldown; // about toggling auto-look
+	sf::Time slide_cd; // cooldown for sliding
 
 	InputData();
 };

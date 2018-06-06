@@ -23,9 +23,9 @@ struct BehaviorSystem
 	rpg::DelaySystem delay;
 
 	BehaviorSystem(core::LogContext& log, std::size_t max_objects, core::DungeonSystem const& dungeon,
-		core::MovementManager const& movement, core::FocusManager const& focus,
-		core::AnimationManager const& animation, rpg::ItemManager const& item,
-		rpg::StatsManager const& stats, rpg::PlayerManager const& player);
+		core::MovementManager const& movement, core::CollisionManager const & collision,
+		core::FocusManager const& focus, core::AnimationManager const& animation,
+		rpg::ItemManager const& item, rpg::StatsManager const& stats, rpg::PlayerManager const& player);
 	
 	void connect(MultiEventListener& listener);
 	void disconnect(MultiEventListener& listener);

@@ -8,7 +8,8 @@ InputData::InputData()
 	, keys{}
 	, is_active{true}
 	, auto_look{true}
-	, cooldown{sf::Time::Zero} {}
+	, cooldown{sf::Time::Zero}
+	, slide_cd{sf::Time::Zero} {}
 
 ActionData::ActionData()
 	: core::ComponentData{}

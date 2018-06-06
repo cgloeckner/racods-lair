@@ -113,6 +113,12 @@ MoveStyle getMoveStyle(MovementData const & actor);
 /// @return speed factor within specified bounds
 float calcSpeedFactor(MovementData const& actor);
 
+/// Calculate object's movement speed delta
+/// @param actor Movement data to use for calculation
+/// @param elapsed Duration to use
+/// @return speed delta factor for interpolation
+float getSpeedDelta(MovementData const & data, sf::Time const & elapsed);
+
 /// Used to interpolate a movement
 /// This function calculates a new world position. Be aware not to call this
 /// method directly! It's part of `updateRange` and `updateSmallSteps` in

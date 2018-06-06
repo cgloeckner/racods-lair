@@ -20,9 +20,6 @@ bool CollisionResult::meansCollision() const {
 
 namespace collision_impl {
 
-
-// ---------------------------------------------------------------------------
-
 Context::Context(LogContext& log, CollisionSender& collision_sender,
 	TeleportSender& teleport_sender, CollisionManager& collision_manager,
 	DungeonSystem& dungeon_system, MovementManager const & movement_manager)
@@ -78,6 +75,7 @@ void checkAllCollisions(Context& context) {
 		
 		checkAnyCollision(context, move_data, result);
 		
+		/*
 		if (result.tile) {
 			context.log.debug << "Tille collision at " << move_data.pos << "\n";
 		}
@@ -88,6 +86,7 @@ void checkAllCollisions(Context& context) {
 			}
 			context.log.debug << "\n";
 		}
+		*/
 		
 		if (result.meansCollision()) {
 			ASSERT(context.collision_manager.has(move_data.id));

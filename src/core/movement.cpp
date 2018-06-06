@@ -12,8 +12,8 @@ float const MOVEMENT_VELOCITY = 0.1f;
 float const MIN_SPEEDFACTOR = 0.25f;
 float const MAX_SPEEDFACTOR = 1.75f;
 float const DELTA_SPEEDFACTOR = 0.05f;
-float const SIDEWARD_SPEEDFACTOR = 0.9f;
-float const BACKWARD_SPEEDFACTOR = 0.75f;
+float const SIDEWARD_SPEEDFACTOR = 0.8f;
+float const BACKWARD_SPEEDFACTOR = 0.66f;
 
 Context::Context(LogContext& log, MoveSender& move_sender,
 	MovementManager& movement_manager, DungeonSystem& dungeon_system)
@@ -95,6 +95,10 @@ float calcSpeedFactor(MovementData const& actor) {
 	return speed_factor;
 }
 
+float getSpeedDelta(MovementData const & data, sf::Time const & elapsed) {
+	return data.max_speed * calcSpeedFactor(data) * elapsed.asSeconds() * MOVEMENT_VELOCITY;
+}
+
 void interpolate(Context& context, MovementData& data, sf::Time const& elapsed) {
 	if (data.scene == 0u) {
 		// object already vanished
@@ -106,7 +110,7 @@ void interpolate(Context& context, MovementData& data, sf::Time const& elapsed) 
 	// interpolate movement
 	float delta{1.f};
 	if (data.move != sf::Vector2f{}) {
-		delta = data.max_speed * calcSpeedFactor(data) * elapsed.asSeconds() * MOVEMENT_VELOCITY;
+		delta = getSpeedDelta(data, elapsed);
 	}
 	
 	// apply changes
