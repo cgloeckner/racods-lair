@@ -1,3 +1,3 @@
 <general is_projectile="false" collide="true" max_sight="0.0" max_speed="0.0" fov="0.0" sprite_name="warrior-statue" display_name="Warrior Statue" />
-<collision is_aabb="false" radius="0.5" />
+<collision is_aabb="false" radius="0.3" />
 <sounds />
