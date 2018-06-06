@@ -314,8 +314,6 @@ sf::Vector2f Engine::getWorldPos(sf::Vector2f const & screen_pos) const {
 	auto const cam_size = sf::Vector2f{cam.screen.getSize()} * cam.zoom;
 	auto const world_pos = spos * cam.zoom + cam_pos - cam_size / 2.f;
 	auto tmp = dungeon.fromScreen(world_pos);
-	tmp.x += 0.5f; // tiles are rendered centered
-	tmp.y += 0.5f;
 	return tmp;
 }
 
@@ -331,11 +329,7 @@ void Engine::snapGrid(sf::Vector2f& screen_pos) const {
 	auto const cam_size = sf::Vector2f{cam.screen.getSize()} * cam.zoom;
 	auto const world_pos = screen_pos * cam.zoom + cam_pos - cam_size / 2.f;
 	auto tmp = dungeon.fromScreen(world_pos);
-	tmp.x -= 0.5f; // tiles are rendered centered!
-	tmp.y -= 0.5f;
 	tmp = sf::Vector2f{sf::Vector2u{tmp}}; // snap to grid!
-	tmp.x += 0.5f; // tiles are rendered centered!
-	tmp.y += 0.5f;
 	screen_pos = dungeon.toScreen(tmp);
 }
 
