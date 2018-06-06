@@ -55,7 +55,7 @@ void EngineState::loadRoom(std::string const & room_name) {
 	
 	changed = false;
 	
-	context.log.debug << "[State/RoomEditor] " << "Loaded '" << current_name << "'\n";
+	context.log.debug << "[State/RoomEditor] " << "Loaded Room '" << current_name << "'\n";
 }
 
 void EngineState::saveRoom() {
@@ -66,7 +66,7 @@ void EngineState::saveRoom() {
 	current_room.saveToFile(path);
 	changed = false;
 	
-	context.log.debug << "[State/RoomEditor] " << "Saved '" << current_name << "'\n";
+	context.log.debug << "[State/RoomEditor] " << "Saved Room '" << current_name << "'\n";
 }
 
 void EngineState::rebuild() {
@@ -317,8 +317,12 @@ bool RoomEditorState::hasMap() const {
 }
 
 void RoomEditorState::onLoadMod(std::string const & mod_name) {
+	auto& context = getApplication().getContext();
+	
 	if (!utils::file_exists(mod_name)) {
 		// mod doesn't exist
+		context.log.error << "[State/RoomEditor] "
+			<< "Mod '" << mod_name << "' not found\n";
 		return;
 	}
 	
@@ -335,6 +339,8 @@ void RoomEditorState::onLoadMod(std::string const & mod_name) {
 		std::sort(load_filename.begin(), load_filename.end());
 		std::sort(entity_filename.begin(), entity_filename.end());
 	} catch (...) {
+		context.log.error << "[State/RoomEditor] "
+			<< "Mod '" << mod_name << "' failed loading\n";
 		engine = nullptr;
 	}
 }
@@ -828,7 +834,7 @@ void RoomEditorState::update(sf::Time const & elapsed) {
 					onPenResize();
 				}
 			} else if (edit_mode == 1) {
-				if (ui::Combo("Entity", entity_filename_index, entity_filename)) {
+				if (ui::Combo("Entity file", entity_filename_index, entity_filename)) {
 					onEntitySelect();
 				}
 				if (ImGui::SliderInt2("Direction", entity_direction, -1, 1)) {
