@@ -149,20 +149,9 @@ bool adjustMovement(Context const& context, InputData const& data, sf::Vector2f&
 		auto delta = core::movement_impl::getSpeedDelta(mv_cpy, sf::milliseconds(core::MAX_FRAMETIME_MS));
 		mv_cpy.pos += move * delta;
 		
-		/// @todo: add const & collision manager to input system
 		core::CollisionResult coll;
 		core::checkAnyCollision(context.movement, context.collision, dungeon, mv_cpy, coll);
 		return !coll.meansCollision();
-		
-		/*
-		// previous impl......................
-		auto target = sf::Vector2u{move_data.pos + move * delta};
-		if (!dungeon.has(target)) {
-			return false;
-		}
-		auto const& cell = dungeon.getCell(target);
-		return !core::checkTileCollision(cell);
-		*/
 	};
 	
 	// check given movement
@@ -170,6 +159,7 @@ bool adjustMovement(Context const& context, InputData const& data, sf::Vector2f&
 		// everything is ok (at least no tile collision was detected!)
 		return false;
 	}
+	
 	// try alternative direction (randomly chosen)
 	auto right = core::rotate(vector, 45.f);
 	auto left = core::rotate(vector, -45.f);
@@ -181,6 +171,7 @@ bool adjustMovement(Context const& context, InputData const& data, sf::Vector2f&
 		decision = left;
 		other = right;
 	}
+	
 	if (canAccess(decision)) {
 		// use this movement vector
 		vector = decision;

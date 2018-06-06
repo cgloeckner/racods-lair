@@ -46,14 +46,13 @@ BOOST_AUTO_TEST_CASE(
 
 BOOST_AUTO_TEST_CASE(clockwise_rotated_north_vector_equals_northeast_vector) {
 	sf::Vector2f n{0.f, -1.f};
-	auto ne = core::rotate(n, true);
+	auto ne = core::rotate(n);
 	BOOST_CHECK_VECTOR_CLOSE(ne, utils::normalize(sf::Vector2f(1.f, -1.f)), 0.0001f);
 }
 
-BOOST_AUTO_TEST_CASE(
-	counterclockwise_rotated_north_vector_equals_northwest_vector) {
+BOOST_AUTO_TEST_CASE(counterclockwise_rotated_north_vector_equals_northwest_vector) {
 	sf::Vector2f n{0.f, -1.f};
-	auto nw = core::rotate(n, false);
+	auto nw = core::rotate(n, -45.f);
 	BOOST_CHECK_VECTOR_CLOSE(nw, utils::normalize(sf::Vector2f{-1.f, -1.f}), 0.0001f);
 }
 
@@ -64,8 +63,8 @@ BOOST_AUTO_TEST_CASE(rotate_vector_clockwise_is_inverse_to_counter_clockwise_rot
 			if (dir.x == 0 && dir.y == 0) {
 				continue;
 			}
-			auto clockwise = core::rotate(sf::Vector2f{dir}, true);
-			auto counterwise = core::rotate(clockwise, false);
+			auto clockwise = core::rotate(sf::Vector2f{dir});
+			auto counterwise = core::rotate(clockwise, -45.f);
 			BOOST_CHECK_VECTOR_CLOSE(counterwise, utils::normalize(sf::Vector2f{dir}), 0.0001f);
 		}
 	}

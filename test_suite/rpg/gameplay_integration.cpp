@@ -111,7 +111,7 @@ struct GameplayFixture
 		, action{log, 1000u}
 		, delay{log, dungeon, movement, focus, animation, item, stats, interact,
 			  player}
-		, input{log, 1000u, dungeon, movement, focus}
+		, input{log, 1000u, dungeon, movement, collision, focus}
 		, interact{log, 1000u, movement, focus, player}
 		, quickslot{log, 1000u}  // others
 		, scene{0u}

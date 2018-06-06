@@ -57,9 +57,11 @@ struct InputFixture {
 		move.last_pos = move.pos;
 		move.scene = scene;
 		move.look = {1.f, 0.f};
+		move.max_speed = 15.f;
 		d.getCell({1u, 1u}).entities.push_back(1u);
-		collision.acquire(1u);
-		auto& f = focus.acquire(1u);
+		auto& c = collision.acquire(1u);
+		c.shape.radius = 0.5f;
+		focus.acquire(1u);
 		// connect gamepad
 		sf::Event event;
 		std::size_t gamepad_id = 0u;
@@ -93,9 +95,13 @@ struct InputFixture {
 	}
 
 	void reset() {
+		auto& mv = getMoveData();
+		mv.move = sf::Vector2f{1.f, 0.f};
+		
 		data.is_active = true;
 		data.auto_look = true;
 		data.cooldown = sf::Time::Zero;
+		data.slide_cd = sf::Time::Zero;
 		// reset event senders
 		input_sender.clear();
 		action_sender.clear();
@@ -131,6 +137,10 @@ struct InputFixture {
 		event.joystickButton.joystickId = gamepad_id;
 		event.joystickButton.button = button;
 		context.mapper.pushEvent(event);
+	}
+	
+	core::MovementData& getMoveData() {
+		return movement.query(1u);
 	}
 };
 
@@ -320,6 +330,34 @@ BOOST_AUTO_TEST_CASE(move_is_forwarded) {
 	BOOST_REQUIRE_EQUAL(events.size(), 1u);
 }
 
+BOOST_AUTO_TEST_CASE(sliding_move_triggers_cooldown_for_move_forward) {
+	auto& fix = Singleton<InputFixture>::get();
+	fix.reset();
+
+	// trigger movement
+	fix.set(0, sf::Joystick::Axis::X, -30.f);
+	fix.set(0, sf::Joystick::Axis::Y,  30.f);
+	// trigger object update
+	rpg::input_impl::updateInput(fix.context, fix.data, sf::milliseconds(50));
+	BOOST_CHECK_TIME_EQUAL(fix.data.slide_cd, sf::milliseconds(rpg::input_impl::SLIDE_COOLDOWN_MS));
+}
+
+BOOST_AUTO_TEST_CASE(previous_move_is_forwarded_if_slide_cooldown_is_active) {
+	auto& fix = Singleton<InputFixture>::get();
+	fix.reset();
+
+	auto const & mv = fix.getMoveData();
+
+	// trigger movement
+	fix.set(0, sf::Joystick::Axis::X, 30.f);
+	// trigger object update
+	rpg::input_impl::updateInput(fix.context, fix.data, sf::milliseconds(50));
+	// expect an outgoing event
+	auto const& events = fix.input_sender.data();
+	BOOST_REQUIRE_EQUAL(events.size(), 1u);
+	BOOST_CHECK_VECTOR_CLOSE(mv.move, events[0].move, 0.0001f);
+}
+
 BOOST_AUTO_TEST_CASE(look_is_forwarded) {
 	auto& fix = Singleton<InputFixture>::get();
 	fix.reset();
@@ -366,25 +404,21 @@ BOOST_AUTO_TEST_CASE(facing_without_moving_does_not_disable_autolook_state) {
 
 // ---------------------------------------------------------------------------
 
-/// @TODO: move to collision test after reimplementing sliding along walls
-/*
-BOOST_AUTO_TEST_CASE(
-	adjustMovement_will_rotate_movevector_clockwise_if_necessary_and_possible) {
+BOOST_AUTO_TEST_CASE(adjustMovement_wont_adjust_if_no_necessary) {
 	auto& fix = Singleton<InputFixture>::get();
 	fix.reset();
 
-	sf::Vector2f move{1.f, -0.f};
-	rpg::input_impl::adjustMovement(fix.context, fix.data, move);
+	sf::Vector2f move{1.f, 0.f};
+	BOOST_CHECK(!rpg::input_impl::adjustMovement(fix.context, fix.data, move));
 	BOOST_CHECK_VECTOR_CLOSE(move, sf::Vector2f(1.f, 0.f), 0.0001f);
 }
 
-BOOST_AUTO_TEST_CASE(
-	adjustMovement_will_rotate_movevector_counterclockwise_if_necessary_and_possible) {
+BOOST_AUTO_TEST_CASE(adjustMovement_will_rotate_movevector_if_necessary) {
 	auto& fix = Singleton<InputFixture>::get();
 	fix.reset();
 
 	sf::Vector2f move{-1.f, 1.f};
-	rpg::input_impl::adjustMovement(fix.context, fix.data, move);
+	BOOST_CHECK(rpg::input_impl::adjustMovement(fix.context, fix.data, move));
 	BOOST_CHECK_VECTOR_CLOSE(move, sf::Vector2f(0.f, 1.f), 0.0001f);
 }
 
@@ -392,11 +426,10 @@ BOOST_AUTO_TEST_CASE(adjustMovement_will_drop_movevector_if_impossible) {
 	auto& fix = Singleton<InputFixture>::get();
 	fix.reset();
 
-	sf::Vector2f move{0.f, -1.f};
-	rpg::input_impl::adjustMovement(fix.context, fix.data, move);
+	sf::Vector2f move{-1.f, -1.f};
+	BOOST_CHECK(!rpg::input_impl::adjustMovement(fix.context, fix.data, move));
 	BOOST_CHECK_VECTOR_CLOSE(move, sf::Vector2f(), 0.0001f);
 }
-*/
 
 // ---------------------------------------------------------------------------
 

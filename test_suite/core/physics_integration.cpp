@@ -729,7 +729,7 @@ BOOST_AUTO_TEST_CASE(object_is_not_stopped_after_teleport) {
 
 	auto mover = fix.add_object(fix.scene, {1u, 1u}, {1, 0}, 1.f, 15.f);
 	fix.move_object(mover, {1.f, 0.f}, {-1.f, 1.f});
-	fix.update(sf::seconds(3.f));
+	fix.update(sf::seconds(4.f));
 
 	// expect object moving away from teleport target position
 	auto const& move_data = fix.movement.query(mover);
