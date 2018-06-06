@@ -166,9 +166,7 @@ utils::SceneID Factory::createDungeon(rpg::TilesetTemplate const& tileset,
 			dungeon_impl::transform(pos, settings.cell_size, room.angle, room.flip_x, room.flip_y);
 			dungeon_impl::transform(dir, room.angle, room.flip_x, room.flip_y);
 			// spawn (centered to the tile)
-			spawn.pos       = sf::Vector2f{pos + room.offset};
-			spawn.pos.x    += 0.5f;
-			spawn.pos.y    += 0.5f;
+			spawn.pos       = sf::Vector2f{pos + room.offset} + utils::HalfTilePos;
 			spawn.direction = sf::Vector2f{dir};
 			createObject(*entity.ptr, spawn);
 		}

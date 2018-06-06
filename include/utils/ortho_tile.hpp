@@ -8,6 +8,8 @@
 
 namespace utils {
 
+extern sf::Vector2f const HalfTilePos;
+
 sf::Image fixTileset(sf::Image const & source, sf::Vector2u const & tilesize);
 
 void scale(sf::Vector2f& vec, sf::Vector2u const & size);

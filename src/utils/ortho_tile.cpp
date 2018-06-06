@@ -3,6 +3,8 @@
 
 namespace utils {
 
+sf::Vector2f const HalfTilePos{0.5f, 0.5f};
+
 sf::Image fixTileset(sf::Image const & source, sf::Vector2u const & tilesize) {
 	// determine new size
 	auto size = source.getSize();

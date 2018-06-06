@@ -262,6 +262,8 @@ GameState::GameState(App& app)
 		// pick random position
 		searchPosition(src_room, spawn1.pos, src_dungeon);
 		searchPosition(dst_room, spawn2.pos, dst_dungeon);
+		spawn1.pos += utils::HalfTilePos;
+		spawn2.pos += utils::HalfTilePos;
 		
 		// place stairs and teleport triggers
 		game.engine.factory.createObject(downstairs, spawn1);

@@ -201,9 +201,9 @@ class Factory
 	/// The teleporter is NOT bidirectional by default.
 	///
 	/// @param source SceneID of the source scene
-	/// @param src Cell position to trigger at
+	/// @param src Position to trigger at
 	/// @param target SceneID of the target scene
-	/// @param dst Cell position to teleport to
+	/// @param dst Position to teleport to
 	void addTeleport(utils::SceneID source, sf::Vector2f const & src,
 		utils::SceneID target, sf::Vector2f const & dst);
 	
