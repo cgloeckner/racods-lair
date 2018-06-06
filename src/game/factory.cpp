@@ -243,6 +243,7 @@ core::ObjectID Factory::createObject(
 	
 	// create object graphics
 	auto& r = session.render.query(id);
+	r.default_rotation = entity.sprite->rotation;
 	auto color = utils::ptrToColor(&r);
 	color.a = 32u;
 	r.fov.setFillColor(color);

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<general filename="cowl"/>
+<general filename="cowl" rotation="-90.0"/>
 <torso>
 	<Idle>
 		<frame left="128" top="16" width="8" height="9" x="4" y="5" duration="100"/>

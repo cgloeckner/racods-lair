@@ -224,6 +224,23 @@ BOOST_AUTO_TEST_CASE(complete_sprite_is_valid) {
 		pair.second.refresh();
 	}
 	resource.frameset_name = "foo";
+	resource.rotation = 90.f;
+	resource.frameset = &fix.texture;
+	resource.edges.resize(3u);
+	BOOST_CHECK(game::mod_impl::verify(fix.log.debug, "", resource));
+}
+
+BOOST_AUTO_TEST_CASE(sprite_without_rotation) {
+	auto& fix = Singleton<ModFixture>::get();
+
+	rpg::SpriteTemplate resource;
+	resource.legs.append({}, {}, sf::milliseconds(1));
+	resource.legs.refresh();
+	for (auto& pair : resource.torso) {
+		pair.second.append({}, {}, sf::milliseconds(1));
+		pair.second.refresh();
+	}
+	resource.frameset_name = "foo";
 	resource.frameset = &fix.texture;
 	resource.edges.resize(3u);
 	BOOST_CHECK(game::mod_impl::verify(fix.log.debug, "", resource));

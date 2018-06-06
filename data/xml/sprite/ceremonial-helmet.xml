@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<general filename="ceremonial-helmet"/>
+<general filename="ceremonial-helmet" rotation="-90.0"/>
 <torso>
 	<Idle>
 		<frame left="112" top="16" width="8" height="13" x="4" y="9" duration="100"/>

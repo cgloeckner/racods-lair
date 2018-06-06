@@ -311,7 +311,7 @@ BOOST_AUTO_TEST_CASE(can_interpolate_large_movement) {
 	core::movement_impl::setMovement(fix.context, data, {1.f, 1.f}, {1.f, 1.f});
 
 	// trigger interpolation
-	fix.update(sf::seconds(5.f));
+	fix.update(sf::seconds(8.f));
 
 	// assert new position
 	BOOST_CHECK_GT(data.pos.x, 3.f);
@@ -385,18 +385,18 @@ BOOST_AUTO_TEST_CASE(movement_direction_can_be_modified) {
 	core::movement_impl::setMovement(fix.context, data, {-1.f, 1.f}, {-1.f, 1.f});
 
 	// trigger interpolation
-	fix.update(sf::milliseconds(3000));
+	fix.update(sf::milliseconds(5000));
 
 	// trigger another direction
 	core::movement_impl::setMovement(fix.context, data, {1.f, 0.f}, {1.f, 0.f});
 
 	// try to continue interpolation
-	fix.update(sf::milliseconds(2250));
+	fix.update(sf::milliseconds(5000));
 
-	// assert new direction applied at position <3,3>
+	// assert new direction applied bottom right of <,>
 	// note: looking direction is changed while previous move direction is executed
-	BOOST_CHECK_GT(data.pos.y, 10.f);
 	BOOST_CHECK_GT(data.pos.x, 4.f);
+	BOOST_CHECK_GT(data.pos.y, 2.f);
 }
 
 BOOST_AUTO_TEST_CASE(object_movement_stopps_movement_as_interrupt_collision_occures) {

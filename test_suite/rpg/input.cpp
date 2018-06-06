@@ -363,6 +363,8 @@ BOOST_AUTO_TEST_CASE(facing_without_moving_does_not_disable_autolook_state) {
 
 // ---------------------------------------------------------------------------
 
+/// @TODO: move to collision test after reimplementing sliding along walls
+/*
 BOOST_AUTO_TEST_CASE(
 	adjustMovement_will_rotate_movevector_clockwise_if_necessary_and_possible) {
 	auto& fix = Singleton<InputFixture>::get();
@@ -391,6 +393,7 @@ BOOST_AUTO_TEST_CASE(adjustMovement_will_drop_movevector_if_impossible) {
 	rpg::input_impl::adjustMovement(fix.context, fix.data, move);
 	BOOST_CHECK_VECTOR_CLOSE(move, sf::Vector2f(), 0.0001f);
 }
+*/
 
 // ---------------------------------------------------------------------------
 

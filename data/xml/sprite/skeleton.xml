@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<general filename="skeleton"/>
+<general filename="skeleton" rotation="-90.0"/>
 <legs>
 	<frame left="0" top="16" width="11" height="9" x="6" y="3" duration="75"/>
 	<frame left="16" top="32" width="10" height="7" x="5" y="2" duration="75"/>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<general filename="human"/>
+<general filename="human" rotation="-90.0"/>
 <legs>
 	<frame left="48" top="32" width="12" height="9" x="5" y="2" duration="75"/>
 	<frame left="208" top="0" width="10" height="12" x="5" y="4" duration="75"/>

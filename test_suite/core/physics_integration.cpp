@@ -163,6 +163,13 @@ struct PhysicsFixture
 		movement.receive(event);
 	}
 
+	void stop_object(core::ObjectID id) {
+		core::InputEvent event;
+		event.actor = id;
+		event.look = movement.query(id).look;
+		movement.receive(event);
+	}
+
 	void rotate_object(core::ObjectID id, sf::Vector2f const& look) {
 		core::InputEvent event;
 		event.actor = id;
@@ -196,7 +203,7 @@ BOOST_AUTO_TEST_CASE(bullet_can_collide_with_regular_objects) {
 
 
 	auto entity = fix.add_object(fix.scene, {3u, 2u}, {0, 1}, 5.f, 5.f);
-	auto bullet = fix.add_bullet(fix.scene, {5u, 2u}, {-1, 0}, 1.f, 5.f);
+	auto bullet = fix.add_bullet(fix.scene, {5u, 2u}, {-1, 0}, 1.f, 50.f);
 
 	fix.update(sf::seconds(0.5f));
 	
@@ -306,8 +313,8 @@ BOOST_AUTO_TEST_CASE(
 	auto& fix = Singleton<PhysicsFixture>::get();
 	fix.reset();
 
-	auto cross = fix.add_object(fix.scene, {2u, 4u}, {-1, 0}, 1.f, 5.f);
-	auto mover = fix.add_object(fix.scene, {4u, 2u}, {-1, 0}, 1.f, 5.f);
+	auto cross = fix.add_object(fix.scene, {2u, 4u}, {-1, 0}, 1.f, 15.f);
+	auto mover = fix.add_object(fix.scene, {4u, 2u}, {-1, 0}, 1.f, 15.f);
 	fix.move_object(cross, {1.f, 0.f}, {1.f, 0.f});
 	fix.move_object(mover, {0.f, 1.f}, {0.f, 1.f});
 	fix.update(sf::seconds(6.f));
@@ -324,12 +331,14 @@ BOOST_AUTO_TEST_CASE(
 	auto const& m_m = fix.movement.query(mover);
 	BOOST_CHECK_VECTOR_CLOSE(m_m.move, sf::Vector2f(), 0.0001f);
 	BOOST_CHECK_CLOSE(m_m.pos.x, 4.f, 0.0001f);
+	BOOST_CHECK_GT(m_m.pos.y, 2.5f);
 	BOOST_CHECK_LT(m_m.pos.y, 3.5f);
 
 	// expect crossing object stopped, too
 	auto const& c_m = fix.movement.query(cross);
 	BOOST_CHECK_VECTOR_CLOSE(c_m.move, sf::Vector2f(), 0.0001f);
-	BOOST_CHECK_LT(c_m.pos.x, 3.25f);
+	BOOST_CHECK_GT(c_m.pos.x, 2.5f);
+	BOOST_CHECK_LT(c_m.pos.x, 3.5f);
 	BOOST_CHECK_CLOSE(c_m.pos.y, 4.f, 0.0001f);
 	
 	// check distance
@@ -344,8 +353,8 @@ BOOST_AUTO_TEST_CASE(direct_tunnelingtest_fast) {
 	auto& fix = Singleton<PhysicsFixture>::get();
 	fix.reset();
 
-	auto mover = fix.add_object(fix.scene, {1u, 2u}, {-1, 0}, 1.f, core::MAX_SPEED);
 	auto oncom = fix.add_object(fix.scene, {9u, 2u}, {-1, 0}, 1.f, core::MAX_SPEED);
+	auto mover = fix.add_object(fix.scene, {1u, 2u}, {-1, 0}, 1.f, core::MAX_SPEED);
 	fix.move_object(mover, {1.f, 0.f}, {1.f, 0.f});
 	fix.move_object(oncom, {-1.f, 0.f}, {-1.f, 0.f});
 	fix.update(sf::seconds(8.f));
@@ -389,7 +398,7 @@ BOOST_AUTO_TEST_CASE(direct_tunnelingtest_slow) {
 	auto oncom = fix.add_object(fix.scene, {9u, 2u}, {-1, 0}, 1.f, 2.f);
 	fix.move_object(mover, {1.f, 0.f}, {1.f, 0.f});
 	fix.move_object(oncom, {-1.f, 0.f}, {-1.f, 0.f});
-	fix.update(sf::seconds(8.f));
+	fix.update(sf::seconds(20.f));
 
 	// expect collisions
 	auto const& colls = fix.collisions;
@@ -426,8 +435,8 @@ BOOST_AUTO_TEST_CASE(indirect_tunnelingtest_fast) {
 	auto& fix = Singleton<PhysicsFixture>::get();
 	fix.reset();
 
-	auto mover = fix.add_object(fix.scene, {1u, 2u}, { 1, 0}, 1.f, core::MAX_SPEED);
 	auto oncom = fix.add_object(fix.scene, {9u, 3u}, {-1, 0}, 1.f, core::MAX_SPEED);
+	auto mover = fix.add_object(fix.scene, {1u, 2u}, { 1, 0}, 1.f, core::MAX_SPEED);
 	auto& m_c = fix.collision.query(mover);
 	auto& o_c = fix.collision.query(oncom);
 	m_c.shape.radius = 0.75f;
@@ -476,7 +485,7 @@ BOOST_AUTO_TEST_CASE(indirect_tunnelingtest_slow) {
 	o_c.shape.radius = 0.75f;
 	fix.move_object(mover, {1.f, 0.f}, {1.f, 0.f});
 	fix.move_object(oncom, {-1.f, 0.f}, {-1.f, 0.f});
-	fix.update(sf::seconds(8.f));
+	fix.update(sf::seconds(20.f));
 
 	// expect collisions
 	auto const& colls = fix.collisions;
@@ -549,31 +558,48 @@ BOOST_AUTO_TEST_CASE(
 	BOOST_CHECK_LT(radsum * radsum, dist);
 }
 
+BOOST_AUTO_TEST_CASE(object_do_not_collide_with_bullet) {
+	auto& fix = Singleton<PhysicsFixture>::get();
+	fix.reset();
+
+	auto actor = fix.add_object(fix.scene, {3u, 1u}, {1, 0}, 5.f, 15.f);
+	auto bullet = fix.add_bullet(fix.scene, {4u, 1u}, {-1, 0}, 5.f, 50.f);
+	fix.move_object(actor, {1.f, 0.f}, {1.f, 0.f});
+	fix.stop_object(bullet);
+	fix.update(sf::seconds(4.f));
+
+	// expect no collisions
+	auto& coll = fix.collisions;
+	BOOST_REQUIRE_EQUAL(coll.size(), 0u);
+}
+
 BOOST_AUTO_TEST_CASE(object_is_not_stopped_if_bullet_collides_with_it) {
 	auto& fix = Singleton<PhysicsFixture>::get();
 	fix.reset();
 
-	auto actor = fix.add_object(fix.scene, {3u, 1u}, {1, 0}, 5.f, 5.f);
-	auto bullet = fix.add_bullet(fix.scene, {5u, 1u}, {-1, 0}, 5.f, 5.f);
+	auto actor = fix.add_object(fix.scene, {3u, 1u}, {1, 0}, 5.f, 15.f);
+	auto bullet = fix.add_bullet(fix.scene, {5u, 1u}, {-1, 0}, 5.f, 50.f);
 	fix.move_object(actor, {1.f, 0.f}, {1.f, 0.f});
 	// object moves to (4,1), bullet moves to (4,1) and collides
-	fix.update(sf::seconds(0.5f));
+	fix.update(sf::seconds(4.f));
 
 	// expect collisions
 	auto& coll = fix.collisions;
-	BOOST_REQUIRE_EQUAL(coll.size(), 1u);
+	BOOST_REQUIRE_EQUAL(coll.size(), 2u);
+	
 	BOOST_CHECK_EQUAL(coll[0].actor, bullet);
 	BOOST_CHECK_EQUAL(coll[0].collider, actor);
+	BOOST_CHECK_EQUAL(coll[1].actor, bullet);
+	BOOST_CHECK_EQUAL(coll[1].collider, 0u); // bullet hit the wall
 
-	// expect both moving on!
+	// expect actor moving on
+	// (bullet prooved movement continuation by hitting the wall)
 	auto& m_a = fix.movement.query(actor);
 	BOOST_CHECK(m_a.move != sf::Vector2f{});
 	BOOST_CHECK_VECTOR_EQUAL(m_a.move, sf::Vector2i(1, 0));
 	BOOST_CHECK_GT(m_a.pos.x, 4.f);
 	BOOST_CHECK_CLOSE(m_a.pos.y, 1.f, 0.0001f);
 	auto& m_b = fix.movement.query(bullet);
-	BOOST_CHECK(m_b.move != sf::Vector2f{});
-	BOOST_CHECK_VECTOR_EQUAL(m_b.move, sf::Vector2i(-1, 0));
 	BOOST_CHECK_LT(m_b.pos.x, 4.f);
 	BOOST_CHECK_CLOSE(m_b.pos.y, 1.f, 0.0001f);
 }
@@ -582,8 +608,8 @@ BOOST_AUTO_TEST_CASE(bullets_do_collide_with_each_other) {
 	auto& fix = Singleton<PhysicsFixture>::get();
 	fix.reset();
 
-	auto actor = fix.add_bullet(fix.scene, {3u, 1u}, {1, 0}, 5.f, 5.f);
-	auto other = fix.add_bullet(fix.scene, {5u, 1u}, {-1, 0}, 5.f, 5.f);
+	auto actor = fix.add_bullet(fix.scene, {3u, 1u}, {1, 0}, 5.f, 50.f);
+	auto other = fix.add_bullet(fix.scene, {5u, 1u}, {-1, 0}, 5.f, 50.f);
 	fix.update(sf::seconds(0.5f));
 
 	// expect collisions
@@ -665,7 +691,7 @@ BOOST_AUTO_TEST_CASE(collision_map_works_correct_if_object_collides_with_dungeon
 	auto& fix = Singleton<PhysicsFixture>::get();
 	fix.reset();
 
-	auto actor = fix.add_object(fix.scene, {3u, 2u}, {1, 0}, 5.f, 5.f);
+	auto actor = fix.add_object(fix.scene, {3u, 2u}, {1, 0}, 5.f, 15.f);
 	auto const& dungeon = fix.dungeon[fix.scene];
 	auto const& move = fix.movement.query(actor);
 
@@ -701,11 +727,11 @@ BOOST_AUTO_TEST_CASE(object_is_not_stopped_after_teleport) {
 	// create teleport trigger
 	fix.addTeleport(1u, {4u, 1u}, 1u, {3u, 5u});
 
-	auto mover = fix.add_object(fix.scene, {1u, 1u}, {1, 0}, 1.f, 5.f);
+	auto mover = fix.add_object(fix.scene, {1u, 1u}, {1, 0}, 1.f, 15.f);
 	fix.move_object(mover, {1.f, 0.f}, {-1.f, 1.f});
-	fix.update(sf::seconds(1.f));
+	fix.update(sf::seconds(3.f));
 
-	// expect object move off teleport target position
+	// expect object moving away from teleport target position
 	auto const& move_data = fix.movement.query(mover);
 	BOOST_CHECK_VECTOR_EQUAL(move_data.move, sf::Vector2f(1.f, 0.f));
 	BOOST_CHECK_LT(move_data.pos.x, 4.f);
@@ -719,7 +745,7 @@ BOOST_AUTO_TEST_CASE(bullet_is_not_effected_by_teleport) {
 	// create teleport trigger
 	fix.addTeleport(1u, {4u, 1u}, 1u, {3u, 5u});
 	
-	auto mover = fix.add_bullet(fix.scene, {1u, 1u}, {1, 0}, 0.f, 5.f);
+	auto mover = fix.add_bullet(fix.scene, {1u, 1u}, {1, 0}, 0.f, 50.f);
 	fix.update(sf::seconds(8.f));
 
 	// expect object move beyond trigger and collide with wall

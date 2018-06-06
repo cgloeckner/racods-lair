@@ -1,4 +1,4 @@
-<general filename="wood-chest" />
+<general filename="wood-chest" rotation="-90.0" />
 <shadow>
 	<point x="-4" y="-4" />
 	<point x="4" y="-4" />

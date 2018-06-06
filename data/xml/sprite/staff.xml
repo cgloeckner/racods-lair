@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<general filename="staff"/>
+<general filename="staff" rotation="-90.0"/>
 <torso>
 	<Idle>
 		<frame left="208" top="0" width="6" height="20" x="9" y="8" duration="100"/>

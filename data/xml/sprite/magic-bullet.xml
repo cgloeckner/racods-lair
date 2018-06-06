@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<general filename="magic-bullet"/>
+<general filename="magic-bullet" rotation="-90.0"/>
 <torso>
 	<Idle>
 		<frame left="14" top="0" width="12" height="14" x="6" y="8" duration="100"/>

@@ -35,13 +35,13 @@ BOOST_AUTO_TEST_CASE(tile_refresh_position) {
 
 	BOOST_REQUIRE_EQUAL(4u, tile.vertices.size());
 	BOOST_CHECK_VECTOR_CLOSE(
-		sf::Vector2f(46.f, 9.f), tile.vertices[0].position, 0.0001f);
+		sf::Vector2f(48.f, 10.f), tile.vertices[0].position, 0.0001f);
 	BOOST_CHECK_VECTOR_CLOSE(
-		sf::Vector2f(50.f, 9.f), tile.vertices[1].position, 0.0001f);
+		sf::Vector2f(52.f, 10.f), tile.vertices[1].position, 0.0001f);
 	BOOST_CHECK_VECTOR_CLOSE(
-		sf::Vector2f(50.f, 11.f), tile.vertices[2].position, 0.0001f);
+		sf::Vector2f(52.f, 12.f), tile.vertices[2].position, 0.0001f);
 	BOOST_CHECK_VECTOR_CLOSE(
-		sf::Vector2f(46.f, 11.f), tile.vertices[3].position, 0.0001f);
+		sf::Vector2f(48.f, 12.f), tile.vertices[3].position, 0.0001f);
 }
 
 BOOST_AUTO_TEST_CASE(tile_refresh_texcoord) {

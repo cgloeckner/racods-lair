@@ -198,6 +198,7 @@ SpriteTemplate::SpriteTemplate()
 	, legs{}
 	, torso{}
 	, frameset_name{}
+	, rotation{0.f}
 	, frameset{nullptr}
 	, edges{} {}
 
@@ -221,6 +222,7 @@ void SpriteTemplate::loadFromTree(utils::ptree_type const& ptree) {
 	
 	// parse general data
 	frameset_name = ptree.get<std::string>("general.<xmlattr>.filename");
+	rotation = ptree.get<float>("general.<xmlattr>.rotation", 0.f);
 	// parse legs
 	auto legs_opt_node = ptree.get_child_optional("legs");
 	if (legs_opt_node) {
@@ -278,6 +280,9 @@ void SpriteTemplate::saveToTree(utils::ptree_type& ptree) const {
 
 	// dump general data
 	ptree.put<std::string>("general.<xmlattr>.filename", frameset_name);
+	if (rotation != 0.f) {
+		ptree.put<float>("general.<xmlattr>.rotation", rotation);
+	}
 	// dump legs
 	if (!legs.frames.empty()) {
 		save_frames(ptree, "legs", legs);

@@ -627,7 +627,7 @@ struct GameplayFixture
 		objects.push_back(id);
 		auto& move_data = movement.acquire(id);
 		move_data.look = look;
-		move_data.max_speed = 10.f;
+		move_data.max_speed = 15.f;
 		collision.acquire(id);
 		core::spawn(dungeon[1u], move_data, pos);
 		move_data.pos = pos;
@@ -701,15 +701,14 @@ struct GameplayFixture
 		if (event.id > 0u) {
 			auto& m = movement.query(event.id);
 			auto& f = focus.query(event.id);
-			auto p = m.pos;
-			p.x = std::round(p.x);
-			p.y = std::round(p.y);
-			spawn.pos = p;
+			spawn.pos = m.pos;
 			spawn.direction = m.look;
 		}
 
 		ASSERT(spawn.direction != sf::Vector2f{})
 		auto id = createObject(spawn.pos, spawn.direction);
+		auto& m = movement.query(id);
+		m.max_speed = 50.f;
 		auto& f = focus.query(id);
 		f.sight = 0.f;  // bullet cannot be focused
 		auto& c = collision.query(id);
@@ -1490,12 +1489,16 @@ BOOST_AUTO_TEST_CASE(player_stops_movement_if_killed) {
 	// move towards bullet
 	fix.setInput(rpg::PlayerAction::MoveE, true);
 	fix.update(sf::milliseconds(3000));
+	
+	// expect player to be dead
+	BOOST_CHECK_EQUAL(stats.stats[rpg::Stat::Life], 0u);
 
 	// expect player holds his position
 	auto& body = fix.movement.query(id);
-	auto pos = body.pos;
-	fix.update(sf::milliseconds(1000));
-	BOOST_CHECK_VECTOR_CLOSE(body.pos, pos, 0.0001f);
+	BOOST_CHECK_VECTOR_CLOSE(body.move, sf::Vector2f(0.f, 0.f), 0.0001f);
+	auto prev_pos = body.pos;
+	fix.update(sf::milliseconds(500));
+	BOOST_CHECK_VECTOR_CLOSE(body.pos, prev_pos, 0.0001f);
 }
 
 BOOST_AUTO_TEST_CASE(player_stops_actions_if_killed) {

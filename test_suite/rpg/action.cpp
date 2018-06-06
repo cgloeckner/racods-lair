@@ -108,6 +108,20 @@ BOOST_AUTO_TEST_CASE(actor_plays_dying_animation_on_death) {
 	BOOST_CHECK(events[0].action == core::AnimationAction::Die);
 }
 
+BOOST_AUTO_TEST_CASE(actor_stops_movement_on_death) {
+	auto& fix = Singleton<ActionFixture>::get();
+	fix.reset();
+
+	rpg::DeathEvent event;
+	rpg::action_impl::onDeath(fix.context, fix.actor, event);
+
+	BOOST_CHECK(fix.actor.dead);
+	auto const& events = fix.input_sender.data();
+	BOOST_REQUIRE_EQUAL(events.size(), 1u);
+	BOOST_CHECK_EQUAL(events[0].actor, 1u);
+	BOOST_CHECK_VECTOR_CLOSE(events[0].move, sf::Vector2f(), 0.0001f);
+}
+
 BOOST_AUTO_TEST_CASE(actor_can_respawn) {
 	auto& fix = Singleton<ActionFixture>::get();
 	fix.reset();

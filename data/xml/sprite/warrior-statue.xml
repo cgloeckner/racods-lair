@@ -1,4 +1,4 @@
-<general filename="warrior-statue" />
+<general filename="warrior-statue" rotation="-90.0" />
 <shadow>
 	<point x="-16" y="-16" />
 	<point x="16" y="-16" />

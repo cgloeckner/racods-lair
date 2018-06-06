@@ -311,19 +311,22 @@ BOOST_AUTO_TEST_CASE(regular_object_cannot_collide_with_projectile) {
 	fix.reset();
 
 	utils::Collider shape;
-	shape.radius  = 1.f;
+	shape.radius  = 2.f;
 	shape.is_aabb = false;
 
 	auto actor = fix.add_object({1u, 1u}, &shape);
 	auto target = fix.add_object({2u, 1u}, &shape);
 	
-	fix.collision_manager.query(target).is_projectile = true;
-	
 	auto const & actor_move = fix.movement_manager.query(actor);
-	
 	core::CollisionResult result;
+	
+	fix.collision_manager.query(target).is_projectile = true;
 	core::collision_impl::checkAnyCollision(fix.context, actor_move, result);
 	BOOST_REQUIRE(!result.meansCollision());
+	
+	fix.collision_manager.query(target).is_projectile = false;
+	core::collision_impl::checkAnyCollision(fix.context, actor_move, result);
+	BOOST_REQUIRE(result.meansCollision());
 }
 
 BOOST_AUTO_TEST_CASE(projectile_can_collide_with_regular_object) {

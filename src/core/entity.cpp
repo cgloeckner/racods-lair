@@ -11,7 +11,8 @@ CollisionData::CollisionData()
 	: ComponentData{}
 	, is_projectile{false}
 	, shape{}
-	, ignore{} {}
+	, ignore{}
+	, has_changed{false} {}
 
 FocusData::FocusData()
 	: ComponentData{}
@@ -62,6 +63,7 @@ RenderData::RenderData()
 	, light{nullptr}
 	, layer{default_value<ObjectLayer>()}
 	, matrix{sf::Transform::Identity}
+	, default_rotation{0.f}
 	, edges{}
 	, blood_color{sf::Color::Transparent}
 	, fov{} {}

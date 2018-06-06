@@ -190,9 +190,7 @@ void updateObject(Context& context, RenderData& data) {
 	auto const& dungeon = context.dungeon_system[move_data.scene];
 	// update transformation if necessary
 	if (move_data.has_changed && move_data.look != sf::Vector2f{}) {
-		// note: 0° polar angle equals facing right, but sprites are
-		// faded down at default
-		float angle = thor::polarAngle(move_data.look) - 90.f;
+		float angle = thor::polarAngle(move_data.look) + data.default_rotation;
 		auto screen_pos = dungeon.toScreen(move_data.pos);
 		move_data.has_changed = false;
 		// modify transformation matrix

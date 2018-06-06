@@ -82,6 +82,7 @@ struct RenderData : ComponentData {
 	std::unique_ptr<utils::Light> light;
 	ObjectLayer layer;
 	sf::Transform matrix; // sprite transformation
+	float default_rotation; // referring sprite's direction
 	std::vector<utils::Edge> edges;
 	sf::Color blood_color;
 	utils::ArcShape fov;

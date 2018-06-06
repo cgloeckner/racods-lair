@@ -68,6 +68,10 @@ void onDeath(Context& context, ActionData& data, DeathEvent const& event) {
 	core::AnimationEvent ani_event;
 	ani_event.force = true; // ignore whether flying or not
 	ani_event.actor = data.id;
+	// stop actual movement
+	core::InputEvent inp_event;
+	inp_event.actor = data.id;
+	context.input_sender.send(inp_event);
 	/*
 	// trigger stop legs' animation
 	ani_event.type = core::AnimationEvent::Move;

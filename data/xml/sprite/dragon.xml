@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<general filename="dragon"/>
+<general filename="dragon"  rotation="-90.0"/>
 <legs>
 	<frame left="132" top="32" width="44" height="30" x="22" y="29" duration="80"/>
 	<frame left="44" top="32" width="44" height="30" x="22" y="29" duration="80"/>

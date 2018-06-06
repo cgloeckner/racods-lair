@@ -175,6 +175,7 @@ struct SpriteTemplate : BaseResource {
 	utils::ActionFrames legs;
 	utils::EnumMap<core::AnimationAction, utils::ActionFrames> torso;
 	std::string frameset_name;
+	float rotation;
 	sf::Texture const* frameset;
 	std::vector<utils::Edge> edges;
 

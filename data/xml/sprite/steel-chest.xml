@@ -1,4 +1,4 @@
-<general filename="steel-chest" />
+<general filename="steel-chest" rotation="-90.0" />
 <shadow>
 	<point x="-4" y="-4" />
 	<point x="4" y="-4" />

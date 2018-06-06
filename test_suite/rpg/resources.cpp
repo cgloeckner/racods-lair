@@ -224,6 +224,7 @@ BOOST_AUTO_TEST_CASE(loading_and_save_sprite_iterates_all_existing_data) {
 	// prepare entity
 	rpg::SpriteTemplate sprite;
 	sprite.frameset_name = "goblin/warrior";
+	sprite.rotation = 90.f;
 	sprite.legs.append({0, 0, 32, 32}, {0.f, 0.f}, sf::milliseconds(150));
 	sprite.legs.append({32, 0, 32, 32}, {0.f, 0.f}, sf::milliseconds(150));
 	sprite.legs.append({64, 0, 32, 32}, {0.f, 0.f}, sf::milliseconds(150));
@@ -252,6 +253,7 @@ BOOST_AUTO_TEST_CASE(loading_and_save_sprite_iterates_all_existing_data) {
 
 	// test some data
 	BOOST_CHECK_EQUAL(data.frameset_name, "goblin/warrior");
+	BOOST_CHECK_CLOSE(data.rotation, 90.f, 0.0001f);
 	BOOST_REQUIRE_EQUAL(3u, data.legs.frames.size());
 	BOOST_CHECK_RECT_EQUAL(
 		sf::IntRect(32, 0, 32, 32), data.legs.frames[1].clip);
@@ -332,7 +334,7 @@ BOOST_AUTO_TEST_CASE(loading_and_save_entity_with_circle_collision_iterates_all_
 
 	// test some data
 	BOOST_CHECK_EQUAL(data.is_projectile, true);
-	BOOST_CHECK_EQUAL(data.collide, false);
+	BOOST_CHECK_EQUAL(data.collide, true);
 	BOOST_CHECK(data.flying);
 	BOOST_REQUIRE(data.interact != nullptr);
 	BOOST_CHECK(*data.interact == rpg::InteractType::Barrier);
@@ -384,7 +386,7 @@ BOOST_AUTO_TEST_CASE(loading_and_save_entity_with_aabb_collision_iterates_all_ex
 
 	// test some data
 	BOOST_CHECK_EQUAL(data.is_projectile, true);
-	BOOST_CHECK_EQUAL(data.collide, false);
+	BOOST_CHECK_EQUAL(data.collide, true);
 	BOOST_CHECK(data.flying);
 	BOOST_REQUIRE(data.interact != nullptr);
 	BOOST_CHECK(*data.interact == rpg::InteractType::Barrier);

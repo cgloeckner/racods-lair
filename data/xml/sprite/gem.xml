@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<general filename="gem"/>
+<general filename="gem" rotation="-90.0"/>
 <torso>
 	<Idle>
 		<frame left="0" top="0" width="10" height="10" x="5" y="5" duration="100"/>

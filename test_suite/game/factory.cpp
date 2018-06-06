@@ -90,7 +90,7 @@ struct FactoryFixture : utils::EventListener<core::InputEvent,
 		, sound{}
 		, lighting{{320, 180}, dummy}
 		, render_context{log, render, animation, movement,
-			focus, dungeon, camera, lighting}
+			focus, collision, dungeon, camera, lighting}
 		, stats{}
 		, effect{}
 		, item{}
@@ -480,7 +480,7 @@ BOOST_AUTO_TEST_CASE(aabb_collideable_object_has_collision_component) {
 	fix.entity.collide = true;
 	fix.entity.shape.is_aabb = true;
 	fix.entity.shape.radius = 0.f;
-	fix.entity.size = {1.f, 2.f};
+	fix.entity.shape.size = {1.f, 2.f};
 	fix.entity.is_projectile = false;
 
 	rpg::SpawnMetaData spawn;
@@ -496,7 +496,7 @@ BOOST_AUTO_TEST_CASE(aabb_collideable_object_has_collision_component) {
 	BOOST_CHECK(!data.is_projectile);
 	BOOST_CHECK(data.shape.is_aabb);
 	BOOST_CHECK_GT(data.shape.radius, 0.f); // means it was updated
-	BOOST_CHECK_VECTOR_CLOSE(data.shape.size, fix.entity.size);
+	BOOST_CHECK_VECTOR_CLOSE(data.shape.size, fix.entity.shape.size, 0.0001f);
 }
 
 BOOST_AUTO_TEST_CASE(circle_collideable_object_has_collision_component) {
@@ -938,18 +938,16 @@ BOOST_AUTO_TEST_CASE(bullet_has_suitable_component_Data) {
 	}
 }
 
+/// @note idk what this testcase is supposed to do
 BOOST_AUTO_TEST_CASE(bullet_spawndata_is_renewed_if_owner_given) {
 	auto& fix = Singleton<FactoryFixture>::get();
 	fix.reset();
 	fix.entity.collide = true;
 
-	rpg::CombatMetaData meta;
-	meta.emitter = rpg::EmitterType::Trap;
-	meta.trap = &fix.trap;
-
+	// create obstacle
 	rpg::SpawnMetaData spawn;
 	spawn.scene = 1u;
-	spawn.pos = {5u, 5u};
+	spawn.pos = {5.25f, 4.7f};
 	spawn.direction = {1, 0};
 
 	fix.entity.max_sight = 10.f;
@@ -958,27 +956,25 @@ BOOST_AUTO_TEST_CASE(bullet_spawndata_is_renewed_if_owner_given) {
 	auto owner = fix.factory.createObject(fix.entity, spawn);
 	fix.objects.push_back(owner);
 	BOOST_REQUIRE(fix.movement.has(owner));
-	{
-		auto& data = fix.movement.query(owner);
-		data.pos.x += 0.25f;
-		data.pos.y -= 0.3f;
-	}
 
+	// create bullet (with obstacle as owner)
 	spawn.pos = {10u, 7u};
 	spawn.direction = {0, -1};
 	fix.entity.max_sight = 0.f;
 	fix.entity.display_name.clear();
 	fix.entity.is_projectile = true;
 
+	rpg::CombatMetaData meta;
+	meta.emitter = rpg::EmitterType::Trap;
+	meta.trap = &fix.trap;
+
 	auto id = fix.factory.createBullet(meta, spawn, owner);
 	fix.objects.push_back(id);
 
 	BOOST_REQUIRE(fix.movement.has(id));
-	{
-		auto const& data = fix.movement.query(id);
-		BOOST_CHECK_VECTOR_CLOSE(data.pos, sf::Vector2f(5.f, 5.f), 0.0001f);
-		BOOST_CHECK_VECTOR_EQUAL(data.look, sf::Vector2f(1, 0));
-	}
+	auto const& data = fix.movement.query(id);
+	BOOST_CHECK_VECTOR_CLOSE(data.pos, sf::Vector2f(5.25f, 4.7f), 0.0001f);
+	BOOST_CHECK_VECTOR_EQUAL(data.look, sf::Vector2f(1.f, 0.f));
 }
 
 BOOST_AUTO_TEST_CASE(bullet_ignores_its_owner) {

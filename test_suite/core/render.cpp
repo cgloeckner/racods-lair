@@ -15,6 +15,7 @@ struct RenderFixture {
 	core::RenderManager render_manager;
 	core::AnimationManager animation_manager;
 	core::MovementManager movement_manager;
+	core::CollisionManager collision_manager;
 	core::FocusManager focus_manager;
 	core::DungeonSystem dungeon_system;
 	core::CameraSystem camera_system;
@@ -34,12 +35,14 @@ struct RenderFixture {
 		, render_manager{}
 		, animation_manager{}
 		, movement_manager{}
+		, collision_manager{}
 		, focus_manager{}
 		, dungeon_system{}
 		, camera_system{{320, 180}}
 		, lighting_system{{320, 180}, dummy_texture}
 		, context{log, render_manager, animation_manager, movement_manager,
-			focus_manager, dungeon_system, camera_system, lighting_system} {
+			focus_manager, collision_manager, dungeon_system, camera_system,
+			lighting_system} {
 		// add a scenes
 		auto scene = dungeon_system.create(
 			dummy_texture, map_size, sf::Vector2f{64.f, 64.f});
@@ -91,6 +94,9 @@ struct RenderFixture {
 			if (movement_manager.has(id)) {
 				movement_manager.release(id);
 			}
+			if (collision_manager.has(id)) {
+				collision_manager.release(id);
+			}
 			if (focus_manager.has(id)) {
 				focus_manager.release(id);
 			}
@@ -103,6 +109,7 @@ struct RenderFixture {
 		// cleanup systems
 		id_manager.reset();
 		movement_manager.cleanup();
+		collision_manager.cleanup();
 		focus_manager.cleanup();
 		animation_manager.cleanup();
 		render_manager.cleanup();
@@ -123,6 +130,7 @@ struct RenderFixture {
 		move_data.pos = sf::Vector2f{pos};
 		move_data.scene = 1u;
 		move_data.look = sf::Vector2f{look};
+		auto& coll_data = collision_manager.acquire(id);
 		if (sight > 0.f) {
 			auto& focus_data = focus_manager.acquire(id);
 			focus_data.sight = sight;
@@ -339,7 +347,7 @@ BOOST_AUTO_TEST_CASE(move_dirtyflag_will_change_matrix) {
 	auto& dungeon = fix.dungeon_system[1];
 	auto expected = sf::Transform::Identity;
 	expected.translate(dungeon.toScreen(actor_move.pos));
-	expected.rotate(thor::polarAngle(sf::Vector2f{0.f, 1.f}));
+	expected.rotate(thor::polarAngle(sf::Vector2f{0.f, 1.f}) + actor_render.default_rotation);
 	BOOST_CHECK_4x4_MATRIX_CLOSE(actor_render.matrix, expected, 0.0001f);
 }
 
