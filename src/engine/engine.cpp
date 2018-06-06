@@ -105,7 +105,7 @@ Engine::Engine(core::LogContext& log, std::size_t max_objects,
 		  mod.get_ext<sf::Music>()}
 	, behavior{log, max_objects, dungeon, physics.movement, physics.collision,
 		physics.focus, ui.animation, avatar.item, avatar.stats, avatar.player}
-	, ai{log, max_objects}
+	, ai{log, max_objects, physics.movement}
 	, combat{log, physics.movement, physics.projectile, avatar.perk,
 		  avatar.stats, behavior.interact, 0.f}
 	, generator{log}
@@ -114,13 +114,16 @@ Engine::Engine(core::LogContext& log, std::size_t max_objects,
 		  avatar.stats, avatar.effect, avatar.item, avatar.perk, avatar.player,
 		  physics.projectile, behavior.action, behavior.input,
 		  behavior.interact, avatar.quickslot, ui.audio, generator,
-		  ai.navigation, /*ai.script,*/ ui.hud, ai.path}
+		  ai.navigation, /*ai.script,*/ ui.hud, ai.path, ai.tracer}
 	, mod{mod}
 	, factory{log, session, mod} {
 	log.debug << "[Engine/Engine] Initialized with max_objects="
 		<< max_objects << "\n";
 	// propagate available rooms to dungeon generator
 	generator.rooms = mod.getAll<game::RoomTemplate>();
+
+	// setup ai notifications
+	ai.bind<core::InputEvent>(physics);
 
 	// setup behavior notifications
 	behavior.bind<core::InputEvent>(physics);	  // move request
@@ -187,6 +190,8 @@ Engine::Engine(core::LogContext& log, std::size_t max_objects,
 }
 
 void Engine::connect(MultiEventListener& listener) {
+	ai.bind<core::InputEvent>(listener);
+
 	behavior.bind<core::InputEvent>(listener);
 	behavior.bind<rpg::ActionEvent>(listener);
 	behavior.bind<rpg::CombatEvent>(listener);
@@ -229,6 +234,8 @@ void Engine::connect(MultiEventListener& listener) {
 }
 
 void Engine::disconnect(MultiEventListener& listener) {
+	ai.unbind<core::InputEvent>(listener);
+	
 	behavior.unbind<core::InputEvent>(listener);
 	behavior.unbind<core::AnimationEvent>(listener);
 	behavior.unbind<rpg::ActionEvent>(listener);

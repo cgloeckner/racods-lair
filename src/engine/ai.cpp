@@ -2,14 +2,16 @@
 
 namespace engine {
 
-AiSystem::AiSystem(core::LogContext& log, std::size_t max_objects)
+AiSystem::AiSystem(core::LogContext& log, std::size_t max_objects, core::MovementManager const & movement)
 	: utils::EventListener<core::CollisionEvent, core::TeleportEvent,
 		core::AnimationEvent, core::MoveEvent,
 		rpg::EffectEvent, rpg::StatsEvent, rpg::DeathEvent,
 		rpg::SpawnEvent, rpg::FeedbackEvent>{}
-	//, script{log, max_objects}
+	, log{log}
+	, script{log, max_objects}
 	, path{log}
-	, navigation{} {
+	, navigation{}
+	, tracer{log, max_objects, movement, path} {
 	// path.start();
 }
 
@@ -18,47 +20,71 @@ AiSystem::~AiSystem() {
 }
 
 void AiSystem::connect(MultiEventListener& listener) {
+	tracer.bind<core::InputEvent>(listener);
 }
 
 void AiSystem::disconnect(MultiEventListener& listener) {
+	tracer.unbind<core::InputEvent>(listener);
+}
+
+// ---------------------------------------------------------------------------
+
+template <>
+void AiSystem::bind(
+	utils::SingleEventListener<core::InputEvent>& listener) {
+	// to action
+	tracer.bind<core::InputEvent>(listener);
+}
+
+// ---------------------------------------------------------------------------
+
+template <>
+void AiSystem::unbind(
+	utils::SingleEventListener<core::InputEvent> const & listener) {
+	// to action
+	tracer.unbind<core::InputEvent>(listener);
 }
 
 // ---------------------------------------------------------------------------
 
 void AiSystem::handle(core::CollisionEvent const& event) {
-	//script.receive(event);
+	script.receive(event);
+	tracer.receive(event);
 }
 
 void AiSystem::handle(core::TeleportEvent const& event) {
-	//script.receive(event);
+	script.receive(event);
+	tracer.receive(event);
 }
 
 void AiSystem::handle(core::AnimationEvent const& event) {
-	//script.receive(event);
+	script.receive(event);
 }
 
 void AiSystem::handle(core::MoveEvent const& event) {
-	//script.receive(event);
+	script.receive(event);
 }
 
 void AiSystem::handle(rpg::EffectEvent const& event) {
-	//script.receive(event);
+	script.receive(event);
 }
 
 void AiSystem::handle(rpg::StatsEvent const& event) {
-	//script.receive(event);
+	script.receive(event);
 }
 
 void AiSystem::handle(rpg::DeathEvent const& event) {
-	//script.receive(event);
+	script.receive(event);
+	tracer.receive(event);
 }
 
 void AiSystem::handle(rpg::SpawnEvent const& event) {
-	//script.receive(event);
+	script.receive(event);
+	tracer.receive(event);
 }
 
 void AiSystem::handle(rpg::FeedbackEvent const& event) {
-	//script.receive(event);
+	script.receive(event);
 }
 
 // ---------------------------------------------------------------------------
@@ -76,7 +102,9 @@ sf::Time AiSystem::update(sf::Time const& elapsed) {
 	dispatch<rpg::SpawnEvent>(*this);
 	dispatch<rpg::FeedbackEvent>(*this);
 
-	//script.update(elapsed);
+	script.update(elapsed);
+	path.calculate(elapsed);
+	tracer.update(elapsed);
 
 	return clock.restart();
 }

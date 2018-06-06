@@ -5,7 +5,7 @@ namespace game {
 
 struct PathFailedEvent {
 	core::ObjectID actor;
-	sf::Vector2u pos;
+	sf::Vector2f pos;
 
 	PathFailedEvent();
 };

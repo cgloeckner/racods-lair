@@ -221,4 +221,21 @@ BOOST_AUTO_TEST_CASE(algorithm_string_works_if_token_not_contained) {
 	BOOST_CHECK_EQUAL(subs[0], "hello world");
 }
 
+// --------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE(future_state_can_be_queried) {
+	std::future<int> f;
+	BOOST_CHECK(!utils::isReady(f));
+	
+	std::promise<int> p;
+	f = p.get_future();
+	BOOST_CHECK(!utils::isReady(f));
+	
+	p.set_value(42);
+	BOOST_CHECK(utils::isReady(f));
+	
+	f.get();
+	BOOST_CHECK(!utils::isReady(f));
+}
+
 BOOST_AUTO_TEST_SUITE_END()

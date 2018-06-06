@@ -6,6 +6,7 @@
 #include <game/generator.hpp>
 #include <game/navigator.hpp>
 #include <game/path.hpp>
+#include <game/tracer.hpp>
 
 namespace game {
 
@@ -19,6 +20,7 @@ struct Session : rpg::Session {
 	//ScriptManager& script;
 	HudManager& hud;
 	PathSystem& path;
+	TracerSystem& tracer;
 
 	Session(core::IdManager& id_manager, core::DungeonSystem& dungeon,
 		core::CameraSystem& camera, core::MovementManager& movement,
@@ -30,7 +32,8 @@ struct Session : rpg::Session {
 		rpg::InputManager& input, rpg::InteractManager& interact,
 		rpg::QuickslotManager& quickslot, AudioSystem& audio,
 		DungeonGenerator& generator, NavigationSystem& navigation,
-		/*ScriptManager& script,*/ HudManager& hud, PathSystem& path);
+		/*ScriptManager& script,*/ HudManager& hud, PathSystem& path,
+		TracerSystem& tracer);
 };
 
 }  // ::rage

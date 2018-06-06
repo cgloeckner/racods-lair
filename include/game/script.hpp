@@ -5,8 +5,6 @@
 
 namespace game {
 
-/// @note out of order, needs reimplementation
-/*
 namespace script_impl {
 
 /// Prevent scripts from being update-notified too often; delay in ms
@@ -23,6 +21,8 @@ struct Context {
 
 // ---------------------------------------------------------------------------
 
+/// @note out of order, needs reimplementation
+/*
 /// Notify about a collision event
 /// 
 ///	This will query the corresponding objects' ScriptData and notify
@@ -150,6 +150,8 @@ void onUpdate(Context& context, ScriptData& actor);
 /// 
 void update(Context& context, sf::Time const& elapsed);
 
+*/
+
 } // ::script_impl
 
 // ---------------------------------------------------------------------------
@@ -183,6 +185,5 @@ class ScriptSystem
 
 	void update(sf::Time const& elapsed);
 };
-*/
 
 }  // ::game

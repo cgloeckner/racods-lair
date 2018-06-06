@@ -10,6 +10,14 @@
 
 namespace game {
 
+struct TracerData : core::ComponentData {
+	std::future<Path> request;
+	Path path; /// @note path is traverse backwards for better performance
+	bool is_enabled;
+	
+	TracerData();
+};
+
 struct HudData : core::ComponentData {
 	std::unique_ptr<ui::PlayerHud> hud;
 
@@ -27,7 +35,8 @@ struct ScriptData : core::ComponentData {
 // ---------------------------------------------------------------------------
 // enhanced component managers
 
+using TracerManager = core::ComponentManager<TracerData>;
 using HudManager = core::ComponentManager<HudData>;
 using ScriptManager = core::ComponentManager<ScriptData>;
 
-}  // ::rage
+} // ::game

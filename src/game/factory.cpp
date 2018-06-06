@@ -436,6 +436,8 @@ core::ObjectID Factory::createBot(BotTemplate const& bot,
 	// note: equipment is chosen by AI later
 
 	// setup ai
+	session.tracer.acquire(id);
+
 	/*
 	auto& a = session.script.acquire(id);
 	a.api = std::make_unique<LuaApi>(log, id, hostile, session,
@@ -556,6 +558,10 @@ core::ObjectID Factory::createPlayer(PlayerTemplate const & player,
 	if (color != sf::Color::Transparent) {
 		hud.hud->setColor(color);
 	}
+	
+	// create path tracing component
+	/// @note maybe this is only used by the testmode .. but who cares
+	session.tracer.acquire(id);
 
 	entity_cache[id].hostile = false;
 

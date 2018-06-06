@@ -1,16 +1,92 @@
 #pragma once
-#include <boost/optional.hpp>
-
 #include <core/entity.hpp>
 #include <core/event.hpp>
 #include <game/common.hpp>
+#include <game/entity.hpp>
 #include <game/event.hpp>
 #include <game/path.hpp>
 
 namespace game {
 
+namespace tracer_impl {
+
+extern float const WAYPOINT_REACHED_THRESHOLD;
+
+struct Context {
+	core::LogContext& log;
+	core::InputSender& input_sender;
+	core::MovementManager const & movement;
+	
+	PathSystem& pathfinder;
+	
+	Context(core::LogContext& log, core::InputSender& input_sender, core::MovementManager const & movement,
+		PathSystem& pathfinder);
+};
+
+/// Retrigger pathfinding on collision
+/// @param context Tracer context to use
+/// @param data TracerData to use
+void onCollision(Context& context, TracerData& data);
+
+/// Clears the path on teleport
+/// @param data TracerData to clear for
+void onTeleport(TracerData& data);
+
+/// Disable tracing on death
+/// @param data TracerData to disable
+void onDeath(TracerData& data);
+
+/// Enable tracing on (re-)spawn
+/// @param data TracerData to enable
+void onSpawn(TracerData& data);
+
+/// Update the pathtracing for a single entity
+/// @param context Tracer context to use
+/// @param data TracerData to use
+void onUpdate(Context& context, TracerData& data);
+
+} // ::tracer_impl
+
+/// Trigger pathfinding to given target
+/// @param log LogContext
+/// @param pathfinder Pathfinding System to use
+/// @param move MovementData (like sceneID, startPos)
+/// @param trace TracerData to use
+/// @param target Pos to move to
+void tracer(core::LogContext& log, PathSystem& pathfinder, core::MovementData const & move, TracerData& tracer, sf::Vector2f const & target);
+
+// -----------------------------------------------------------------------------------------
+
+class TracerSystem
+	: public utils::EventListener<core::CollisionEvent, core::TeleportEvent, rpg::DeathEvent, rpg::SpawnEvent>
+	, public utils::EventSender<core::InputEvent>
+	// Component API
+	, public TracerManager {
+
+  private:
+	tracer_impl::Context context;
+
+  public:
+	TracerSystem(core::LogContext& log, std::size_t max_objects, core::MovementManager const & movement,
+		PathSystem& pathfinder);
+
+	void handle(core::CollisionEvent const& event);
+	void handle(core::TeleportEvent const& event);
+	void handle(rpg::DeathEvent const& event);
+	void handle(rpg::SpawnEvent const& event);
+
+	void update(sf::Time const& elapsed);
+};
+
+
+
+
+
+
+
+
+	
 /// @note out of order, needs reimplementation
-/*
 /// Helper to trace a path
 /// 
 /// A tracer is used once per AI object to simplify the entire movement
@@ -21,7 +97,7 @@ namespace game {
 /// 
 class PathTracer {
   private:
-	enum { Idle, Trigger, Wait, Trace } state;
+	TraceState state;
 
 	core::LogContext& log;
 	PathSystem& pathfinder;
@@ -30,8 +106,8 @@ class PathTracer {
 	core::ObjectID const actor;
 
 	std::future<Path> request;
-	std::vector<sf::Vector2u> path;
-	sf::Vector2u current, target;
+	std::vector<sf::Vector2f> path;
+	sf::Vector2f start, finish;
 
 	bool requestIsReady() const;
 
@@ -65,16 +141,7 @@ class PathTracer {
 	/// 
 	/// @param target Target position to move to
 	/// 
-	void pathfind(sf::Vector2u const& target);
-
-	/// Handle incomming movement event
-	/// 
-	/// This is used to detect whether the object is ready for the
-	/// next step.
-	/// 
-	/// @param event MoveEvent to consider
-	/// 
-	void handle(core::MoveEvent const& event);
+	void pathfind(sf::Vector2f const& target);
 
 	/// Handle incomming collision event
 	/// 
@@ -100,9 +167,7 @@ class PathTracer {
 	bool isRunning() const;
 
 	/// Return actual path
-	std::vector<sf::Vector2u> const& getPath() const;
+	std::vector<sf::Vector2f> const& getPath() const;
 };
-
-*/
 
 }  // ::game

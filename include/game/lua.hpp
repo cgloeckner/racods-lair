@@ -12,7 +12,7 @@
 #include <game/common.hpp>
 #include <game/event.hpp>
 #include <game/path.hpp>
-#include <game/tracer.hpp>
+//#include <game/tracer.hpp>
 
 namespace game {
 

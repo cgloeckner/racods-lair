@@ -2,8 +2,6 @@
 
 namespace game {
 
-/// @note out of order, needs reimplementation
-/*
 namespace script_impl {
 
 unsigned int const UPDATE_DELAY = 200; // ms
@@ -16,6 +14,8 @@ Context::Context(core::LogContext& log, ScriptManager& script_manager)
 
 // ---------------------------------------------------------------------------
 
+/// @note out of order, needs reimplementation
+/*
 void onCollision(Context& context, core::CollisionEvent const& event) {
 	if (!context.script_manager.has(event.actor)) {
 		// no such component
@@ -340,25 +340,27 @@ void update(Context& context, sf::Time const& elapsed) {
 	}
 }
 
+*/
+
 }  // ::script_impl
 
 // ---------------------------------------------------------------------------
 
 ScriptSystem::ScriptSystem(core::LogContext& log, std::size_t max_objects)
 	: utils::EventListener<core::CollisionEvent, core::TeleportEvent,
-		core::AnimationEvent, core::MoveEvent, core::FocusEvent,
-		rpg::EffectEvent, rpg::StatsEvent, rpg::DeathEvent,
-		rpg::SpawnEvent, rpg::FeedbackEvent, PathFailedEvent>{}
+		core::AnimationEvent, core::MoveEvent, rpg::EffectEvent,
+		rpg::StatsEvent, rpg::DeathEvent, rpg::SpawnEvent,
+		rpg::FeedbackEvent, PathFailedEvent>{}
 	, ScriptManager{max_objects}
 	, context{log, *this} {
 }
 
 void ScriptSystem::handle(core::CollisionEvent const& event) {
-	script_impl::onCollision(context, event);
+	//script_impl::onCollision(context, event);
 }
 
 void ScriptSystem::handle(core::TeleportEvent const& event) {
-	script_impl::onTeleport(context, event);
+	//script_impl::onTeleport(context, event);
 }
 
 void ScriptSystem::handle(core::AnimationEvent const& event) {
@@ -367,6 +369,7 @@ void ScriptSystem::handle(core::AnimationEvent const& event) {
 		return;
 	}
 
+	/*
 	switch (event.type) {
 		case core::AnimationEvent::Action:
 			switch (event.action) {
@@ -382,34 +385,35 @@ void ScriptSystem::handle(core::AnimationEvent const& event) {
 		default:
 			break;
 	}
+	*/
 }
 
 void ScriptSystem::handle(core::MoveEvent const& event) {
-	script_impl::onMove(context, event);
+	//script_impl::onMove(context, event);
 }
 
 void ScriptSystem::handle(rpg::EffectEvent const& event) {
-	script_impl::onEffect(context, event);
+	//script_impl::onEffect(context, event);
 }
 
 void ScriptSystem::handle(rpg::StatsEvent const& event) {
-	script_impl::onStats(context, event);
+	//script_impl::onStats(context, event);
 }
 
 void ScriptSystem::handle(rpg::DeathEvent const& event) {
-	script_impl::onDeath(context, event);
+	//script_impl::onDeath(context, event);
 }
 
 void ScriptSystem::handle(rpg::SpawnEvent const& event) {
-	script_impl::onSpawn(context, event);
+	//script_impl::onSpawn(context, event);
 }
 
 void ScriptSystem::handle(rpg::FeedbackEvent const& event) {
-	script_impl::onFeedback(context, event);
+	//script_impl::onFeedback(context, event);
 }
 
 void ScriptSystem::handle(PathFailedEvent const& event) {
-	script_impl::onPathFailed(context, event);
+	//script_impl::onPathFailed(context, event);
 }
 
 void ScriptSystem::update(sf::Time const& elapsed) {
@@ -424,6 +428,7 @@ void ScriptSystem::update(sf::Time const& elapsed) {
 	dispatch<rpg::FeedbackEvent>(*this);
 	dispatch<PathFailedEvent>(*this);
 
+	/*
 	for (auto& data : *this) {
 		if (data.is_active) {
 			auto failure = data.api->update(elapsed);
@@ -432,8 +437,8 @@ void ScriptSystem::update(sf::Time const& elapsed) {
 			}
 		}
 	}
-	script_impl::update(context, elapsed);
+	*/
+	//script_impl::update(context, elapsed);
 }
-*/
 
 }  // ::game

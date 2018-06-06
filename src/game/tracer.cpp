@@ -1,147 +1,176 @@
+#include <utils/algorithm.hpp>
 #include <utils/assert.hpp>
+#include <utils/math2d.hpp>
 #include <core/algorithm.hpp>
 #include <game/tracer.hpp>
-#include <game/navigator.hpp>  // distance!
 
 namespace game {
 
-/// @note out of order, needs reimplementation
-/*
-PathTracer::PathTracer(core::LogContext& log, PathSystem& pathfinder,
-	core::MovementManager const& movement_manager,
-	core::InputSender& input_sender, core::ObjectID actor)
-	: state{PathTracer::Idle}
-	, log{log}
-	, pathfinder{pathfinder}
-	, movement_manager{movement_manager}
+namespace tracer_impl {
+
+float const WAYPOINT_REACHED_THRESHOLD = 0.01f;
+
+Context::Context(core::LogContext& log, core::InputSender& input_sender, core::MovementManager const & movement, PathSystem& pathfinder)
+	: log{log}
 	, input_sender{input_sender}
-	, actor{actor}
-	, request{}
-	, path{}
-	, current{}
-	, target{} {}
-
-bool PathTracer::requestIsReady() const {
-	auto status = request.wait_for(std::chrono::milliseconds(0));
-	return status == std::future_status::ready;
+	, movement{movement}
+	, pathfinder{pathfinder} {
 }
 
-void PathTracer::reset() {
-	state = PathTracer::Idle;
-	request = std::future<Path>{};
-	path.clear();
-	current = sf::Vector2u{};
-	// target = sf::Vector2u{};
-	(void)log;
+void onCollision(Context& context, TracerData& data) {
+	if (!data.is_enabled) {
+		return;
+	}
+	
+	auto const & move_data = context.movement.query(data.id);
+	auto target  = sf::Vector2f{data.path.front()};
+	
+	// Trigger pathfinding from current position to the original target
+	tracer(context.log, context.pathfinder, context.movement.query(data.id), data, target);
 }
 
-void PathTracer::pathfind(sf::Vector2u const& target) {
-	this->target = target;
-	// force path renew
-	auto const& data = movement_manager.query(actor);
-	current = data.target;
-	request = std::future<Path>{};
-	path.clear();
-	state = PathTracer::Trigger;
+void onTeleport(TracerData& data) {
+	data.request = std::future<Path>{};
+	data.path.clear();
 }
 
-void PathTracer::handle(core::MoveEvent const& event) {
-	switch (event.type) {
-		case core::MoveEvent::Left: {
-			// stop movement
-			core::InputEvent event;
-			event.actor = actor;
-			event.move = {};
-			input_sender.send(event);
-		} break;
+void onDeath(TracerData& data) {
+	data.request = std::future<Path>{};
+	data.path.clear();
+	data.is_enabled = false;
+}
 
-		case core::MoveEvent::Reached:
-			current = event.target;
-			if (state != PathTracer::Trace) {
-				return;
-			}
-			if (path.empty()) {
-				log.debug << "[Game/Tracer] " << "Panic: #" << actor << " has no path\n";
-				return;
-			}
-			if (path.back() == current) {
-				path.pop_back();
-			}
-			if (!path.empty()) {
-				// head to next waypiont
-				auto next = path.back();
-				auto v = sf::Vector2i{next} - sf::Vector2i{current};
-				core::fixDirection(v);
-				core::InputEvent event;
-				event.actor = actor;
-				event.move = v;
-				event.look = v;
-				input_sender.send(event);
-			} else {
-				state = PathTracer::Idle;
-			}
-			break;
+void onSpawn(TracerData& data) {
+	data.request = std::future<Path>{};
+	data.path.clear();
+	data.is_enabled = true;
+}
+
+void onUpdate(Context& context, TracerData& data) {
+	// check if path tracing is possible
+	if (!data.is_enabled) {
+		return;
+	}
+	if (data.path.empty() && !utils::isReady(data.request)) {
+		return;
+	}
+	
+	bool trigger{false};
+	if (data.path.empty()) {
+		data.path = std::move(data.request.get());
+		trigger = !data.path.empty();
+	}
+	
+	// check whether object moved close enough
+	auto const & move_data = context.movement.query(data.id);
+	auto next       = sf::Vector2f{data.path.back()} + utils::HalfTilePos;
+	auto dist       = utils::distance(move_data.pos, next);
+	auto last_dist  = utils::distance(move_data.last_pos, next);
+	bool wp_reached = dist < WAYPOINT_REACHED_THRESHOLD;
+	bool wp_missed  = last_dist < dist; // last position was closed then current
+	
+	if (wp_reached || wp_missed) {
+		// waypoint was reached
+		data.path.pop_back();
+		trigger = true;
+		context.log.debug << "[Game/Tracer] " << "Waypoint " << next << " reached by #"
+			<< data.id << "\n";
+	}
+	
+	// trigger trace of next waypoint if suitable
+	if (trigger && !data.path.empty()) {
+		next = sf::Vector2f{data.path.back()} + utils::HalfTilePos;
+		if (next == move_data.pos) {
+			// ignore this wp
+			data.path.pop_back();
+			return;
+		}
+		
+		core::InputEvent event;
+		event.actor = data.id;
+		event.move = thor::unitVector(next - move_data.pos);
+		event.look = event.move;
+		context.input_sender.send(event);
+		
+		context.log.debug << "[Game/Tracer] " << "Going to " << next << " via " << event.move << "\n";
 	}
 }
 
-void PathTracer::handle(core::CollisionEvent const& event) {
-	// force abort
-	request = std::future<Path>{};
-	path.clear();
-	state = PathTracer::Idle;
-}
+} // ::tracer_impl
 
-boost::optional<PathFailedEvent> PathTracer::update() {
-	switch (state) {
-		case PathTracer::Idle:
-			break;
 
-		case PathTracer::Trigger: {
-			if (target.x == 0 and target.y == 0) {
-				log.debug << "[Game/Tracer] " << "Warning: invalid target\n";
-			}
-			auto const& data = movement_manager.query(actor);
-			current = sf::Vector2u{data.pos};
-			request = pathfinder.schedule(actor, data.scene, current, target);
-			state = PathTracer::Wait;
-		} break;
-
-		case PathTracer::Wait:
-			ASSERT(request.valid());
-			if (requestIsReady()) {
-				path = request.get();
-				// check whether path is ok
-				if (path.size() == 1u &&
-					navigator_impl::distance(current, target) >= 2.f) {
-					// pathfinding failed!
-					state = PathTracer::Idle;
-					PathFailedEvent event;
-					event.actor = actor;
-					event.pos = target;
-					return event;
-
-				} else {
-					state = PathTracer::Trace;
-					core::MoveEvent event;
-					event.source = current;
-					event.target = current;
-					event.type = core::MoveEvent::Reached;
-					handle(event);
-				}
-			}
-			break;
-
-		case PathTracer::Trace:
-			// tracing is done on entering a tile
-			break;
+void tracer(core::LogContext& log, PathSystem& pathfinder, core::MovementData const & move, TracerData& tracer, sf::Vector2f const & target) {
+	if (!tracer.is_enabled) {
+		return;
 	}
-
-	return boost::none;
+	
+	tracer.request = pathfinder.schedule(tracer.id, move.scene, sf::Vector2u{move.pos}, sf::Vector2u{target});
+	tracer.path.clear();
+	
+	log.debug << "[Game/Tracer] " << "Pathfinding #" << tracer.id << " to " << target << "\n";
 }
 
-bool PathTracer::isRunning() const { return state != PathTracer::Idle; }
+// ---------------------------------------------------------------------------------------
 
-std::vector<sf::Vector2u> const& PathTracer::getPath() const { return path; }
-*/
+TracerSystem::TracerSystem(core::LogContext& log, std::size_t max_objects, core::MovementManager const & movement,
+		PathSystem& pathfinder)
+	: utils::EventListener<core::CollisionEvent, core::TeleportEvent, rpg::DeathEvent, rpg::SpawnEvent>{}
+	, utils::EventSender<core::InputEvent>{}
+	, TracerManager{max_objects}
+	, context{log, *this, movement, pathfinder} {
+}
 
-}  // ::game
+void TracerSystem::handle(core::CollisionEvent const& event) {
+	if (!event.interrupt) {
+		return;
+	}
+	
+	if (!has(event.actor)) {
+		return;
+	}
+	
+	auto& data = query(event.actor);
+	tracer_impl::onCollision(context, data);
+}
+
+void TracerSystem::handle(core::TeleportEvent const& event) {
+	if (!has(event.actor)) {
+		return;
+	}
+	
+	auto& data = query(event.actor);
+	tracer_impl::onTeleport(data);
+}
+
+void TracerSystem::handle(rpg::DeathEvent const& event) {
+	if (!has(event.actor)) {
+		return;
+	}
+	
+	auto& data = query(event.actor);
+	tracer_impl::onDeath(data);
+}
+
+void TracerSystem::handle(rpg::SpawnEvent const& event) {
+	if (!has(event.actor)) {
+		return;
+	}
+	
+	auto& data = query(event.actor);
+	tracer_impl::onSpawn(data);
+}
+
+void TracerSystem::update(sf::Time const& elapsed) {
+	dispatch<core::CollisionEvent>(*this);
+	dispatch<core::TeleportEvent>(*this);
+	dispatch<rpg::DeathEvent>(*this);
+	dispatch<rpg::SpawnEvent>(*this);
+
+	for (auto& data: *this) {
+		tracer_impl::onUpdate(context, data);
+	}
+	
+	propagate<core::InputEvent>();
+}
+
+} // ::game

@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include <future>
 #include <SFML/Graphics/Rect.hpp>
 
 namespace utils {
@@ -83,7 +84,15 @@ T& randomAt(std::vector<T>& container);
 template <typename T>
 T const & randomAt(std::vector<T> const & container);
 
-}  // ::utils
+// ---------------------------------------------------------------------------
+
+/// Check whether the pathfinding is done
+/// @param data TracerData to check for
+/// @return true if path is available
+template <typename T>
+bool isReady(std::future<T> const & f);
+
+} // ::utils
 
 // include implementation details
 #include <utils/algorithm.inl>

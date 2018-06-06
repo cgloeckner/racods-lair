@@ -432,6 +432,13 @@ void TestMode::updateTeleporter() {
 			core::vanish(engine.dungeon[data.scene], data);
 			core::spawn(dungeon, data, target_pos);
 		}
+		if (ImGui::Button("Pathfind")) {
+			if (engine.session.tracer.has(object)) {
+				auto& mv = engine.session.movement.query(object);
+				auto& tc = engine.session.tracer.query(object);
+				game::tracer(parent.getContext().log, engine.session.path, mv, tc, target_pos);
+			}
+		}
 	}
 }
 

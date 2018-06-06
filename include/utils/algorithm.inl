@@ -136,4 +136,16 @@ T const & randomAt(std::vector<T> const & container) {
 	return container[thor::random(0u, container.size()-1u)];
 }
 
+
+// --------------------------------------------------------------------
+
+template <typename T>
+bool isReady(std::future<T> const & f) {
+	if (!f.valid()) {
+		return false;
+	}
+	auto status = f.wait_for(std::chrono::milliseconds(0));
+	return status == std::future_status::ready;
+}
+
 }  // ::utils

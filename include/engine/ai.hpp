@@ -3,6 +3,7 @@
 #include <rpg/event.hpp>
 #include <game/path.hpp>
 #include <game/script.hpp>
+#include <game/tracer.hpp>
 #include <engine/event.hpp>
 
 namespace engine {
@@ -13,16 +14,25 @@ struct AiSystem
 		rpg::EffectEvent, rpg::StatsEvent, rpg::DeathEvent,
 		rpg::SpawnEvent, rpg::FeedbackEvent> {
 
-	//game::ScriptSystem script;
+	core::LogContext& log;
+	
+	game::ScriptSystem script;
 	game::PathSystem path;
 	game::NavigationSystem navigation;
+	game::TracerSystem tracer; /// @note not only for AI-based entities
 
-	AiSystem(core::LogContext& log, std::size_t max_objects);
+	AiSystem(core::LogContext& log, std::size_t max_objects, core::MovementManager const & movement);
 	~AiSystem();
 	
 	void connect(MultiEventListener& listener);
 	void disconnect(MultiEventListener& listener);
 	
+	template <typename T>
+	void bind(utils::SingleEventListener<T>& listener);
+	
+	template <typename T>
+	void unbind(utils::SingleEventListener<T> const & listener);
+
 	void handle(core::CollisionEvent const& event);
 	void handle(core::TeleportEvent const& event);
 	void handle(core::AnimationEvent const& event);
